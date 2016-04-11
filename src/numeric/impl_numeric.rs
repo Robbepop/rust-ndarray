@@ -8,13 +8,13 @@
 
 use std::ops::Add;
 use libnum::{self, Zero, Float};
+use itertools::free::enumerate;
 
 use imp_prelude::*;
 use numeric_util;
 
 use {
     LinalgScalar,
-    aview0,
 };
 
 /// Numerical methods for arrays.
@@ -70,9 +70,18 @@ impl<A, S, D> ArrayBase<S, D>
     {
         let n = self.shape().axis(axis);
         let mut res = self.subview(axis, 0).to_owned();
-        for i in 1..n {
-            let view = self.subview(axis, i);
-            res = res + &view;
+        let stride = self.strides()[axis.axis()];
+        if self.ndim() == 2 && stride == 1 {
+            // contiguous along the axis we are summing
+            let ax = axis.axis();
+            for (i, elt) in enumerate(&mut res) {
+                *elt = self.subview(Axis(1 - ax), i).scalar_sum();
+            }
+        } else {
+            for i in 1..n {
+                let view = self.subview(axis, i);
+                res = res + &view;
+            }
         }
         res
     }
