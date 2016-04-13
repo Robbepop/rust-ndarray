@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/ulrik/pt/13/rustexperiments/ndarray/src/impl_numeric.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/ulrik/pt/rust/ndarray/src/impl_numeric.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>impl_numeric.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -177,6 +178,7 @@
 <span id="134">134</span>
 <span id="135">135</span>
 <span id="136">136</span>
+<span id="137">137</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014-2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -217,6 +219,7 @@
     <span class='doccomment'>/// ```</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// **Panics** if `axis` is out of bounds.</span>
+    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>deprecated</span>)]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>sum</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>axis</span>: <span class='ident'>Axis</span>) <span class='op'>-&gt;</span> <span class='ident'>OwnedArray</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='op'>&lt;</span><span class='ident'>D</span> <span class='kw'>as</span> <span class='ident'>RemoveAxis</span><span class='op'>&gt;</span>::<span class='ident'>Smaller</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>A</span>: <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Add</span><span class='op'>&lt;</span><span class='ident'>Output</span><span class='op'>=</span><span class='ident'>A</span><span class='op'>&gt;</span>,
               <span class='ident'>D</span>: <span class='ident'>RemoveAxis</span>,

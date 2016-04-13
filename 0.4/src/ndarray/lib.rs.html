@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/ulrik/pt/13/rustexperiments/ndarray/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/ulrik/pt/rust/ndarray/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -797,6 +798,7 @@
 <span id="754">754</span>
 <span id="755">755</span>
 <span id="756">756</span>
+<span id="757">757</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014-2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -1176,7 +1178,8 @@
 <span class='doccomment'>/// Let `C` be an array with mutable data (either `OwnedArray`, `RcArray`</span>
 <span class='doccomment'>/// or `ArrayViewMut`).</span>
 <span class='doccomment'>/// The following combinations of operands</span>
-<span class='doccomment'>/// are supported for an arbitrary binary operator denoted by `@`.</span>
+<span class='doccomment'>/// are supported for an arbitrary binary operator denoted by `@` (it can be</span>
+<span class='doccomment'>/// `+`, `-`, `*`, `/` and so on).</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// - `&amp;A @ &amp;A` which produces a new `OwnedArray`</span>
 <span class='doccomment'>/// - `B @ A` which consumes `B`, updates it with the result, and returns it</span>

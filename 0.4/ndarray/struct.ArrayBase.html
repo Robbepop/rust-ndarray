@@ -7,10 +7,11 @@
     <meta name="description" content="API documentation for the Rust `ArrayBase` struct in crate `ndarray`.">
     <meta name="keywords" content="rust, rustlang, rust-lang, ArrayBase">
 
-    <title>ndarray 0.4.8 - ndarray::ArrayBase - Rust</title>
+    <title>ndarray 0.4.9 - ndarray::ArrayBase - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
+    
 
     
     
@@ -46,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-2419' class='srclink' href='../src/ndarray/lib.rs.html#420-432' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-2419' class='srclink' href='../src/ndarray/lib.rs.html#421-433' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct ArrayBase&lt;S, D&gt; <span class='where'>where S: <a class='trait' href='../ndarray/trait.Data.html' title='ndarray::Data'>Data</a></span> {
     // some fields omitted
 }</pre><div class='docblock'><p>An <em>N</em>-dimensional array.</p>
@@ -227,7 +228,8 @@ with owned storage (either <code>OwnedArray</code> or <code>RcArray</code>).
 Let <code>C</code> be an array with mutable data (either <code>OwnedArray</code>, <code>RcArray</code>
 or <code>ArrayViewMut</code>).
 The following combinations of operands
-are supported for an arbitrary binary operator denoted by <code>@</code>.</p>
+are supported for an arbitrary binary operator denoted by <code>@</code> (it can be
+<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> and so on).</p>
 
 <ul>
 <li><code>&amp;A @ &amp;A</code> which produces a new <code>OwnedArray</code></li>
@@ -1006,7 +1008,8 @@ also known as <code>axpy</code> in BLAS.</p>
 <p><strong><em>Note: These will be deprecated in favour of overloaded <code>@=</code> operators
 when Rust 1.8 is released.</em></strong></p>
 </div><div class='impl-items'><h4 id='method.iadd' class='method'><code>fn <a href='#method.iadd' class='fnname'>iadd</a>&lt;E: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a>, S2&gt;(&amp;mut self, rhs: &amp;<a class='struct' href='../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;S2, E&gt;) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Add.html' title='core::ops::Add'>Add</a>&lt;A, Output=A&gt;, S2: <a class='trait' href='../ndarray/trait.Data.html' title='ndarray::Data'>Data</a>&lt;Elem=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 addition
  between <code>self</code> and <code>rhs</code>,
  <em>in place</em>.</p>
@@ -1015,12 +1018,14 @@ addition
 
 <p><strong>Panics</strong> if broadcasting isn’t possible.</p>
 </div><h4 id='method.iadd_scalar' class='method'><code>fn <a href='#method.iadd_scalar' class='fnname'>iadd_scalar</a>(&amp;mut self, x: &amp;A) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Add.html' title='core::ops::Add'>Add</a>&lt;A, Output=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 addition
  between <code>self</code> and the scalar <code>x</code>,
  <em>in place</em>.</p>
 </div><h4 id='method.isub' class='method'><code>fn <a href='#method.isub' class='fnname'>isub</a>&lt;E: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a>, S2&gt;(&amp;mut self, rhs: &amp;<a class='struct' href='../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;S2, E&gt;) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Sub.html' title='core::ops::Sub'>Sub</a>&lt;A, Output=A&gt;, S2: <a class='trait' href='../ndarray/trait.Data.html' title='ndarray::Data'>Data</a>&lt;Elem=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 subtraction
  between <code>self</code> and <code>rhs</code>,
  <em>in place</em>.</p>
@@ -1029,12 +1034,14 @@ subtraction
 
 <p><strong>Panics</strong> if broadcasting isn’t possible.</p>
 </div><h4 id='method.isub_scalar' class='method'><code>fn <a href='#method.isub_scalar' class='fnname'>isub_scalar</a>(&amp;mut self, x: &amp;A) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Sub.html' title='core::ops::Sub'>Sub</a>&lt;A, Output=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 subtraction
  between <code>self</code> and the scalar <code>x</code>,
  <em>in place</em>.</p>
 </div><h4 id='method.imul' class='method'><code>fn <a href='#method.imul' class='fnname'>imul</a>&lt;E: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a>, S2&gt;(&amp;mut self, rhs: &amp;<a class='struct' href='../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;S2, E&gt;) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Mul.html' title='core::ops::Mul'>Mul</a>&lt;A, Output=A&gt;, S2: <a class='trait' href='../ndarray/trait.Data.html' title='ndarray::Data'>Data</a>&lt;Elem=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 multiplication
  between <code>self</code> and <code>rhs</code>,
  <em>in place</em>.</p>
@@ -1043,12 +1050,14 @@ multiplication
 
 <p><strong>Panics</strong> if broadcasting isn’t possible.</p>
 </div><h4 id='method.imul_scalar' class='method'><code>fn <a href='#method.imul_scalar' class='fnname'>imul_scalar</a>(&amp;mut self, x: &amp;A) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Mul.html' title='core::ops::Mul'>Mul</a>&lt;A, Output=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 multiplication
  between <code>self</code> and the scalar <code>x</code>,
  <em>in place</em>.</p>
 </div><h4 id='method.idiv' class='method'><code>fn <a href='#method.idiv' class='fnname'>idiv</a>&lt;E: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a>, S2&gt;(&amp;mut self, rhs: &amp;<a class='struct' href='../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;S2, E&gt;) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Div.html' title='core::ops::Div'>Div</a>&lt;A, Output=A&gt;, S2: <a class='trait' href='../ndarray/trait.Data.html' title='ndarray::Data'>Data</a>&lt;Elem=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 division
  between <code>self</code> and <code>rhs</code>,
  <em>in place</em>.</p>
@@ -1057,12 +1066,14 @@ division
 
 <p><strong>Panics</strong> if broadcasting isn’t possible.</p>
 </div><h4 id='method.idiv_scalar' class='method'><code>fn <a href='#method.idiv_scalar' class='fnname'>idiv_scalar</a>(&amp;mut self, x: &amp;A) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Div.html' title='core::ops::Div'>Div</a>&lt;A, Output=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 division
  between <code>self</code> and the scalar <code>x</code>,
  <em>in place</em>.</p>
 </div><h4 id='method.irem' class='method'><code>fn <a href='#method.irem' class='fnname'>irem</a>&lt;E: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a>, S2&gt;(&amp;mut self, rhs: &amp;<a class='struct' href='../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;S2, E&gt;) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Rem.html' title='core::ops::Rem'>Rem</a>&lt;A, Output=A&gt;, S2: <a class='trait' href='../ndarray/trait.Data.html' title='ndarray::Data'>Data</a>&lt;Elem=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 remainder
  between <code>self</code> and <code>rhs</code>,
  <em>in place</em>.</p>
@@ -1071,12 +1082,14 @@ remainder
 
 <p><strong>Panics</strong> if broadcasting isn’t possible.</p>
 </div><h4 id='method.irem_scalar' class='method'><code>fn <a href='#method.irem_scalar' class='fnname'>irem_scalar</a>(&amp;mut self, x: &amp;A) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Rem.html' title='core::ops::Rem'>Rem</a>&lt;A, Output=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 remainder
  between <code>self</code> and the scalar <code>x</code>,
  <em>in place</em>.</p>
 </div><h4 id='method.ibitand' class='method'><code>fn <a href='#method.ibitand' class='fnname'>ibitand</a>&lt;E: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a>, S2&gt;(&amp;mut self, rhs: &amp;<a class='struct' href='../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;S2, E&gt;) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitAnd.html' title='core::ops::BitAnd'>BitAnd</a>&lt;A, Output=A&gt;, S2: <a class='trait' href='../ndarray/trait.Data.html' title='ndarray::Data'>Data</a>&lt;Elem=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 bit and
  between <code>self</code> and <code>rhs</code>,
  <em>in place</em>.</p>
@@ -1085,12 +1098,14 @@ bit and
 
 <p><strong>Panics</strong> if broadcasting isn’t possible.</p>
 </div><h4 id='method.ibitand_scalar' class='method'><code>fn <a href='#method.ibitand_scalar' class='fnname'>ibitand_scalar</a>(&amp;mut self, x: &amp;A) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitAnd.html' title='core::ops::BitAnd'>BitAnd</a>&lt;A, Output=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 bit and
  between <code>self</code> and the scalar <code>x</code>,
  <em>in place</em>.</p>
 </div><h4 id='method.ibitor' class='method'><code>fn <a href='#method.ibitor' class='fnname'>ibitor</a>&lt;E: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a>, S2&gt;(&amp;mut self, rhs: &amp;<a class='struct' href='../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;S2, E&gt;) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitOr.html' title='core::ops::BitOr'>BitOr</a>&lt;A, Output=A&gt;, S2: <a class='trait' href='../ndarray/trait.Data.html' title='ndarray::Data'>Data</a>&lt;Elem=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 bit or
  between <code>self</code> and <code>rhs</code>,
  <em>in place</em>.</p>
@@ -1099,12 +1114,14 @@ bit or
 
 <p><strong>Panics</strong> if broadcasting isn’t possible.</p>
 </div><h4 id='method.ibitor_scalar' class='method'><code>fn <a href='#method.ibitor_scalar' class='fnname'>ibitor_scalar</a>(&amp;mut self, x: &amp;A) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitOr.html' title='core::ops::BitOr'>BitOr</a>&lt;A, Output=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 bit or
  between <code>self</code> and the scalar <code>x</code>,
  <em>in place</em>.</p>
 </div><h4 id='method.ibitxor' class='method'><code>fn <a href='#method.ibitxor' class='fnname'>ibitxor</a>&lt;E: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a>, S2&gt;(&amp;mut self, rhs: &amp;<a class='struct' href='../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;S2, E&gt;) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitXor.html' title='core::ops::BitXor'>BitXor</a>&lt;A, Output=A&gt;, S2: <a class='trait' href='../ndarray/trait.Data.html' title='ndarray::Data'>Data</a>&lt;Elem=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 bit xor
  between <code>self</code> and <code>rhs</code>,
  <em>in place</em>.</p>
@@ -1113,12 +1130,14 @@ bit xor
 
 <p><strong>Panics</strong> if broadcasting isn’t possible.</p>
 </div><h4 id='method.ibitxor_scalar' class='method'><code>fn <a href='#method.ibitxor_scalar' class='fnname'>ibitxor_scalar</a>(&amp;mut self, x: &amp;A) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.BitXor.html' title='core::ops::BitXor'>BitXor</a>&lt;A, Output=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 bit xor
  between <code>self</code> and the scalar <code>x</code>,
  <em>in place</em>.</p>
 </div><h4 id='method.ishl' class='method'><code>fn <a href='#method.ishl' class='fnname'>ishl</a>&lt;E: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a>, S2&gt;(&amp;mut self, rhs: &amp;<a class='struct' href='../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;S2, E&gt;) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Shl.html' title='core::ops::Shl'>Shl</a>&lt;A, Output=A&gt;, S2: <a class='trait' href='../ndarray/trait.Data.html' title='ndarray::Data'>Data</a>&lt;Elem=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 left shift
  between <code>self</code> and <code>rhs</code>,
  <em>in place</em>.</p>
@@ -1127,12 +1146,14 @@ left shift
 
 <p><strong>Panics</strong> if broadcasting isn’t possible.</p>
 </div><h4 id='method.ishl_scalar' class='method'><code>fn <a href='#method.ishl_scalar' class='fnname'>ishl_scalar</a>(&amp;mut self, x: &amp;A) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Shl.html' title='core::ops::Shl'>Shl</a>&lt;A, Output=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 left shift
  between <code>self</code> and the scalar <code>x</code>,
  <em>in place</em>.</p>
 </div><h4 id='method.ishr' class='method'><code>fn <a href='#method.ishr' class='fnname'>ishr</a>&lt;E: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a>, S2&gt;(&amp;mut self, rhs: &amp;<a class='struct' href='../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;S2, E&gt;) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Shr.html' title='core::ops::Shr'>Shr</a>&lt;A, Output=A&gt;, S2: <a class='trait' href='../ndarray/trait.Data.html' title='ndarray::Data'>Data</a>&lt;Elem=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 right shift
  between <code>self</code> and <code>rhs</code>,
  <em>in place</em>.</p>
@@ -1141,14 +1162,17 @@ right shift
 
 <p><strong>Panics</strong> if broadcasting isn’t possible.</p>
 </div><h4 id='method.ishr_scalar' class='method'><code>fn <a href='#method.ishr_scalar' class='fnname'>ishr_scalar</a>(&amp;mut self, x: &amp;A) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Shr.html' title='core::ops::Shr'>Shr</a>&lt;A, Output=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform elementwise
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform elementwise
 right shift
  between <code>self</code> and the scalar <code>x</code>,
  <em>in place</em>.</p>
 </div><h4 id='method.ineg' class='method'><code>fn <a href='#method.ineg' class='fnname'>ineg</a>(&amp;mut self) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Neg.html' title='core::ops::Neg'>Neg</a>&lt;Output=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform an elementwise negation of <code>self</code>, <em>in place</em>.</p>
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform an elementwise negation of <code>self</code>, <em>in place</em>.</p>
 </div><h4 id='method.inot' class='method'><code>fn <a href='#method.inot' class='fnname'>inot</a>(&amp;mut self) <span class='where'>where A: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Not.html' title='core::ops::Not'>Not</a>&lt;Output=A&gt;</span></code></h4>
-<div class='docblock'><p>Perform an elementwise unary not of <code>self</code>, <em>in place</em>.</p>
+<div class='stability'><em class='stab deprecated'>Deprecated<p>: Use augmented assignments (+= and similar) instead.</p>
+</em></div><div class='docblock'><p>Perform an elementwise unary not of <code>self</code>, <em>in place</em>.</p>
 </div></div><h3 class='impl'><code>impl&lt;'a, A, D&gt; <a class='struct' href='../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;<a class='struct' href='../ndarray/struct.ViewRepr.html' title='ndarray::ViewRepr'>ViewRepr</a>&lt;&amp;'a A&gt;, D&gt; <span class='where'>where D: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a></span></code></h3><div class='docblock'>
 <h1 id='methods-for-array-views' class='section-header'><a href='#methods-for-array-views'>Methods for Array Views</a></h1>
 <p>Methods for read-only array views <code>ArrayView&lt;&#39;a, A, D&gt;</code></p>
