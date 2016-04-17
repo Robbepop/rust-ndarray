@@ -323,8 +323,8 @@
             <span class='comment'>// Create a new vec if the current view is less than half of</span>
             <span class='comment'>// backing data.</span>
             <span class='kw'>unsafe</span> {
-                <span class='op'>*</span><span class='ident'>self_</span> <span class='op'>=</span> <span class='ident'>ArrayBase</span>::<span class='ident'>from_vec_dim_unchecked</span>(<span class='ident'>self_</span>.<span class='ident'>dim</span>.<span class='ident'>clone</span>(),
-                                                           <span class='ident'>self_</span>.<span class='ident'>iter</span>()
+                <span class='op'>*</span><span class='ident'>self_</span> <span class='op'>=</span> <span class='ident'>ArrayBase</span>::<span class='ident'>from_shape_vec_unchecked</span>(<span class='ident'>self_</span>.<span class='ident'>dim</span>.<span class='ident'>clone</span>(),
+                                                             <span class='ident'>self_</span>.<span class='ident'>iter</span>()
                                                             .<span class='ident'>cloned</span>()
                                                             .<span class='ident'>collect</span>());
             }

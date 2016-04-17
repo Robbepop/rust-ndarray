@@ -237,7 +237,7 @@
 <span class='doccomment'>/// Create a zero-dimensional array with the element `x`.</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>arr0</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span>(<span class='ident'>x</span>: <span class='ident'>A</span>) <span class='op'>-&gt;</span> <span class='ident'>OwnedArray</span><span class='op'>&lt;</span><span class='ident'>A</span>, ()<span class='op'>&gt;</span>
 {
-    <span class='kw'>unsafe</span> { <span class='ident'>ArrayBase</span>::<span class='ident'>from_vec_dim_unchecked</span>((), <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>x</span>]) }
+    <span class='kw'>unsafe</span> { <span class='ident'>ArrayBase</span>::<span class='ident'>from_shape_vec_unchecked</span>((), <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>x</span>]) }
 }
 
 <span class='doccomment'>/// Create a one-dimensional array with elements from `xs`.</span>
@@ -353,7 +353,7 @@
         <span class='ident'>result</span>.<span class='ident'>extend_from_slice</span>(<span class='ident'>snd</span>.<span class='ident'>as_init_slice</span>());
     }
     <span class='kw'>unsafe</span> {
-        <span class='ident'>ArrayBase</span>::<span class='ident'>from_vec_dim_unchecked</span>(<span class='ident'>dim</span>, <span class='ident'>result</span>)
+        <span class='ident'>ArrayBase</span>::<span class='ident'>from_shape_vec_unchecked</span>(<span class='ident'>dim</span>, <span class='ident'>result</span>)
     }
 }
 
@@ -391,7 +391,7 @@
         }
     }
     <span class='kw'>unsafe</span> {
-        <span class='ident'>ArrayBase</span>::<span class='ident'>from_vec_dim_unchecked</span>(<span class='ident'>dim</span>, <span class='ident'>result</span>)
+        <span class='ident'>ArrayBase</span>::<span class='ident'>from_shape_vec_unchecked</span>(<span class='ident'>dim</span>, <span class='ident'>result</span>)
     }
 }
 

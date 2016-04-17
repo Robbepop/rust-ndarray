@@ -209,7 +209,7 @@
     <span class='kw'>unsafe</span> {
         <span class='ident'>v</span>.<span class='ident'>set_len</span>(<span class='ident'>size</span>);
     }
-    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>OwnedArray</span>::<span class='ident'>from_vec_dim</span>(<span class='ident'>res_dim</span>, <span class='ident'>v</span>));
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>OwnedArray</span>::<span class='ident'>from_shape_vec</span>(<span class='ident'>res_dim</span>, <span class='ident'>v</span>));
 
     {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>assign_view</span> <span class='op'>=</span> <span class='ident'>res</span>.<span class='ident'>view_mut</span>();

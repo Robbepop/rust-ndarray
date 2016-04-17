@@ -164,6 +164,7 @@
 <span id="120">120</span>
 <span id="121">121</span>
 <span id="122">122</span>
+<span id="123">123</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -242,6 +243,7 @@
         <span class='ident'>Self</span>::<span class='ident'>random_using</span>(<span class='ident'>dim</span>, <span class='ident'>dist</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rand</span>::<span class='ident'>weak_rng</span>())
     }
 
+    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>deprecated</span>)]</span> <span class='comment'>// from_vec_dim</span>
     <span class='kw'>fn</span> <span class='ident'>random_using</span><span class='op'>&lt;</span><span class='ident'>IdS</span>, <span class='ident'>R</span><span class='op'>&gt;</span>(<span class='ident'>dim</span>: <span class='ident'>D</span>, <span class='ident'>dist</span>: <span class='ident'>IdS</span>, <span class='ident'>rng</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>IdS</span>: <span class='ident'>IndependentSample</span><span class='op'>&lt;</span><span class='ident'>S</span>::<span class='ident'>Elem</span><span class='op'>&gt;</span>,
               <span class='ident'>R</span>: <span class='ident'>Rng</span>

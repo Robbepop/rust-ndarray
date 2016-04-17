@@ -442,6 +442,7 @@
 <span id="398">398</span>
 <span id="399">399</span>
 <span id="400">400</span>
+<span id="401">401</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014-2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -555,6 +556,7 @@
 
 <span class='doccomment'>/// If the array is not in the standard layout, copy all elements</span>
 <span class='doccomment'>/// into the standard layout so that the array is C-contiguous.</span>
+<span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>deprecated</span>)]</span> <span class='comment'>// from_vec_dim</span>
 <span class='kw'>fn</span> <span class='ident'>ensure_standard_layout</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span>(<span class='ident'>a</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span>)
     <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>DataOwned</span><span class='op'>&lt;</span><span class='ident'>Elem</span><span class='op'>=</span><span class='ident'>A</span><span class='op'>&gt;</span>,
           <span class='ident'>D</span>: <span class='ident'>Dimension</span>,
