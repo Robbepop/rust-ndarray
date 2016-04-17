@@ -30,6 +30,7 @@ use {
     AxisIter,
     AxisIterMut,
 };
+use stacking::stack;
 
 impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
 {
@@ -196,6 +197,8 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         }
         debug_assert!(self.pointer_is_inbounds());
     }
+
+
 
     /// Return a reference to the element at `index`, or return `None`
     /// if the index is out of bounds.
@@ -388,6 +391,46 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
             ptr: self.ptr,
             dim: self.dim.remove_axis(axis),
             strides: self.strides.remove_axis(axis),
+        }
+    }
+
+    /// Along `axis`, select arbitrary subviews corresponding to `indices`
+    /// and and copy them into a new array.
+    ///
+    /// **Panics** if `axis` or an element of `indices` is out of bounds.
+    ///
+    /// ```
+    /// use ndarray::{arr2, Axis};
+    ///
+    /// let x = arr2(&[[0., 1.],
+    ///                [2., 3.],
+    ///                [4., 5.],
+    ///                [6., 7.],
+    ///                [8., 9.]]);
+    ///
+    /// let r = x.select(Axis(0), &[0, 4, 3]);
+    /// assert!(
+    ///         r == arr2(&[[0., 1.],
+    ///                     [8., 9.],
+    ///                     [6., 7.]])
+    ///);
+    /// ```
+    pub fn select(&self, axis: Axis, indices: &[Ix]) -> OwnedArray<A, D>
+        where A: Copy,
+              D: RemoveAxis,
+    {
+        let mut subs = vec![self.view(); indices.len()];
+        for (&i, sub) in zipsl(indices, &mut subs[..]) {
+            sub.isubview(axis, i);
+        }
+        if subs.is_empty() {
+            let mut dim = self.dim();
+            dim.set_axis(axis, 0);
+            unsafe {
+                OwnedArray::from_vec_dim_unchecked(dim, vec![])
+            }
+        } else {
+            stack(axis, &subs).unwrap()
         }
     }
 
@@ -636,7 +679,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// Return a pointer to the first element in the array.
     ///
     /// Raw access to array elements needs to follow the strided indexing
-    /// scheme: an element at multi-index *I* in an array with strides *S* is 
+    /// scheme: an element at multi-index *I* in an array with strides *S* is
     /// located at offset
     ///
     /// *Σ<sub>0 ≤ k < d</sub> I<sub>k</sub> × S<sub>k</sub>*
@@ -930,7 +973,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     }
 
     fn pointer_is_inbounds(&self) -> bool {
-        let slc = self.data.slice();
+        let slc = self.data._data_slice();
         if slc.is_empty() {
             // special case for data-less views
             return true;
