@@ -7,7 +7,7 @@
     <meta name="description" content="API documentation for the Rust `ShapeBuilder` trait in crate `ndarray`.">
     <meta name="keywords" content="rust, rustlang, rust-lang, ShapeBuilder">
 
-    <title>0.5.0 - ndarray::ShapeBuilder - Rust</title>
+    <title>0.5.2 - 0.5.2 - ndarray::ShapeBuilder - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-2204' class='srclink' href='../src/ndarray/src/shape_builder.rs.html#10-16' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-2124' class='srclink' href='../src/ndarray/src/shape_builder.rs.html#10-16' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait ShapeBuilder {
     type <a href='#associatedtype.Dim' class='type'>Dim</a>: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a>;
     fn <a href='#tymethod.f' class='fnname'>f</a>(self) -&gt; <a class='struct' href='../ndarray/struct.Shape.html' title='ndarray::Shape'>Shape</a>&lt;Self::<a class='trait' href='../ndarray/trait.ShapeBuilder.html' title='ndarray::ShapeBuilder'>Dim</a>&gt;;
@@ -67,7 +67,8 @@ customizing the memory layout (strides) of an array shape.</p>
         <h3 id='tymethod.f' class='method stab '><code>fn <a href='#tymethod.f' class='fnname'>f</a>(self) -&gt; <a class='struct' href='../ndarray/struct.Shape.html' title='ndarray::Shape'>Shape</a>&lt;Self::<a class='trait' href='../ndarray/trait.ShapeBuilder.html' title='ndarray::ShapeBuilder'>Dim</a>&gt;</code></h3><h3 id='tymethod.set_f' class='method stab '><code>fn <a href='#tymethod.set_f' class='fnname'>set_f</a>(self, is_f: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; <a class='struct' href='../ndarray/struct.Shape.html' title='ndarray::Shape'>Shape</a>&lt;Self::<a class='trait' href='../ndarray/trait.ShapeBuilder.html' title='ndarray::ShapeBuilder'>Dim</a>&gt;</code></h3><h3 id='tymethod.strides' class='method stab '><code>fn <a href='#tymethod.strides' class='fnname'>strides</a>(self, strides: Self::<a class='trait' href='../ndarray/trait.ShapeBuilder.html' title='ndarray::ShapeBuilder'>Dim</a>) -&gt; <a class='struct' href='../ndarray/struct.StrideShape.html' title='ndarray::StrideShape'>StrideShape</a>&lt;Self::<a class='trait' href='../ndarray/trait.ShapeBuilder.html' title='ndarray::ShapeBuilder'>Dim</a>&gt;</code></h3></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;D&gt; <a class='trait' href='../ndarray/trait.ShapeBuilder.html' title='ndarray::ShapeBuilder'>ShapeBuilder</a> for <a class='struct' href='../ndarray/struct.Shape.html' title='ndarray::Shape'>Shape</a>&lt;D&gt; <span class='where'>where D: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a></span></code></li>
+    <li><code>impl&lt;D&gt; ShapeBuilder for D <span class='where'>where D: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a></span></code></li>
+<li><code>impl&lt;D&gt; ShapeBuilder for <a class='struct' href='../ndarray/struct.Shape.html' title='ndarray::Shape'>Shape</a>&lt;D&gt; <span class='where'>where D: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a></span></code></li>
 </ul><script type="text/javascript" async
                          src="../implementors/ndarray/trait.ShapeBuilder.js">
                  </script></section>

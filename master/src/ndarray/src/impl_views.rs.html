@@ -302,7 +302,7 @@
     <span class='doccomment'>/// assert!(a.strides() == &amp;[1, 4, 2]);</span>
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_shape</span><span class='op'>&lt;</span><span class='ident'>Sh</span><span class='op'>&gt;</span>(<span class='ident'>shape</span>: <span class='ident'>Sh</span>, <span class='ident'>xs</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='ident'>A</span>])
-        <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='kw'>Self</span>, <span class='ident'>ShapeError</span><span class='op'>&gt;</span>
+        <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='self'>Self</span>, <span class='ident'>ShapeError</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>Sh</span>: <span class='ident'>Into</span><span class='op'>&lt;</span><span class='ident'>StrideShape</span><span class='op'>&lt;</span><span class='ident'>D</span><span class='op'>&gt;&gt;</span>,
     {
         <span class='kw'>let</span> <span class='ident'>shape</span> <span class='op'>=</span> <span class='ident'>shape</span>.<span class='ident'>into</span>();
@@ -310,7 +310,7 @@
         <span class='kw'>let</span> <span class='ident'>strides</span> <span class='op'>=</span> <span class='ident'>shape</span>.<span class='ident'>strides</span>;
         <span class='ident'>dimension</span>::<span class='ident'>can_index_slice</span>(<span class='ident'>xs</span>, <span class='kw-2'>&amp;</span><span class='ident'>dim</span>, <span class='kw-2'>&amp;</span><span class='ident'>strides</span>).<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> {
             <span class='kw'>unsafe</span> {
-                <span class='ident'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>xs</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>dim</span>, <span class='ident'>strides</span>)
+                <span class='self'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>xs</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>dim</span>, <span class='ident'>strides</span>)
             }
         })
     }
@@ -318,11 +318,11 @@
     <span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>has_deprecated</span>, <span class='ident'>deprecated</span>(<span class='ident'>note</span><span class='op'>=</span><span class='string'>&quot;Use from_shape instead.&quot;</span>))]</span>
     <span class='doccomment'>/// ***Deprecated: Use from_shape instead***</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_slice_dim_stride</span>(<span class='ident'>dim</span>: <span class='ident'>D</span>, <span class='ident'>strides</span>: <span class='ident'>D</span>, <span class='ident'>xs</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='ident'>A</span>])
-        <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='kw'>Self</span>, <span class='ident'>ShapeError</span><span class='op'>&gt;</span>
+        <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='self'>Self</span>, <span class='ident'>ShapeError</span><span class='op'>&gt;</span>
     {
         <span class='ident'>dimension</span>::<span class='ident'>can_index_slice</span>(<span class='ident'>xs</span>, <span class='kw-2'>&amp;</span><span class='ident'>dim</span>, <span class='kw-2'>&amp;</span><span class='ident'>strides</span>).<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> {
             <span class='kw'>unsafe</span> {
-                <span class='ident'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>xs</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>dim</span>, <span class='ident'>strides</span>)
+                <span class='self'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>xs</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>dim</span>, <span class='ident'>strides</span>)
             }
         })
     }
@@ -337,7 +337,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// &lt;img src=&quot;split_at.svg&quot; width=&quot;300px&quot; height=&quot;271px&quot;&gt;</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>split_at</span>(<span class='self'>self</span>, <span class='ident'>axis</span>: <span class='ident'>Axis</span>, <span class='ident'>index</span>: <span class='ident'>Ix</span>)
-        <span class='op'>-&gt;</span> (<span class='kw'>Self</span>, <span class='kw'>Self</span>)
+        <span class='op'>-&gt;</span> (<span class='self'>Self</span>, <span class='self'>Self</span>)
     {
         <span class='comment'>// NOTE: Keep this in sync with the ArrayViewMut version</span>
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>index</span> <span class='op'>&lt;=</span> <span class='self'>self</span>.<span class='ident'>shape</span>().<span class='ident'>axis</span>(<span class='ident'>axis</span>));
@@ -354,14 +354,14 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dim_left</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>clone</span>();
         <span class='ident'>dim_left</span>.<span class='ident'>set_axis</span>(<span class='ident'>axis</span>, <span class='ident'>index</span>);
         <span class='kw'>let</span> <span class='ident'>left</span> <span class='op'>=</span> <span class='kw'>unsafe</span> {
-            <span class='ident'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>left_ptr</span>, <span class='ident'>dim_left</span>, <span class='self'>self</span>.<span class='ident'>strides</span>.<span class='ident'>clone</span>())
+            <span class='self'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>left_ptr</span>, <span class='ident'>dim_left</span>, <span class='self'>self</span>.<span class='ident'>strides</span>.<span class='ident'>clone</span>())
         };
 
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dim_right</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dim</span>;
         <span class='kw'>let</span> <span class='ident'>right_len</span>  <span class='op'>=</span> <span class='ident'>dim_right</span>.<span class='ident'>axis</span>(<span class='ident'>axis</span>) <span class='op'>-</span> <span class='ident'>index</span>;
         <span class='ident'>dim_right</span>.<span class='ident'>set_axis</span>(<span class='ident'>axis</span>, <span class='ident'>right_len</span>);
         <span class='kw'>let</span> <span class='ident'>right</span> <span class='op'>=</span> <span class='kw'>unsafe</span> {
-            <span class='ident'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>right_ptr</span>, <span class='ident'>dim_right</span>, <span class='self'>self</span>.<span class='ident'>strides</span>)
+            <span class='self'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>right_ptr</span>, <span class='ident'>dim_right</span>, <span class='self'>self</span>.<span class='ident'>strides</span>)
         };
 
         (<span class='ident'>left</span>, <span class='ident'>right</span>)
@@ -403,7 +403,7 @@
     <span class='doccomment'>/// assert!(a.strides() == &amp;[1, 4, 2]);</span>
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_shape</span><span class='op'>&lt;</span><span class='ident'>Sh</span><span class='op'>&gt;</span>(<span class='ident'>shape</span>: <span class='ident'>Sh</span>, <span class='ident'>xs</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> [<span class='ident'>A</span>])
-        <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='kw'>Self</span>, <span class='ident'>ShapeError</span><span class='op'>&gt;</span>
+        <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='self'>Self</span>, <span class='ident'>ShapeError</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>Sh</span>: <span class='ident'>Into</span><span class='op'>&lt;</span><span class='ident'>StrideShape</span><span class='op'>&lt;</span><span class='ident'>D</span><span class='op'>&gt;&gt;</span>,
     {
         <span class='kw'>let</span> <span class='ident'>shape</span> <span class='op'>=</span> <span class='ident'>shape</span>.<span class='ident'>into</span>();
@@ -411,7 +411,7 @@
         <span class='kw'>let</span> <span class='ident'>strides</span> <span class='op'>=</span> <span class='ident'>shape</span>.<span class='ident'>strides</span>;
         <span class='ident'>dimension</span>::<span class='ident'>can_index_slice</span>(<span class='ident'>xs</span>, <span class='kw-2'>&amp;</span><span class='ident'>dim</span>, <span class='kw-2'>&amp;</span><span class='ident'>strides</span>).<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> {
             <span class='kw'>unsafe</span> {
-                <span class='ident'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>xs</span>.<span class='ident'>as_mut_ptr</span>(), <span class='ident'>dim</span>, <span class='ident'>strides</span>)
+                <span class='self'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>xs</span>.<span class='ident'>as_mut_ptr</span>(), <span class='ident'>dim</span>, <span class='ident'>strides</span>)
             }
         })
     }
@@ -419,11 +419,11 @@
     <span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>has_deprecated</span>, <span class='ident'>deprecated</span>(<span class='ident'>note</span><span class='op'>=</span><span class='string'>&quot;Use from_shape instead.&quot;</span>))]</span>
     <span class='doccomment'>/// ***Deprecated: Use from_shape instead***</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_slice_dim_stride</span>(<span class='ident'>dim</span>: <span class='ident'>D</span>, <span class='ident'>strides</span>: <span class='ident'>D</span>, <span class='ident'>xs</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> [<span class='ident'>A</span>])
-        <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='kw'>Self</span>, <span class='ident'>ShapeError</span><span class='op'>&gt;</span>
+        <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='self'>Self</span>, <span class='ident'>ShapeError</span><span class='op'>&gt;</span>
     {
         <span class='ident'>dimension</span>::<span class='ident'>can_index_slice</span>(<span class='ident'>xs</span>, <span class='kw-2'>&amp;</span><span class='ident'>dim</span>, <span class='kw-2'>&amp;</span><span class='ident'>strides</span>).<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> {
             <span class='kw'>unsafe</span> {
-                <span class='ident'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>xs</span>.<span class='ident'>as_mut_ptr</span>(), <span class='ident'>dim</span>, <span class='ident'>strides</span>)
+                <span class='self'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>xs</span>.<span class='ident'>as_mut_ptr</span>(), <span class='ident'>dim</span>, <span class='ident'>strides</span>)
             }
         })
     }
@@ -433,7 +433,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// **Panics** if `axis` or `index` is out of bounds.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>split_at</span>(<span class='self'>self</span>, <span class='ident'>axis</span>: <span class='ident'>Axis</span>, <span class='ident'>index</span>: <span class='ident'>Ix</span>)
-        <span class='op'>-&gt;</span> (<span class='kw'>Self</span>, <span class='kw'>Self</span>)
+        <span class='op'>-&gt;</span> (<span class='self'>Self</span>, <span class='self'>Self</span>)
     {
         <span class='comment'>// NOTE: Keep this in sync with the ArrayView version</span>
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>index</span> <span class='op'>&lt;=</span> <span class='self'>self</span>.<span class='ident'>shape</span>().<span class='ident'>axis</span>(<span class='ident'>axis</span>));
@@ -450,14 +450,14 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dim_left</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>clone</span>();
         <span class='ident'>dim_left</span>.<span class='ident'>set_axis</span>(<span class='ident'>axis</span>, <span class='ident'>index</span>);
         <span class='kw'>let</span> <span class='ident'>left</span> <span class='op'>=</span> <span class='kw'>unsafe</span> {
-            <span class='ident'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>left_ptr</span>, <span class='ident'>dim_left</span>, <span class='self'>self</span>.<span class='ident'>strides</span>.<span class='ident'>clone</span>())
+            <span class='self'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>left_ptr</span>, <span class='ident'>dim_left</span>, <span class='self'>self</span>.<span class='ident'>strides</span>.<span class='ident'>clone</span>())
         };
 
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dim_right</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dim</span>;
         <span class='kw'>let</span> <span class='ident'>right_len</span>  <span class='op'>=</span> <span class='ident'>dim_right</span>.<span class='ident'>axis</span>(<span class='ident'>axis</span>) <span class='op'>-</span> <span class='ident'>index</span>;
         <span class='ident'>dim_right</span>.<span class='ident'>set_axis</span>(<span class='ident'>axis</span>, <span class='ident'>right_len</span>);
         <span class='kw'>let</span> <span class='ident'>right</span> <span class='op'>=</span> <span class='kw'>unsafe</span> {
-            <span class='ident'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>right_ptr</span>, <span class='ident'>dim_right</span>, <span class='self'>self</span>.<span class='ident'>strides</span>)
+            <span class='self'>Self</span>::<span class='ident'>new_</span>(<span class='ident'>right_ptr</span>, <span class='ident'>dim_right</span>, <span class='self'>self</span>.<span class='ident'>strides</span>)
         };
 
         (<span class='ident'>left</span>, <span class='ident'>right</span>)

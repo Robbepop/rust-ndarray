@@ -428,7 +428,7 @@
 <span class='comment'>// except according to those terms.</span>
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>any</span>::<span class='ident'>Any</span>;
-<span class='kw'>use</span> <span class='ident'>libnum</span>::<span class='ident'>Complex</span>;
+<span class='kw'>use</span> <span class='ident'>num_complex</span>::<span class='ident'>Complex</span>;
 
 <span class='doccomment'>/// Elements that can be used as direct operands in arithmetic with arrays.</span>
 <span class='doccomment'>///</span>
@@ -635,11 +635,11 @@
 
 
 <span class='kw'>mod</span> <span class='ident'>arithmetic_ops</span> {
-    <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>imp_prelude</span>::<span class='op'>*</span>;
 
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='op'>*</span>;
-    <span class='kw'>use</span> <span class='ident'>libnum</span>::<span class='ident'>Complex</span>;
+    <span class='kw'>use</span> <span class='ident'>num_complex</span>::<span class='ident'>Complex</span>;
 
     <span class='macro'>impl_binary_op</span><span class='macro'>!</span>(<span class='ident'>Add</span>, <span class='op'>+</span>, <span class='ident'>add</span>, <span class='op'>+=</span>, <span class='string'>&quot;addition&quot;</span>);
     <span class='macro'>impl_binary_op</span><span class='macro'>!</span>(<span class='ident'>Sub</span>, <span class='op'>-</span>, <span class='ident'>sub</span>, <span class='op'>-=</span>, <span class='string'>&quot;subtraction&quot;</span>);
@@ -706,9 +706,9 @@
               <span class='ident'>S</span>: <span class='ident'>DataOwned</span><span class='op'>&lt;</span><span class='ident'>Elem</span><span class='op'>=</span><span class='ident'>A</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>DataMut</span>,
               <span class='ident'>D</span>: <span class='ident'>Dimension</span>
     {
-        <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='kw'>Self</span>;
+        <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='self'>Self</span>;
         <span class='doccomment'>/// Perform an elementwise negation of `self` and return the result.</span>
-        <span class='kw'>fn</span> <span class='ident'>neg</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+        <span class='kw'>fn</span> <span class='ident'>neg</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
             <span class='self'>self</span>.<span class='ident'>unordered_foreach_mut</span>(<span class='op'>|</span><span class='ident'>elt</span><span class='op'>|</span> {
                 <span class='op'>*</span><span class='ident'>elt</span> <span class='op'>=</span> <span class='op'>-</span><span class='ident'>elt</span>.<span class='ident'>clone</span>();
             });
@@ -721,9 +721,9 @@
               <span class='ident'>S</span>: <span class='ident'>DataOwned</span><span class='op'>&lt;</span><span class='ident'>Elem</span><span class='op'>=</span><span class='ident'>A</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>DataMut</span>,
               <span class='ident'>D</span>: <span class='ident'>Dimension</span>
     {
-        <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='kw'>Self</span>;
+        <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='self'>Self</span>;
         <span class='doccomment'>/// Perform an elementwise unary not of `self` and return the result.</span>
-        <span class='kw'>fn</span> <span class='ident'>not</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+        <span class='kw'>fn</span> <span class='ident'>not</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
             <span class='self'>self</span>.<span class='ident'>unordered_foreach_mut</span>(<span class='op'>|</span><span class='ident'>elt</span><span class='op'>|</span> {
                 <span class='op'>*</span><span class='ident'>elt</span> <span class='op'>=</span> <span class='op'>!</span><span class='ident'>elt</span>.<span class='ident'>clone</span>();
             });
@@ -733,7 +733,7 @@
 }
 
 <span class='kw'>mod</span> <span class='ident'>assign_ops</span> {
-    <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>imp_prelude</span>::<span class='op'>*</span>;
 
     <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>impl_assign_op</span> {

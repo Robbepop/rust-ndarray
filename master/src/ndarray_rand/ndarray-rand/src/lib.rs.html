@@ -240,7 +240,7 @@
     <span class='kw'>fn</span> <span class='ident'>random</span><span class='op'>&lt;</span><span class='ident'>IdS</span><span class='op'>&gt;</span>(<span class='ident'>dim</span>: <span class='ident'>D</span>, <span class='ident'>dist</span>: <span class='ident'>IdS</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>IdS</span>: <span class='ident'>IndependentSample</span><span class='op'>&lt;</span><span class='ident'>S</span>::<span class='ident'>Elem</span><span class='op'>&gt;</span>
     {
-        <span class='ident'>Self</span>::<span class='ident'>random_using</span>(<span class='ident'>dim</span>, <span class='ident'>dist</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rand</span>::<span class='ident'>weak_rng</span>())
+        <span class='self'>Self</span>::<span class='ident'>random_using</span>(<span class='ident'>dim</span>, <span class='ident'>dist</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rand</span>::<span class='ident'>weak_rng</span>())
     }
 
     <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>deprecated</span>)]</span> <span class='comment'>// from_vec_dim</span>
@@ -249,7 +249,7 @@
               <span class='ident'>R</span>: <span class='ident'>Rng</span>
     {
         <span class='kw'>let</span> <span class='ident'>elements</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>from_iter</span>((<span class='number'>0</span>..<span class='ident'>dim</span>.<span class='ident'>size</span>()).<span class='ident'>map</span>(<span class='kw'>move</span> <span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>dist</span>.<span class='ident'>ind_sample</span>(<span class='ident'>rng</span>)));
-        <span class='ident'>Self</span>::<span class='ident'>from_vec_dim</span>(<span class='ident'>dim</span>, <span class='ident'>elements</span>).<span class='ident'>unwrap</span>()
+        <span class='self'>Self</span>::<span class='ident'>from_vec_dim</span>(<span class='ident'>dim</span>, <span class='ident'>elements</span>).<span class='ident'>unwrap</span>()
     }
 }
 
