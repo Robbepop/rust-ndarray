@@ -2,9 +2,9 @@ ndarray
 =========
 
 The ``ndarray`` crate provides an N-dimensional container for general elements
-and for numerics.  Requires Rust 1.7.
+and for numerics.  Requires Rust 1.8.
 
-Please read the API documentation here: `(0.5.0-alpha / master)`__, `(0.4)`__, `(0.3)`__, `(0.2)`__
+Please read the API documentation here: `(0.5 / master)`__, `(0.4)`__, `(0.3)`__, `(0.2)`__
 
 __ http://bluss.github.io/rust-ndarray/
 __ http://bluss.github.io/rust-ndarray/0.4/
@@ -60,7 +60,7 @@ Status and Lookout
     ``.zip_mut_with()`` are the most efficient ways to
     perform single traversal and lock step traversal respectively.
   + ``.iter()`` is efficient for c-contiguous arrays.
-  + Can use BLAS in some operations (``dot`` and ``mat_mul``).
+  + Can use BLAS in matrix multiplication
 
 Crate Feature Flags
 -------------------
@@ -82,14 +82,22 @@ your `Cargo.toml`.
 How to use with cargo::
 
     [dependencies]
-    ndarray = "0.4"
+    ndarray = "0.5"
 
 Recent Changes (ndarray)
 ------------------------
 
+- 0.5.2
+
+  - Use num-traits, num-complex instead of num.
+
+- 0.5.1
+
+  - Fix theoretical well-formedness issue with Data trait
+
 - 0.5.0
 
-  - Require Rust 1.8 and exable +=, -= and other assign operators.
+  - Require Rust 1.8 and enable +=, -=, and the other assign operators.
     All ``iadd, iadd_scalar`` and similar methods are now deprecated.
   - ndarray now has a prelude: ``use ndarray::prelude::*;``.
   - Constructors from_elem, zeros, from_shape_vec now all support passing a custom
