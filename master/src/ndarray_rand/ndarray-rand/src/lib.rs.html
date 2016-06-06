@@ -164,7 +164,6 @@
 <span id="120">120</span>
 <span id="121">121</span>
 <span id="122">122</span>
-<span id="123">123</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -211,11 +210,11 @@
     <span class='doccomment'>/// extern crate ndarray_rand;</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// use rand::distributions::Range;</span>
-    <span class='doccomment'>/// use ndarray::OwnedArray;</span>
+    <span class='doccomment'>/// use ndarray::Array;</span>
     <span class='doccomment'>/// use ndarray_rand::RandomExt;</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// # fn main() {</span>
-    <span class='doccomment'>/// let a = OwnedArray::random((2, 5), Range::new(0., 10.));</span>
+    <span class='doccomment'>/// let a = Array::random((2, 5), Range::new(0., 10.));</span>
     <span class='doccomment'>/// println!(&quot;{:8.4}&quot;, a);</span>
     <span class='doccomment'>/// // Example Output:</span>
     <span class='doccomment'>/// // [[  8.6900,   6.9824,   3.8922,   6.5861,   2.4890],</span>
@@ -243,13 +242,12 @@
         <span class='self'>Self</span>::<span class='ident'>random_using</span>(<span class='ident'>dim</span>, <span class='ident'>dist</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rand</span>::<span class='ident'>weak_rng</span>())
     }
 
-    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>deprecated</span>)]</span> <span class='comment'>// from_vec_dim</span>
     <span class='kw'>fn</span> <span class='ident'>random_using</span><span class='op'>&lt;</span><span class='ident'>IdS</span>, <span class='ident'>R</span><span class='op'>&gt;</span>(<span class='ident'>dim</span>: <span class='ident'>D</span>, <span class='ident'>dist</span>: <span class='ident'>IdS</span>, <span class='ident'>rng</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>IdS</span>: <span class='ident'>IndependentSample</span><span class='op'>&lt;</span><span class='ident'>S</span>::<span class='ident'>Elem</span><span class='op'>&gt;</span>,
               <span class='ident'>R</span>: <span class='ident'>Rng</span>
     {
         <span class='kw'>let</span> <span class='ident'>elements</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>from_iter</span>((<span class='number'>0</span>..<span class='ident'>dim</span>.<span class='ident'>size</span>()).<span class='ident'>map</span>(<span class='kw'>move</span> <span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>dist</span>.<span class='ident'>ind_sample</span>(<span class='ident'>rng</span>)));
-        <span class='self'>Self</span>::<span class='ident'>from_vec_dim</span>(<span class='ident'>dim</span>, <span class='ident'>elements</span>).<span class='ident'>unwrap</span>()
+        <span class='self'>Self</span>::<span class='ident'>from_shape_vec</span>(<span class='ident'>dim</span>, <span class='ident'>elements</span>).<span class='ident'>unwrap</span>()
     }
 }
 
@@ -261,11 +259,11 @@
 <span class='doccomment'>/// extern crate ndarray_rand;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// use rand::distributions::Normal;</span>
-<span class='doccomment'>/// use ndarray::OwnedArray;</span>
+<span class='doccomment'>/// use ndarray::Array;</span>
 <span class='doccomment'>/// use ndarray_rand::{RandomExt, F32};</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// # fn main() {</span>
-<span class='doccomment'>/// let a = OwnedArray::random((2, 5), F32(Normal::new(0., 1.)));</span>
+<span class='doccomment'>/// let a = Array::random((2, 5), F32(Normal::new(0., 1.)));</span>
 <span class='doccomment'>/// println!(&quot;{:8.4}&quot;, a);</span>
 <span class='doccomment'>/// // Example Output:</span>
 <span class='doccomment'>/// // [[ -0.6910,   1.1730,   1.0902,  -0.4092,  -1.7340],</span>
@@ -313,6 +311,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

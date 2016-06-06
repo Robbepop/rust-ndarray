@@ -763,6 +763,8 @@
 <span id="719">719</span>
 <span id="720">720</span>
 <span id="721">721</span>
+<span id="722">722</span>
+<span id="723">723</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014-2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -779,7 +781,7 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! - [`ArrayBase`](struct.ArrayBase.html):</span>
 <span class='doccomment'>//!   The N-dimensional array type itself.</span>
-<span class='doccomment'>//! - [`OwnedArray`](type.OwnedArray.html):</span>
+<span class='doccomment'>//! - [`Array`](type.Array.html):</span>
 <span class='doccomment'>//!   An array where the data is owned uniquely.</span>
 <span class='doccomment'>//! - [`RcArray`](type.RcArray.html):</span>
 <span class='doccomment'>//!   An array where the data has shared ownership and is copy on write.</span>
@@ -792,7 +794,7 @@
 <span class='doccomment'>//! - Slicing, also with arbitrary step size, and negative indices to mean</span>
 <span class='doccomment'>//!   elements from the end of the axis.</span>
 <span class='doccomment'>//! - There is both a copy on write array (`RcArray`), or a regular uniquely owned array</span>
-<span class='doccomment'>//!   (`OwnedArray`), and both can use read-only and read-write array views.</span>
+<span class='doccomment'>//!   (`Array`), and both can use read-only and read-write array views.</span>
 <span class='doccomment'>//! - Iteration and most operations are efficient on arrays with contiguous</span>
 <span class='doccomment'>//!   innermost dimension.</span>
 <span class='doccomment'>//! - Array views can be used to slice and mutate any `[T]` data using</span>
@@ -939,17 +941,17 @@
 <span class='doccomment'>/// The `ArrayBase&lt;S, D&gt;` is parameterized by `S` for the data container and</span>
 <span class='doccomment'>/// `D` for the dimensionality.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// Type aliases [`OwnedArray`], [`RcArray`], [`ArrayView`], and [`ArrayViewMut`] refer</span>
+<span class='doccomment'>/// Type aliases [`Array`], [`RcArray`], [`ArrayView`], and [`ArrayViewMut`] refer</span>
 <span class='doccomment'>/// to `ArrayBase` with different types for the data container.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// [`OwnedArray`]: type.OwnedArray.html</span>
+<span class='doccomment'>/// [`Array`]: type.Array.html</span>
 <span class='doccomment'>/// [`RcArray`]: type.RcArray.html</span>
 <span class='doccomment'>/// [`ArrayView`]: type.ArrayView.html</span>
 <span class='doccomment'>/// [`ArrayViewMut`]: type.ArrayViewMut.html</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ## Contents</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// + [OwnedArray and RcArray](#ownedarray-and-rcarray)</span>
+<span class='doccomment'>/// + [Array and RcArray](#ownedarray-and-rcarray)</span>
 <span class='doccomment'>/// + [Indexing and Dimension](#indexing-and-dimension)</span>
 <span class='doccomment'>/// + [Slicing](#slicing)</span>
 <span class='doccomment'>/// + [Subviews](#subviews)</span>
@@ -958,9 +960,9 @@
 <span class='doccomment'>/// + [Methods](#methods)</span>
 <span class='doccomment'>/// + [Methods for Array Views](#methods-for-array-views)</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// ## `OwnedArray` and `RcArray`</span>
+<span class='doccomment'>/// ## `Array` and `RcArray`</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// `OwnedArray` owns the underlying array elements directly (just like</span>
+<span class='doccomment'>/// `Array` owns the underlying array elements directly (just like</span>
 <span class='doccomment'>/// a `Vec`), while [`RcArray`](type.RcArray.html) is a an array with reference</span>
 <span class='doccomment'>/// counted data. `RcArray` can act both as an owner or as a view in that regard.</span>
 <span class='doccomment'>/// Sharing requires that it uses copy-on-write for mutable operations.</span>
@@ -1117,14 +1119,14 @@
 <span class='doccomment'>/// Since the trait implementations are hard to overview, here is a summary.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// Let `A` be an array or view of any kind. Let `B` be an array</span>
-<span class='doccomment'>/// with owned storage (either `OwnedArray` or `RcArray`).</span>
-<span class='doccomment'>/// Let `C` be an array with mutable data (either `OwnedArray`, `RcArray`</span>
+<span class='doccomment'>/// with owned storage (either `Array` or `RcArray`).</span>
+<span class='doccomment'>/// Let `C` be an array with mutable data (either `Array`, `RcArray`</span>
 <span class='doccomment'>/// or `ArrayViewMut`).</span>
 <span class='doccomment'>/// The following combinations of operands</span>
 <span class='doccomment'>/// are supported for an arbitrary binary operator denoted by `@` (it can be</span>
 <span class='doccomment'>/// `+`, `-`, `*`, `/` and so on).</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// - `&amp;A @ &amp;A` which produces a new `OwnedArray`</span>
+<span class='doccomment'>/// - `&amp;A @ &amp;A` which produces a new `Array`</span>
 <span class='doccomment'>/// - `B @ A` which consumes `B`, updates it with the result, and returns it</span>
 <span class='doccomment'>/// - `B @ &amp;A` which consumes `B`, updates it with the result, and returns it</span>
 <span class='doccomment'>/// - `C @= &amp;A` which performs an arithmetic operation in place</span>
@@ -1134,7 +1136,7 @@
 <span class='doccomment'>/// are supported (scalar can be on either the left or right side, but</span>
 <span class='doccomment'>/// `ScalarOperand` docs has the detailed condtions).</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// - `&amp;A @ K` or `K @ &amp;A` which produces a new `OwnedArray`</span>
+<span class='doccomment'>/// - `&amp;A @ K` or `K @ &amp;A` which produces a new `Array`</span>
 <span class='doccomment'>/// - `B @ K` or `K @ B` which consumes `B`, updates it with the result and returns it</span>
 <span class='doccomment'>/// - `C @= K` which performs an arithmetic operation in place</span>
 <span class='doccomment'>///</span>
@@ -1179,6 +1181,10 @@
 <span class='doccomment'>/// can act as both an owner as the data as well as a lightweight view.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RcArray</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;&gt;</span>, <span class='ident'>D</span><span class='op'>&gt;</span>;
 
+<span class='doccomment'>/// Array where the data is owned uniquely.</span>
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Array</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span>, <span class='ident'>D</span><span class='op'>&gt;</span>;
+
+<span class='attribute'>#[<span class='ident'>deprecated</span>(<span class='ident'>note</span><span class='op'>=</span><span class='string'>&quot;Use the type alias `Array` instead&quot;</span>)]</span>
 <span class='doccomment'>/// Array where the data is owned uniquely.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>OwnedArray</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span>, <span class='ident'>D</span><span class='op'>&gt;</span>;
 
@@ -1285,8 +1291,6 @@
 
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>linalg</span>;
 
-<span class='kw'>mod</span> <span class='ident'>impl_ops_inplace</span>;
-
 <span class='kw'>mod</span> <span class='ident'>impl_ops</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>impl_ops</span>::<span class='ident'>ScalarOperand</span>;
 
@@ -1344,7 +1348,7 @@
 
     <span class='doccomment'>/// Return an outer iterator for this view.</span>
     <span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span> <span class='comment'>// not official</span>
-    <span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>has_deprecated</span>, <span class='ident'>deprecated</span>(<span class='ident'>note</span><span class='op'>=</span><span class='string'>&quot;This method will be replaced.&quot;</span>))]</span>
+    <span class='attribute'>#[<span class='ident'>deprecated</span>(<span class='ident'>note</span><span class='op'>=</span><span class='string'>&quot;This method will be replaced.&quot;</span>)]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>into_outer_iter</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>AxisIter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span>::<span class='ident'>Smaller</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>D</span>: <span class='ident'>RemoveAxis</span>,
     {
@@ -1408,7 +1412,7 @@
 
     <span class='doccomment'>/// Return an outer iterator for this view.</span>
     <span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span> <span class='comment'>// not official</span>
-    <span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>has_deprecated</span>, <span class='ident'>deprecated</span>(<span class='ident'>note</span><span class='op'>=</span><span class='string'>&quot;This method will be replaced.&quot;</span>))]</span>
+    <span class='attribute'>#[<span class='ident'>deprecated</span>(<span class='ident'>note</span><span class='op'>=</span><span class='string'>&quot;This method will be replaced.&quot;</span>)]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>into_outer_iter</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>AxisIterMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span>::<span class='ident'>Smaller</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>D</span>: <span class='ident'>RemoveAxis</span>,
     {
@@ -1509,6 +1513,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

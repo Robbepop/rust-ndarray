@@ -7,7 +7,7 @@
     <meta name="description" content="API documentation for the Rust `ndarray` crate.">
     <meta name="keywords" content="rust, rustlang, rust-lang, ndarray">
 
-    <title>0.5.2 - 0.5.2 - ndarray - Rust</title>
+    <title>0.6.0 - ndarray - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
@@ -47,14 +47,14 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-0' class='srclink' href='../src/ndarray/src/lib.rs.html#8-721' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-0' class='srclink' href='../src/ndarray/src/lib.rs.html#8-723' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>The <code>ndarray</code> crate provides an N-dimensional container for general elements
 and for numerics.</p>
 
 <ul>
 <li><a href="struct.ArrayBase.html"><code>ArrayBase</code></a>:
 The N-dimensional array type itself.</li>
-<li><a href="type.OwnedArray.html"><code>OwnedArray</code></a>:
+<li><a href="type.Array.html"><code>Array</code></a>:
 An array where the data is owned uniquely.</li>
 <li><a href="type.RcArray.html"><code>RcArray</code></a>:
 An array where the data has shared ownership and is copy on write.</li>
@@ -68,7 +68,7 @@ Lightweight array views.</li>
 <li>Slicing, also with arbitrary step size, and negative indices to mean
 elements from the end of the axis.</li>
 <li>There is both a copy on write array (<code>RcArray</code>), or a regular uniquely owned array
-(<code>OwnedArray</code>), and both can use read-only and read-write array views.</li>
+(<code>Array</code>), and both can use read-only and read-write array views.</li>
 <li>Iteration and most operations are efficient on arrays with contiguous
 innermost dimension.</li>
 <li>Array views can be used to slice and mutate any <code>[T]</code> data using
@@ -486,6 +486,13 @@ customizing the memory layout (strides) of an array shape.</p>
                        </tr></table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
 <table>
                        <tr class=' module-item'>
+                           <td><a class='type' href='type.Array.html'
+                                  title='ndarray::Array'>Array</a></td>
+                           <td class='docblock short'>
+                                <p>Array where the data is owned uniquely.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class='type' href='type.ArrayView.html'
                                   title='ndarray::ArrayView'>ArrayView</a></td>
                            <td class='docblock short'>
@@ -517,7 +524,7 @@ customizing the memory layout (strides) of an array shape.</p>
                            <td><a class='type' href='type.OwnedArray.html'
                                   title='ndarray::OwnedArray'>OwnedArray</a></td>
                            <td class='docblock short'>
-                                <p>Array where the data is owned uniquely.</p>
+                               [<em class='stab deprecated'>Deprecated</em>] <p>Array where the data is owned uniquely.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -550,6 +557,8 @@ can act as both an owner as the data as well as a lightweight view.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
