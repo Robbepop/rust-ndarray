@@ -59,6 +59,20 @@ impl<'a, A, D> ArrayBase<ViewRepr<&'a A>, D>
         })
     }
 
+    /// Create an `ArrayView<A, D>` from shape information and a
+    /// raw pointer to the elements.
+    ///
+    /// Unsafe because caller is responsible for ensuring that the pointer is
+    /// valid, not mutably aliased and coherent with the dimension and stride information.
+    pub unsafe fn from_shape_ptr<Sh>(shape: Sh, ptr: *const A) -> Self
+        where Sh: Into<StrideShape<D>>
+    {
+        let shape = shape.into();
+        let dim = shape.dim;
+        let strides = shape.strides;
+        ArrayView::new_(ptr, dim, strides)
+    }
+
     /// Split the array along `axis` and return one view strictly before the
     /// split and one view after the split.
     ///
@@ -146,6 +160,20 @@ impl<'a, A, D> ArrayBase<ViewRepr<&'a mut A>, D>
                 Self::new_(xs.as_mut_ptr(), dim, strides)
             }
         })
+    }
+
+    /// Create an `ArrayViewMut<A, D>` from shape information and a
+    /// raw pointer to the elements.
+    ///
+    /// Unsafe because caller is responsible for ensuring that the pointer is
+    /// valid, not aliased and coherent with the dimension and stride information.
+    pub unsafe fn from_shape_ptr<Sh>(shape: Sh, ptr: *mut A) -> Self
+        where Sh: Into<StrideShape<D>>
+    {
+        let shape = shape.into();
+        let dim = shape.dim;
+        let strides = shape.strides;
+        ArrayViewMut::new_(ptr, dim, strides)
     }
 
     /// Split the array along `axis` and return one mutable view strictly

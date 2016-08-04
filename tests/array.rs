@@ -1036,3 +1036,17 @@ fn test_shape() {
     assert_eq!(b.strides(), &[1, 1, 2]);
     assert_eq!(c.strides(), &[1, 3, 1]);
 }
+
+#[test]
+fn test_view_from_shape_ptr() {
+    let data = [0, 1, 2, 3, 4, 5];
+    let view = unsafe { ArrayView::from_shape_ptr((2, 3), data.as_ptr()) };
+    assert_eq!(view, aview2(&[[0, 1, 2], [3, 4, 5]]));
+
+    let mut data = data;
+    let mut view = unsafe { ArrayViewMut::from_shape_ptr((2, 3), data.as_mut_ptr()) };
+    view[[1, 2]] = 6;
+    assert_eq!(view, aview2(&[[0, 1, 2], [3, 4, 6]]));
+    view[[0, 1]] = 0;
+    assert_eq!(view, aview2(&[[0, 0, 2], [3, 4, 6]]));
+}
