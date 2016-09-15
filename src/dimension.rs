@@ -124,7 +124,7 @@ fn stride_offset_checked_arithmetic<D>(dim: &D, strides: &D, index: &D)
 ///
 /// ***Don't implement or call methods in this trait, its interface is internal
 /// to the crate and will evolve at will.***
-pub unsafe trait Dimension : Clone + Eq + Debug + Send + Sync {
+pub unsafe trait Dimension : Clone + Eq + Debug + Send + Sync + Default {
     /// `SliceArg` is the type which is used to specify slicing for this
     /// dimension.
     ///
@@ -639,6 +639,8 @@ pub trait RemoveAxis : Dimension {
 }
 
 macro_rules! impl_shrink(
+    ($_a:ident, ) => {}; // implement this case manually below
+    ($_a:ident, $_b:ident, ) => {}; // implement this case manually below
     ($from:ident, $($more:ident,)*) => (
 impl RemoveAxis for ($from $(,$more)*)
 {
@@ -664,6 +666,22 @@ impl RemoveAxis for ($from $(,$more)*)
 }
     )
 );
+
+impl RemoveAxis for Ix {
+    type Smaller = ();
+    #[inline]
+    fn remove_axis(&self, _: Axis) { }
+}
+
+impl RemoveAxis for (Ix, Ix) {
+    type Smaller = Ix;
+    #[inline]
+    fn remove_axis(&self, axis: Axis) -> Ix {
+        let axis = axis.axis();
+        debug_assert!(axis < self.ndim());
+        if axis == 0 { self.1 } else { self.0 }
+    }
+}
 
 macro_rules! impl_shrink_recursive(
     ($ix:ident, ) => (impl_shrink!($ix,););
