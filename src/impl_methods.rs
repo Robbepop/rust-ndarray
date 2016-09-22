@@ -1275,4 +1275,29 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         }
         res
     }
+
+    /// Reduce the values along an axis into just one value, producing a new
+    /// array with one less dimension.
+    ///
+    /// Elements are visited in arbitrary order.
+    ///
+    /// Return the result as an `Array`.
+    ///
+    /// **Panics** if `axis` is out of bounds.
+    pub fn map_axis<'a, B, F>(&'a self, axis: Axis, mut mapping: F)
+        -> Array<B, D::Smaller>
+        where D: RemoveAxis,
+              F: FnMut(ArrayView<'a, A, Ix>) -> B,
+              A: 'a,
+    {
+        let view_len = self.shape().axis(axis);
+        let view_stride = self.strides.axis(axis);
+        // use the 0th subview as a map to each 1d array view extended from
+        // the 0th element.
+        self.subview(axis, 0).map(|first_elt| {
+            unsafe {
+                mapping(ArrayView::new_(first_elt, view_len, view_stride))
+            }
+        })
+    }
 }
