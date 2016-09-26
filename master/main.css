@@ -161,3 +161,7 @@ em.deprecated {
     font-weight: bold;
     font-style: italic;
 }
+
+a.test-arrow {
+    display: none;
+}
