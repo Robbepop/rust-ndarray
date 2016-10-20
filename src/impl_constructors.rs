@@ -17,6 +17,8 @@ use {Shape, StrideShape};
 use dimension;
 use linspace;
 use error::{self, ShapeError, ErrorKind};
+use Indexes;
+use iterators::to_vec;
 
 /// Constructor methods for one-dimensional arrays.
 ///
@@ -63,7 +65,7 @@ impl<S> ArrayBase<S, Ix>
         where S: Data<Elem=F>,
               F: Float,
     {
-        Self::from_vec(::iterators::to_vec(linspace::linspace(start, end, n)))
+        Self::from_vec(to_vec(linspace::linspace(start, end, n)))
     }
 
     /// Create a one-dimensional array from the half-open interval
@@ -79,7 +81,7 @@ impl<S> ArrayBase<S, Ix>
         where S: Data<Elem=F>,
               F: Float,
     {
-        Self::from_vec(::iterators::to_vec(linspace::range(start, end, step)))
+        Self::from_vec(to_vec(linspace::range(start, end, step)))
     }
 }
 
@@ -167,7 +169,21 @@ impl<S, A, D> ArrayBase<S, D>
               Sh: Into<Shape<D>>,
     {
         let shape = shape.into();
-        let v = (0..shape.dim.size()).map(|_| A::default()).collect();
+        let v = to_vec((0..shape.dim.size()).map(|_| A::default()));
+        unsafe { Self::from_shape_vec_unchecked(shape, v) }
+    }
+
+    /// Create an array with values created by the function `f`.
+    ///
+    /// The elements are visited in arbitirary order.
+    ///
+    /// **Panics** if the number of elements in `shape` would overflow usize.
+    pub fn from_shape_fn<Sh, F>(shape: Sh, f: F) -> ArrayBase<S, D>
+        where Sh: Into<Shape<D>>,
+              F: FnMut(D) -> A,
+    {
+        let shape = shape.into();
+        let v = to_vec(Indexes::new(shape.dim.clone()).map(f));
         unsafe { Self::from_shape_vec_unchecked(shape, v) }
     }
 
