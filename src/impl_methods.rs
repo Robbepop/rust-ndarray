@@ -10,6 +10,8 @@ use std::cmp;
 use std::ptr as std_ptr;
 use std::slice;
 
+use itertools::zip;
+
 use imp_prelude::*;
 
 use arraytraits;
@@ -17,6 +19,8 @@ use dimension;
 use iterators;
 use error::{self, ShapeError};
 use super::zipsl;
+use super::ZipExt;
+
 use {
     NdIndex,
     AxisChunksIter,
@@ -88,7 +92,8 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         let (data, strides) = if let Some(slc) = self.as_slice_memory_order() {
             (slc.to_vec(), self.strides.clone())
         } else {
-            (self.iter().cloned().collect(), self.dim.default_strides())
+            (iterators::to_vec_mapped(self.iter(), Clone::clone),
+             self.dim.default_strides())
         };
         unsafe {
             ArrayBase::from_shape_vec_unchecked(self.dim.clone().strides(strides), data)
@@ -420,7 +425,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
               D: RemoveAxis,
     {
         let mut subs = vec![self.view(); indices.len()];
-        for (&i, sub) in zipsl(indices, &mut subs[..]) {
+        for (&i, sub) in zip(indices, &mut subs[..]) {
             sub.isubview(axis, i);
         }
         if subs.is_empty() {
@@ -644,8 +649,8 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         }
         if self.ndim() == 1 { return false; }
         // check all dimensions -- a dimension of length 1 can have unequal strides
-        for (&dim, (&s, &ds)) in zipsl(self.dim.slice(),
-                                       zipsl(self.strides(), defaults.slice()))
+        for (&dim, &s, &ds) in zipsl(self.dim.slice(), self.strides())
+            .zip_cons(defaults.slice())
         {
             if dim != 1 && s != (ds as Ixs) {
                 return false;
@@ -1108,18 +1113,13 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         where F: FnMut(B, &'a A) -> B, A: 'a
     {
         if let Some(slc) = self.as_slice_memory_order() {
-            // FIXME: Use for loop when slice iterator is perf is restored
-            for i in 0..slc.len() {
-                init = f(init, &slc[i]);
+            slc.iter().fold(init, f)
+        } else {
+            for row in self.inner_iter() {
+                init = row.into_iter_().fold(init, &mut f);
             }
-            return init;
+            init
         }
-        for row in self.inner_iter() {
-            for elt in row {
-                init = f(init, elt);
-            }
-        }
-        init
     }
 
     /// Call `f` by reference on each element and create a new array
@@ -1151,7 +1151,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
                     self.dim.clone().strides(self.strides.clone()), v)
             }
         } else {
-            let v = ::iterators::to_vec(self.iter().map(f));
+            let v = ::iterators::to_vec_mapped(self.iter(), f);
             unsafe {
                 ArrayBase::from_shape_vec_unchecked(self.dim.clone(), v)
             }
@@ -1244,15 +1244,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
             }
         } else {
             for row in self.inner_iter() {
-                if let Some(slc) = row.into_slice() {
-                    for i in 0..slc.len() {
-                        f(&slc[i]);
-                    }
-                } else {
-                    for elt in row {
-                        f(elt);
-                    }
-                }
+                row.into_iter_().fold((), |(), elt| f(elt));
             }
         }
     }

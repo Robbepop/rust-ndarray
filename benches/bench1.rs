@@ -15,15 +15,6 @@ use ndarray::{arr0, arr1, arr2};
 use test::black_box;
 
 #[bench]
-fn map(bench: &mut test::Bencher)
-{
-    let a = Array::linspace(0., 127., 128).into_shape((8, 16)).unwrap();
-    bench.iter(|| {
-        a.map(|&x| 2. * x)
-    });
-}
-
-#[bench]
 fn iter_sum_1d_regular(bench: &mut test::Bencher)
 {
     let a = Array::<i32, _>::zeros(64 * 64);
@@ -221,6 +212,37 @@ fn scalar_sum_2d_float_cutout(bench: &mut test::Bencher)
 }
 
 #[bench]
+fn fold_sum_i32_2d_regular(bench: &mut test::Bencher)
+{
+    let a = Array::<i32, _>::zeros((64, 64));
+    bench.iter(|| {
+        a.fold(0, |acc, &x| acc + x)
+    });
+}
+
+#[bench]
+fn fold_sum_i32_2d_cutout(bench: &mut test::Bencher)
+{
+    let a = Array::<i32, _>::zeros((66, 66));
+    let av = a.slice(s![1..-1, 1..-1]);
+    let a = black_box(av);
+    bench.iter(|| {
+        a.fold(0, |acc, &x| acc + x)
+    });
+}
+
+#[bench]
+fn fold_sum_i32_2d_stride(bench: &mut test::Bencher)
+{
+    let a = Array::<i32, _>::zeros((64, 128));
+    let av = a.slice(s![.., ..;2]);
+    let a = black_box(av);
+    bench.iter(|| {
+        a.fold(0, |acc, &x| acc + x)
+    });
+}
+
+#[bench]
 fn add_2d_regular(bench: &mut test::Bencher)
 {
     let mut a = Array::<i32, _>::zeros((64, 64));
@@ -335,6 +357,18 @@ fn add_2d_0_to_2_iadd_scalar(bench: &mut test::Bencher)
 }
 
 #[bench]
+fn add_2d_strided(bench: &mut test::Bencher)
+{
+    let mut a = Array::<i32, _>::zeros((64, 128));
+    let mut a = a.slice_mut(s![.., ..;2]);
+    let b = Array::<i32, _>::zeros((64, 64));
+    let bv = b.view();
+    bench.iter(|| {
+        a += &bv;
+    });
+}
+
+#[bench]
 fn add_2d_transposed(bench: &mut test::Bencher)
 {
     let mut a = Array::<i32, _>::zeros((64, 64));
@@ -377,6 +411,25 @@ fn add_1d_strided(bench: &mut test::Bencher)
     let b = Array::<f32, _>::zeros(av.dim());
     bench.iter(|| {
         av += &b;
+    });
+}
+
+#[bench]
+fn iadd_2d_regular(bench: &mut test::Bencher)
+{
+    let mut a = Array::<f32, _>::zeros((64, 64));
+    bench.iter(|| {
+        a += 1.;
+    });
+}
+
+#[bench]
+fn iadd_2d_strided(bench: &mut test::Bencher)
+{
+    let mut a = Array::<f32, _>::zeros((64, 128));
+    let mut a = a.slice_mut(s![.., ..;2]);
+    bench.iter(|| {
+        a += 1.;
     });
 }
 
@@ -556,6 +609,13 @@ fn bench_to_owned_t(bench: &mut test::Bencher)
     bench.iter(|| a.to_owned());
 }
 
+#[bench]
+fn bench_to_owned_strided(bench: &mut test::Bencher)
+{
+    let a = Array::<f32, _>::zeros((32, 64));
+    let a = a.slice(s![.., ..;2]);
+    bench.iter(|| a.to_owned());
+}
 #[bench]
 fn equality_i32(bench: &mut test::Bencher)
 {
