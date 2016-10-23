@@ -149,6 +149,7 @@ mod stacking;
 /// Implementation's prelude. Common types used everywhere.
 mod imp_prelude {
     pub use prelude::*;
+    pub use aliases::*;
     pub use {
         RemoveAxis,
         Data,
