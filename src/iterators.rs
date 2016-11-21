@@ -11,7 +11,7 @@ use std::ptr;
 use Ix1;
 
 use super::{Dimension, Ix, Ixs};
-use super::{Elements, ElementsRepr, ElementsBase, ElementsBaseMut, ElementsMut, Indexed, IndexedMut};
+use super::{Iter, ElementsRepr, ElementsBase, ElementsBaseMut, IterMut, IndexedIter, IndexedIterMut};
 use super::{
     ArrayBase,
     Data,
@@ -96,7 +96,7 @@ impl<'a, A, D: Dimension> Baseiter<'a, A, D> {
         where G: FnMut(Acc, *mut A) -> Acc,
     {
         let ndim = self.dim.ndim();
-        assert!(ndim > 0);
+        debug_assert!(ndim > 0);
         let mut accum = init;
         loop {
             if let Some(mut index) = self.index.clone() {
@@ -104,12 +104,13 @@ impl<'a, A, D: Dimension> Baseiter<'a, A, D> {
                 let elem_index = index.last_elem();
                 let len = self.dim.last_elem();
                 let offset = D::stride_offset(&index, &self.strides);
-                for i in 0..len - elem_index {
-                    unsafe {
-                        accum = g(accum, self.ptr.offset(offset + i as isize * stride));
+                unsafe {
+                    let row_ptr = self.ptr.offset(offset);
+                    for i in 0..(len - elem_index) {
+                        accum = g(accum, row_ptr.offset(i as isize * stride));
                     }
                 }
-                index.slice_mut()[ndim - 1] = len - 1;
+                index.set_last_elem(len - 1);
                 self.index = self.dim.next_for(index);
             } else {
                 break;
@@ -126,7 +127,7 @@ impl<'a, A> Baseiter<'a, A, Ix1> {
             None => return None,
             Some(ix) => ix,
         };
-        self.dim -= 1;
+        self.dim[0] -= 1;
         let offset = <_>::stride_offset(&self.dim, &self.strides);
         if index == self.dim {
             self.index = None;
@@ -180,7 +181,7 @@ impl<'a, A, D: Dimension> Iterator for ElementsBase<'a, A, D> {
         where G: FnMut(Acc, Self::Item) -> Acc,
     {
         unsafe {
-            self.inner.fold(init, |acc, ptr| g(acc, &*ptr))
+            self.inner.fold(init, move |acc, ptr| g(acc, &*ptr))
         }
     }
 }
@@ -215,9 +216,9 @@ macro_rules! either_mut {
 }
 
 
-impl<'a, A, D: Clone> Clone for Elements<'a, A, D> {
-    fn clone(&self) -> Elements<'a, A, D> {
-        Elements {
+impl<'a, A, D: Clone> Clone for Iter<'a, A, D> {
+    fn clone(&self) -> Iter<'a, A, D> {
+        Iter {
             inner: match self.inner {
                 ElementsRepr::Slice(ref iter) => ElementsRepr::Slice(iter.clone()),
                 ElementsRepr::Counted(ref iter) => {
@@ -228,7 +229,7 @@ impl<'a, A, D: Clone> Clone for Elements<'a, A, D> {
     }
 }
 
-impl<'a, A, D: Dimension> Iterator for Elements<'a, A, D> {
+impl<'a, A, D: Dimension> Iterator for Iter<'a, A, D> {
     type Item = &'a A;
     #[inline]
     fn next(&mut self) -> Option<&'a A> {
@@ -246,29 +247,29 @@ impl<'a, A, D: Dimension> Iterator for Elements<'a, A, D> {
     }
 }
 
-impl<'a, A> DoubleEndedIterator for Elements<'a, A, Ix1> {
+impl<'a, A> DoubleEndedIterator for Iter<'a, A, Ix1> {
     #[inline]
     fn next_back(&mut self) -> Option<&'a A> {
         either_mut!(self.inner, iter => iter.next_back())
     }
 }
 
-impl<'a, A, D> ExactSizeIterator for Elements<'a, A, D>
+impl<'a, A, D> ExactSizeIterator for Iter<'a, A, D>
     where D: Dimension
 {}
 
 
-impl<'a, A, D: Dimension> Iterator for Indexed<'a, A, D> {
-    type Item = (D, &'a A);
+impl<'a, A, D: Dimension> Iterator for IndexedIter<'a, A, D> {
+    type Item = (D::Pattern, &'a A);
     #[inline]
-    fn next(&mut self) -> Option<(D, &'a A)> {
+    fn next(&mut self) -> Option<Self::Item> {
         let index = match self.0.inner.index {
             None => return None,
             Some(ref ix) => ix.clone(),
         };
         match self.0.inner.next_ref() {
             None => None,
-            Some(p) => Some((index, p)),
+            Some(p) => Some((index.into_pattern(), p)),
         }
     }
 
@@ -278,11 +279,11 @@ impl<'a, A, D: Dimension> Iterator for Indexed<'a, A, D> {
     }
 }
 
-impl<'a, A, D> ExactSizeIterator for Indexed<'a, A, D>
+impl<'a, A, D> ExactSizeIterator for IndexedIter<'a, A, D>
     where D: Dimension
 {}
 
-impl<'a, A, D: Dimension> Iterator for ElementsMut<'a, A, D> {
+impl<'a, A, D: Dimension> Iterator for IterMut<'a, A, D> {
     type Item = &'a mut A;
     #[inline]
     fn next(&mut self) -> Option<&'a mut A> {
@@ -300,14 +301,14 @@ impl<'a, A, D: Dimension> Iterator for ElementsMut<'a, A, D> {
     }
 }
 
-impl<'a, A> DoubleEndedIterator for ElementsMut<'a, A, Ix1> {
+impl<'a, A> DoubleEndedIterator for IterMut<'a, A, Ix1> {
     #[inline]
     fn next_back(&mut self) -> Option<&'a mut A> {
         either_mut!(self.inner, iter => iter.next_back())
     }
 }
 
-impl<'a, A, D> ExactSizeIterator for ElementsMut<'a, A, D>
+impl<'a, A, D> ExactSizeIterator for IterMut<'a, A, D>
     where D: Dimension
 {}
 
@@ -339,17 +340,17 @@ impl<'a, A> DoubleEndedIterator for ElementsBaseMut<'a, A, Ix1> {
     }
 }
 
-impl<'a, A, D: Dimension> Iterator for IndexedMut<'a, A, D> {
-    type Item = (D, &'a mut A);
+impl<'a, A, D: Dimension> Iterator for IndexedIterMut<'a, A, D> {
+    type Item = (D::Pattern, &'a mut A);
     #[inline]
-    fn next(&mut self) -> Option<(D, &'a mut A)> {
+    fn next(&mut self) -> Option<Self::Item> {
         let index = match self.0.inner.index {
             None => return None,
             Some(ref ix) => ix.clone(),
         };
         match self.0.inner.next_ref_mut() {
             None => None,
-            Some(p) => Some((index, p)),
+            Some(p) => Some((index.into_pattern(), p)),
         }
     }
 
@@ -359,7 +360,7 @@ impl<'a, A, D: Dimension> Iterator for IndexedMut<'a, A, D> {
     }
 }
 
-impl<'a, A, D> ExactSizeIterator for IndexedMut<'a, A, D>
+impl<'a, A, D> ExactSizeIterator for IndexedIterMut<'a, A, D>
     where D: Dimension
 {}
 
@@ -376,7 +377,8 @@ pub struct InnerIter<'a, A: 'a, D> {
 pub fn new_inner_iter<A, D>(mut v: ArrayView<A, D>) -> InnerIter<A, D>
     where D: Dimension
 {
-    if v.shape().len() == 0 {
+    let ndim = v.ndim();
+    if ndim == 0 {
         InnerIter {
             inner_len: 1,
             inner_stride: 1,
@@ -384,10 +386,9 @@ pub fn new_inner_iter<A, D>(mut v: ArrayView<A, D>) -> InnerIter<A, D>
         }
     } else {
         // Set length of innerest dimension to 1, start iteration
-        let ndim = v.shape().len();
-        let len = v.shape()[ndim - 1];
-        let stride = v.strides()[ndim - 1];
-        v.dim.slice_mut()[ndim - 1] = 1;
+        let len = v.dim.last_elem();
+        let stride = v.strides.last_elem() as isize;
+        v.dim.set_last_elem(1);
         InnerIter {
             inner_len: len,
             inner_stride: stride,
@@ -402,7 +403,7 @@ impl<'a, A, D> Iterator for InnerIter<'a, A, D>
     type Item = ArrayView<'a, A, Ix1>;
     fn next(&mut self) -> Option<Self::Item> {
         self.iter.next().map(|ptr| {
-            unsafe { ArrayView::new_(ptr, self.inner_len, self.inner_stride as Ix) }
+            unsafe { ArrayView::new_(ptr, Ix1(self.inner_len), Ix1(self.inner_stride as Ix)) }
         })
     }
 
@@ -433,7 +434,8 @@ pub struct InnerIterMut<'a, A: 'a, D> {
 pub fn new_inner_iter_mut<A, D>(mut v: ArrayViewMut<A, D>) -> InnerIterMut<A, D>
     where D: Dimension,
 {
-    if v.shape().len() == 0 {
+    let ndim = v.ndim();
+    if ndim == 0 {
         InnerIterMut {
             inner_len: 1,
             inner_stride: 1,
@@ -441,10 +443,9 @@ pub fn new_inner_iter_mut<A, D>(mut v: ArrayViewMut<A, D>) -> InnerIterMut<A, D>
         }
     } else {
         // Set length of innerest dimension to 1, start iteration
-        let ndim = v.shape().len();
-        let len = v.shape()[ndim - 1];
-        let stride = v.strides()[ndim - 1];
-        v.dim.slice_mut()[ndim - 1] = 1;
+        let len = v.dim.last_elem();
+        let stride = v.strides.last_elem() as isize;
+        v.dim.set_last_elem(1);
         InnerIterMut {
             inner_len: len,
             inner_stride: stride,
@@ -460,7 +461,7 @@ impl<'a, A, D> Iterator for InnerIterMut<'a, A, D>
     fn next(&mut self) -> Option<Self::Item> {
         self.iter.next().map(|ptr| {
             unsafe {
-                ArrayViewMut::new_(ptr, self.inner_len, self.inner_stride as Ix)
+                ArrayViewMut::new_(ptr, Ix1(self.inner_len), Ix1(self.inner_stride as Ix))
             }
         })
     }
@@ -945,14 +946,14 @@ macro_rules! send_sync_read_write {
     }
 }
 
-send_sync_read_only!(Elements);
-send_sync_read_only!(Indexed);
+send_sync_read_only!(Iter);
+send_sync_read_only!(IndexedIter);
 send_sync_read_only!(InnerIter);
 send_sync_read_only!(AxisIter);
 send_sync_read_only!(AxisChunksIter);
 
-send_sync_read_write!(ElementsMut);
-send_sync_read_write!(IndexedMut);
+send_sync_read_write!(IterMut);
+send_sync_read_write!(IndexedIterMut);
 send_sync_read_write!(InnerIterMut);
 send_sync_read_write!(AxisIterMut);
 send_sync_read_write!(AxisChunksIterMut);
@@ -964,15 +965,15 @@ pub unsafe trait TrustedIterator { }
 use std::slice;
 use std::iter;
 use linspace::Linspace;
-use indexes::Indexes;
+use indexes::Indices;
 
 unsafe impl<F> TrustedIterator for Linspace<F> { }
-unsafe impl<'a, A, D> TrustedIterator for Elements<'a, A, D> { }
+unsafe impl<'a, A, D> TrustedIterator for Iter<'a, A, D> { }
 unsafe impl<I, F> TrustedIterator for iter::Map<I, F>
     where I: TrustedIterator { }
 unsafe impl<'a, A> TrustedIterator for slice::Iter<'a, A> { }
 unsafe impl TrustedIterator for ::std::ops::Range<usize> { }
-unsafe impl<D> TrustedIterator for Indexes<D> where D: Dimension { }
+unsafe impl<D> TrustedIterator for Indices<D> where D: Dimension { }
 
 
 /// Like Iterator::collect, but only for trusted length iterators

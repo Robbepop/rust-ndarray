@@ -2,7 +2,6 @@
 extern crate ndarray;
 
 use ndarray::prelude::*;
-use ndarray::Array2;
 
 const INPUT: &'static [u8] = include_bytes!("life.txt");
 //const INPUT: &'static [u8] = include_bytes!("lifelite.txt");
@@ -35,7 +34,7 @@ fn parse(x: &[u8]) -> Board {
 fn iterate(z: &mut Board, scratch: &mut Board) {
     // compute number of neighbors
     let mut neigh = scratch.view_mut();
-    neigh.assign_scalar(&0);
+    neigh.fill(0);
     neigh += &z.slice(s![0..-2, 0..-2]);
     neigh += &z.slice(s![0..-2, 1..-1]);
     neigh += &z.slice(s![0..-2, 2..  ]);
@@ -58,7 +57,8 @@ fn iterate(z: &mut Board, scratch: &mut Board) {
 }
 
 fn turn_on_corners(z: &mut Board) {
-    let (n, m) = z.dim();
+    let n = z.rows();
+    let m = z.cols();
     z[[1    , 1    ]] = 1;
     z[[1    , m - 2]] = 1;
     z[[n - 2, 1    ]] = 1;

@@ -2,7 +2,7 @@
 extern crate num_traits;
 
 use ndarray::prelude::*;
-use ndarray::{arr0, rcarr1, rcarr2};
+use ndarray::{rcarr1, rcarr2};
 use ndarray::{LinalgScalar, Data};
 use ndarray::linalg::general_mat_mul;
 
@@ -85,7 +85,7 @@ fn scalar_operations()
         let mut x = a.clone();
         let mut y = arr0(0.);
         x += 1.;
-        y.assign_scalar(&2.);
+        y.fill(2.);
         assert_eq!(x, a + arr0(1.));
         assert_eq!(x, y);
     }
@@ -94,7 +94,7 @@ fn scalar_operations()
         let mut x = b.clone();
         let mut y = rcarr1(&[0., 0.]);
         x += 1.;
-        y.assign_scalar(&2.);
+        y.fill(2.);
         assert_eq!(x, b + arr0(1.));
         assert_eq!(x, y);
     }
@@ -103,7 +103,7 @@ fn scalar_operations()
         let mut x = c.clone();
         let mut y = RcArray::zeros((2, 2));
         x += 1.;
-        y.assign_scalar(&2.);
+        y.fill(2.);
         assert_eq!(x, c + arr0(1.));
         assert_eq!(x, y);
     }
@@ -263,21 +263,21 @@ fn fold_and_sum() {
     }
 }
 
-fn range_mat(m: Ix, n: Ix) -> Array<f32, (Ix, Ix)> {
+fn range_mat(m: Ix, n: Ix) -> Array2<f32> {
     Array::linspace(0., (m * n - 1) as f32, m * n).into_shape((m, n)).unwrap()
 }
 
-fn range_mat64(m: Ix, n: Ix) -> Array<f64, (Ix, Ix)> {
+fn range_mat64(m: Ix, n: Ix) -> Array2<f64> {
     Array::linspace(0., (m * n - 1) as f64, m * n).into_shape((m, n)).unwrap()
 }
 
-fn range_i32(m: Ix, n: Ix) -> Array<i32, (Ix, Ix)> {
+fn range_i32(m: Ix, n: Ix) -> Array2<i32> {
     Array::from_iter(0..(m * n) as i32).into_shape((m, n)).unwrap()
 }
 
 // simple, slow, correct (hopefully) mat mul
-fn reference_mat_mul<A, S, S2>(lhs: &ArrayBase<S, (Ix, Ix)>, rhs: &ArrayBase<S2, (Ix, Ix)>)
-    -> Array<A, (Ix, Ix)>
+fn reference_mat_mul<A, S, S2>(lhs: &ArrayBase<S, Ix2>, rhs: &ArrayBase<S2, Ix2>)
+    -> Array2<A>
     where A: LinalgScalar,
           S: Data<Elem=A>,
           S2: Data<Elem=A>,

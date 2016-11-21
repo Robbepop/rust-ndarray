@@ -20,15 +20,16 @@ use iterators;
 use error::{self, ShapeError};
 use super::zipsl;
 use super::ZipExt;
+use dimension::IntoDimension;
 
 use {
     NdIndex,
     AxisChunksIter,
     AxisChunksIterMut,
-    Elements,
-    ElementsMut,
-    Indexed,
-    IndexedMut,
+    Iter,
+    IterMut,
+    IndexedIter,
+    IndexedIterMut,
     InnerIter,
     InnerIterMut,
     AxisIter,
@@ -36,6 +37,7 @@ use {
 };
 use stacking::stack;
 
+/// # Methods For All Array Types
 impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
 {
     /// Return the total number of elements in the array.
@@ -43,8 +45,30 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         self.dim.size()
     }
 
-    /// Return the shape of the array.
-    pub fn dim(&self) -> D {
+    /// Return the length of `axis`.
+    ///
+    /// The axis should be in the range `Axis(` 0 .. *n* `)` where *n* is the
+    /// number of dimensions (axes) of the array.
+    ///
+    /// ***Panics*** if the axis is out of bounds.
+    pub fn len_of(&self, axis: Axis) -> usize {
+        self.dim[axis.axis()]
+    }
+
+    /// Return the number of dimensions (axes) in the array
+    pub fn ndim(&self) -> usize {
+        self.dim.ndim()
+    }
+
+    /// Return the shape of the array in its “pattern” form,
+    /// an integer in the one-dimensional case, tuple in the n-dimensional cases
+    /// and so on.
+    pub fn dim(&self) -> D::Pattern {
+        self.dim.clone().into_pattern()
+    }
+
+    /// Return the shape of the array as it stored in the array.
+    pub fn raw_dim(&self) -> D {
         self.dim.clone()
     }
 
@@ -53,18 +77,13 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         self.dim.slice()
     }
 
-    /// Return the strides of the array
+    /// Return the strides of the array as a slice
     pub fn strides(&self) -> &[Ixs] {
         let s = self.strides.slice();
         // reinterpret unsigned integer as signed
         unsafe {
             slice::from_raw_parts(s.as_ptr() as *const _, s.len())
         }
-    }
-
-    /// Return the number of dimensions (axes) in the array
-    pub fn ndim(&self) -> usize {
-        self.dim.ndim()
     }
 
     /// Return a read-only view of the array
@@ -124,16 +143,22 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
 
     /// Return an iterator of references to the elements of the array.
     ///
+    /// Elements are visited in the *logical order* of the array, which
+    /// is where the rightmost index is varying the fastest.
+    ///
     /// Iterator element type is `&A`.
-    pub fn iter(&self) -> Elements<A, D> {
+    pub fn iter(&self) -> Iter<A, D> {
         debug_assert!(self.pointer_is_inbounds());
         self.view().into_iter_()
     }
 
     /// Return an iterator of mutable references to the elements of the array.
     ///
+    /// Elements are visited in the *logical order* of the array, which
+    /// is where the rightmost index is varying the fastest.
+    ///
     /// Iterator element type is `&mut A`.
-    pub fn iter_mut(&mut self) -> ElementsMut<A, D>
+    pub fn iter_mut(&mut self) -> IterMut<A, D>
         where S: DataMut,
     {
         self.view_mut().into_iter_()
@@ -141,18 +166,24 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
 
     /// Return an iterator of indexes and references to the elements of the array.
     ///
-    /// Iterator element type is `(D, &A)`.
-    pub fn indexed_iter(&self) -> Indexed<A, D> {
-        Indexed(self.view().into_elements_base())
+    /// Elements are visited in the *logical order* of the array, which
+    /// is where the rightmost index is varying the fastest.
+    ///
+    /// Iterator element type is `(D::Pattern, &A)`.
+    pub fn indexed_iter(&self) -> IndexedIter<A, D> {
+        IndexedIter(self.view().into_elements_base())
     }
 
     /// Return an iterator of indexes and mutable references to the elements of the array.
     ///
-    /// Iterator element type is `(D, &mut A)`.
-    pub fn indexed_iter_mut(&mut self) -> IndexedMut<A, D>
+    /// Elements are visited in the *logical order* of the array, which
+    /// is where the rightmost index is varying the fastest.
+    ///
+    /// Iterator element type is `(D::Pattern, &mut A)`.
+    pub fn indexed_iter_mut(&mut self) -> IndexedIterMut<A, D>
         where S: DataMut,
     {
-        IndexedMut(self.view_mut().into_elements_base())
+        IndexedIterMut(self.view_mut().into_elements_base())
     }
 
 
@@ -164,7 +195,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// [`D::SliceArg`]: trait.Dimension.html#associatedtype.SliceArg
     ///
     /// **Panics** if an index is out of bounds or stride is zero.<br>
-    /// (**Panics** if `D` is `Vec` and `indexes` does not match the number of array axes.)
+    /// (**Panics** if `D` is `IxDyn` and `indexes` does not match the number of array axes.)
     pub fn slice(&self, indexes: &D::SliceArg) -> ArrayView<A, D> {
         let mut arr = self.view();
         arr.islice(indexes);
@@ -178,7 +209,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// [`D::SliceArg`]: trait.Dimension.html#associatedtype.SliceArg
     ///
     /// **Panics** if an index is out of bounds or stride is zero.<br>
-    /// (**Panics** if `D` is `Vec` and `indexes` does not match the number of array axes.)
+    /// (**Panics** if `D` is `IxDyn` and `indexes` does not match the number of array axes.)
     pub fn slice_mut(&mut self, indexes: &D::SliceArg) -> ArrayViewMut<A, D>
         where S: DataMut
     {
@@ -194,7 +225,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// [`D::SliceArg`]: trait.Dimension.html#associatedtype.SliceArg
     ///
     /// **Panics** if an index is out of bounds or stride is zero.<br>
-    /// (**Panics** if `D` is `Vec` and `indexes` does not match the number of array axes.)
+    /// (**Panics** if `D` is `IxDyn` and `indexes` does not match the number of array axes.)
     pub fn islice(&mut self, indexes: &D::SliceArg) {
         let offset = D::do_slices(&mut self.dim, &mut self.strides, indexes);
         unsafe {
@@ -224,7 +255,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// );
     /// ```
     pub fn get<I>(&self, index: I) -> Option<&A>
-        where I: NdIndex<Dim=D>,
+        where I: NdIndex<D>,
     {
         let ptr = self.ptr;
         index.index_checked(&self.dim, &self.strides)
@@ -235,7 +266,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// if the index is out of bounds.
     pub fn get_mut<I>(&mut self, index: I) -> Option<&mut A>
         where S: DataMut,
-              I: NdIndex<Dim=D>,
+              I: NdIndex<D>,
     {
         let ptr = self.as_mut_ptr();
         index.index_checked(&self.dim, &self.strides)
@@ -248,9 +279,11 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     ///
     /// **Note:** only unchecked for non-debug builds of ndarray.
     #[inline]
-    pub unsafe fn uget(&self, index: D) -> &A {
+    pub unsafe fn uget<I>(&self, index: I) -> &A
+        where I: NdIndex<D>,
+    {
         arraytraits::debug_bounds_check(self, &index);
-        let off = D::stride_offset(&index, &self.strides);
+        let off = index.index_unchecked(&self.strides);
         &*self.ptr.offset(off)
     }
 
@@ -261,12 +294,13 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// **Note:** Only unchecked for non-debug builds of ndarray.<br>
     /// **Note:** The array must be uniquely held when mutating it.
     #[inline]
-    pub unsafe fn uget_mut(&mut self, index: D) -> &mut A
-        where S: DataMut
+    pub unsafe fn uget_mut<I>(&mut self, index: I) -> &mut A
+        where S: DataMut,
+              I: NdIndex<D>,
     {
         debug_assert!(self.data.is_unique());
         arraytraits::debug_bounds_check(self, &index);
-        let off = D::stride_offset(&index, &self.strides);
+        let off = index.index_unchecked(&self.strides);
         &mut *self.ptr.offset(off)
     }
 
@@ -277,7 +311,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// ***Panics*** if an index is out of bounds.
     pub fn swap<I>(&mut self, index1: I, index2: I)
         where S: DataMut,
-              I: NdIndex<Dim=D>,
+              I: NdIndex<D>,
     {
         let ptr1: *mut _ = &mut self[index1];
         let ptr2: *mut _ = &mut self[index2];
@@ -324,11 +358,11 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// ```
     /// use ndarray::{arr2, ArrayView, Axis};
     ///
-    /// let a = arr2(&[[1., 2.],    // -- axis 0, row 0
-    ///                [3., 4.],    // -- axis 0, row 1
-    ///                [5., 6.]]);  // -- axis 0, row 2
-    /// //               \   \
-    /// //                \   axis 1, column 1
+    /// let a = arr2(&[[1., 2. ],    // ... axis 0, row 0
+    ///                [3., 4. ],    // --- axis 0, row 1
+    ///                [5., 6. ]]);  // ... axis 0, row 2
+    /// //               .   \
+    /// //                .   axis 1, column 1
     /// //                 axis 1, column 0
     /// assert!(
     ///     a.subview(Axis(0), 1) == ArrayView::from(&[3., 4.]) &&
@@ -350,8 +384,11 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// ```
     /// use ndarray::{arr2, aview2, Axis};
     ///
-    /// let mut a = arr2(&[[1., 2.],
-    ///                    [3., 4.]]);
+    /// let mut a = arr2(&[[1., 2. ],
+    ///                    [3., 4. ]]);
+    /// //                   .   \
+    /// //                    .   axis 1, column 1
+    /// //                     axis 1, column 0
     ///
     /// {
     ///     let mut column1 = a.subview_mut(Axis(1), 1);
@@ -429,7 +466,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
             sub.isubview(axis, i);
         }
         if subs.is_empty() {
-            let mut dim = self.dim();
+            let mut dim = self.raw_dim();
             dim.set_axis(axis, 0);
             unsafe {
                 Array::from_shape_vec_unchecked(dim, vec![])
@@ -474,6 +511,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// Return an iterator that traverses over the outermost dimension
     /// and yields each subview.
     ///
+    /// The outer iterator is equivalent to `.axis_iter(Axis(0))`.
     /// For example, in a 2 × 2 × 3 array, the iterator element
     /// is a 2 × 3 subview (and there are 2 in total).
     ///
@@ -501,6 +539,8 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// Return an iterator that traverses over the outermost dimension
     /// and yields each subview.
     ///
+    /// The outer iterator is equivalent to `.axis_iter_mut(Axis(0))`.
+    ///
     /// Iterator element is `ArrayViewMut<A, D::Smaller>` (read-write array view).
     #[allow(deprecated)]
     pub fn outer_iter_mut(&mut self) -> AxisIterMut<A, D::Smaller>
@@ -513,9 +553,9 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// Return an iterator that traverses over `axis`
     /// and yields each subview along it.
     ///
-    /// For example, in a 3 × 5 × 5 array, with `axis` equal to `Axis(2)`,
+    /// For example, in a 3 × 4 × 5 array, with `axis` equal to `Axis(2)`,
     /// the iterator element
-    /// is a 3 × 5 subview (and there are 5 in total), as shown
+    /// is a 3 × 4 subview (and there are 5 in total), as shown
     /// in the picture below.
     ///
     /// Iterator element is `ArrayView<A, D::Smaller>` (read-only array view).
@@ -524,7 +564,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     ///
     /// **Panics** if `axis` is out of bounds.
     ///
-    /// <img src="https://bluss.github.io/ndarray/images/axis_iter.svg" height="250px">
+    /// <img src="https://bluss.github.io/ndarray/images/axis_iter_3_4_5.svg" height="250px">
     pub fn axis_iter(&self, axis: Axis) -> AxisIter<A, D::Smaller>
         where D: RemoveAxis,
     {
@@ -621,8 +661,8 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         ArrayBase {
             data: self.data,
             ptr: self.ptr,
-            dim: len,
-            strides: stride as Ix,
+            dim: Ix1(len),
+            strides: Ix1(stride as Ix),
         }
     }
 
@@ -644,7 +684,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// contiguous in memory, it has custom strides, etc.
     pub fn is_standard_layout(&self) -> bool {
         let defaults = self.dim.default_strides();
-        if self.strides == defaults {
+        if self.strides.equal(&defaults) {
             return true;
         }
         if self.ndim() == 1 { return false; }
@@ -660,25 +700,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     }
 
     fn is_contiguous(&self) -> bool {
-        let defaults = self.dim.default_strides();
-        if self.strides == defaults {
-            return true;
-        }
-        if self.ndim() == 1 { return false; }
-        let order = self.strides._fastest_varying_stride_order();
-        let strides = self.strides.slice();
-
-        // FIXME: Negative strides
-        let dim = self.dim.slice();
-        let mut cstride = 1;
-        for &i in order.slice() {
-            // a dimension of length 1 can have unequal strides
-            if dim[i] != 1 && strides[i] != cstride {
-                return false;
-            }
-            cstride *= dim[i];
-        }
-        true
+        D::is_contiguous(&self.dim, &self.strides)
     }
 
     /// Return a pointer to the first element in the array.
@@ -767,50 +789,6 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     }
 
     /// Transform the array into `shape`; any shape with the same number of
-    /// elements is accepted.
-    ///
-    /// May clone all elements if needed to arrange elements in standard
-    /// layout (and break sharing).
-    ///
-    /// **Panics** if shapes are incompatible.
-    ///
-    /// ```
-    /// use ndarray::{rcarr1, rcarr2};
-    ///
-    /// assert!(
-    ///     rcarr1(&[1., 2., 3., 4.]).reshape((2, 2))
-    ///     == rcarr2(&[[1., 2.],
-    ///                 [3., 4.]])
-    /// );
-    /// ```
-    pub fn reshape<E>(&self, shape: E) -> ArrayBase<S, E>
-        where S: DataShared + DataOwned,
-              A: Clone,
-              E: Dimension,
-    {
-        if shape.size_checked() != Some(self.dim.size()) {
-            panic!("ndarray: incompatible shapes in reshape, attempted from: {:?}, to: {:?}",
-                   self.dim.slice(),
-                   shape.slice())
-        }
-        // Check if contiguous, if not => copy all, else just adapt strides
-        if self.is_standard_layout() {
-            let cl = self.clone();
-            ArrayBase {
-                data: cl.data,
-                ptr: cl.ptr,
-                strides: shape.default_strides(),
-                dim: shape,
-            }
-        } else {
-            let v = self.iter().map(|x| x.clone()).collect::<Vec<A>>();
-            unsafe {
-                ArrayBase::from_shape_vec_unchecked(shape, v)
-            }
-        }
-    }
-
-    /// Transform the array into `shape`; any shape with the same number of
     /// elements is accepted, but the source array or view must be
     /// contiguous, otherwise we cannot rearrange the dimension.
     ///
@@ -826,9 +804,10 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     ///                 [3., 4.]])
     /// );
     /// ```
-    pub fn into_shape<E>(self, shape: E) -> Result<ArrayBase<S, E>, ShapeError>
-        where E: Dimension
+    pub fn into_shape<E>(self, shape: E) -> Result<ArrayBase<S, E::Dim>, ShapeError>
+        where E: IntoDimension,
     {
+        let shape = shape.into_dimension();
         if shape.size_checked() != Some(self.dim.size()) {
             return Err(error::incompatible_shapes(&self.dim, &shape));
         }
@@ -849,6 +828,54 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
             })
         } else {
             Err(error::from_kind(error::ErrorKind::IncompatibleLayout))
+        }
+    }
+
+    /// *Note: Reshape is for `RcArray` only. Use `.into_shape()` for
+    /// other arrays and array views.*
+    ///
+    /// Transform the array into `shape`; any shape with the same number of
+    /// elements is accepted.
+    ///
+    /// May clone all elements if needed to arrange elements in standard
+    /// layout (and break sharing).
+    ///
+    /// **Panics** if shapes are incompatible.
+    ///
+    /// ```
+    /// use ndarray::{rcarr1, rcarr2};
+    ///
+    /// assert!(
+    ///     rcarr1(&[1., 2., 3., 4.]).reshape((2, 2))
+    ///     == rcarr2(&[[1., 2.],
+    ///                 [3., 4.]])
+    /// );
+    /// ```
+    pub fn reshape<E>(&self, shape: E) -> ArrayBase<S, E::Dim>
+        where S: DataShared + DataOwned,
+              A: Clone,
+              E: IntoDimension,
+    {
+        let shape = shape.into_dimension();
+        if shape.size_checked() != Some(self.dim.size()) {
+            panic!("ndarray: incompatible shapes in reshape, attempted from: {:?}, to: {:?}",
+                   self.dim.slice(),
+                   shape.slice())
+        }
+        // Check if contiguous, if not => copy all, else just adapt strides
+        if self.is_standard_layout() {
+            let cl = self.clone();
+            ArrayBase {
+                data: cl.data,
+                ptr: cl.ptr,
+                strides: shape.default_strides(),
+                dim: shape,
+            }
+        } else {
+            let v = self.iter().map(|x| x.clone()).collect::<Vec<A>>();
+            unsafe {
+                ArrayBase::from_shape_vec_unchecked(shape, v)
+            }
         }
     }
 
@@ -881,8 +908,8 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     ///     == aview2(&[[1., 0.]; 10])
     /// );
     /// ```
-    pub fn broadcast<E>(&self, dim: E) -> Option<ArrayView<A, E>>
-        where E: Dimension
+    pub fn broadcast<E>(&self, dim: E) -> Option<ArrayView<A, E::Dim>>
+        where E: IntoDimension
     {
         /// Return new stride when trying to grow `from` into shape `to`
         ///
@@ -901,9 +928,10 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
             }
 
             {
+                let mut new_stride_iter = new_stride.slice_mut().iter_mut().rev();
                 for ((er, es), dr) in from.slice().iter().rev()
                                         .zip(stride.slice().iter().rev())
-                                        .zip(new_stride.slice_mut().iter_mut().rev())
+                                        .zip(new_stride_iter.by_ref())
                 {
                     /* update strides */
                     if *dr == *er {
@@ -918,13 +946,13 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
                 }
 
                 /* set remaining strides to zero */
-                let tail_len = to.ndim() - from.ndim();
-                for dr in &mut new_stride.slice_mut()[..tail_len] {
+                for dr in new_stride_iter {
                     *dr = 0;
                 }
             }
             Some(new_stride)
         }
+        let dim = dim.into_dimension();
 
         // Note: zero strides are safe precisely because we return an read-only view
         let broadcast_strides = match upcast(&dim, &self.dim, &self.strides) {
@@ -1001,7 +1029,15 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     }
 
     /// Perform an elementwise assigment to `self` from scalar `x`.
+    #[deprecated(note="This method is replaced with ArrayBase::fill and will be removed.")]
     pub fn assign_scalar(&mut self, x: &A)
+        where S: DataMut, A: Clone,
+    {
+        self.unordered_foreach_mut(move |elt| *elt = x.clone());
+    }
+
+    /// Perform an elementwise assigment to `self` from element `x`.
+    pub fn fill(&mut self, x: A)
         where S: DataMut, A: Clone,
     {
         self.unordered_foreach_mut(move |elt| *elt = x.clone());
@@ -1050,8 +1086,8 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         }
         // otherwise, break the arrays up into their inner rows
         let mut try_slices = true;
-        let mut rows = self.inner_iter_mut().zip(rhs.inner_iter());
-        for (mut s_row, r_row) in &mut rows {
+        let rows = self.inner_iter_mut().zip(rhs.inner_iter());
+        for (mut s_row, r_row) in rows {
             if try_slices {
                 if let Some(self_s) = s_row.as_slice_mut() {
                     if let Some(rhs_s) = r_row.as_slice() {
@@ -1100,7 +1136,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         } else if self.dim.ndim() == rhs.dim.ndim() && self.shape() == rhs.shape() {
             self.zip_mut_with_same_shape(rhs, f);
         } else {
-            let rhs_broadcast = rhs.broadcast_unwrap(self.dim());
+            let rhs_broadcast = rhs.broadcast_unwrap(self.raw_dim());
             self.zip_mut_with_by_rows(&rhs_broadcast, f);
         }
     }
@@ -1261,7 +1297,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
               F: FnMut(&B, &A) -> B,
               B: Clone,
     {
-        let mut res = Array::from_elem(self.dim().remove_axis(axis), init);
+        let mut res = Array::from_elem(self.raw_dim().remove_axis(axis), init);
         for subview in self.axis_iter(axis) {
             res.zip_mut_with(&subview, |x, y| *x = fold(x, y));
         }
@@ -1288,7 +1324,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         // the 0th element.
         self.subview(axis, 0).map(|first_elt| {
             unsafe {
-                mapping(ArrayView::new_(first_elt, view_len, view_stride))
+                mapping(ArrayView::new_(first_elt, Ix1(view_len), Ix1(view_stride)))
             }
         })
     }

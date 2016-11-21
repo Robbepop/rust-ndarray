@@ -16,8 +16,8 @@ use std::ops::{
 
 use imp_prelude::*;
 use {
-    Elements,
-    ElementsMut,
+    Iter,
+    IterMut,
     NdIndex,
 };
 
@@ -48,7 +48,7 @@ macro_rules! debug_bounds_check {
 #[inline(always)]
 pub fn debug_bounds_check<S, D, I>(_a: &ArrayBase<S, D>, _index: &I)
     where D: Dimension,
-          I: NdIndex<Dim=D>,
+          I: NdIndex<D>,
           S: Data,
 {
     debug_bounds_check!(_a, *_index);
@@ -59,7 +59,7 @@ pub fn debug_bounds_check<S, D, I>(_a: &ArrayBase<S, D>, _index: &I)
 /// **Panics** if index is out of bounds.
 impl<S, D, I> Index<I> for ArrayBase<S, D>
     where D: Dimension,
-          I: NdIndex<Dim=D>,
+          I: NdIndex<D>,
           S: Data,
 {
     type Output = S::Elem;
@@ -75,7 +75,7 @@ impl<S, D, I> Index<I> for ArrayBase<S, D>
 /// **Panics** if index is out of bounds.
 impl<S, D, I> IndexMut<I> for ArrayBase<S, D>
     where D: Dimension,
-          I: NdIndex<Dim=D>,
+          I: NdIndex<D>,
           S: DataMut,
 {
     #[inline]
@@ -127,7 +127,7 @@ impl<'a, S, D> IntoIterator for &'a ArrayBase<S, D>
           S: Data,
 {
     type Item = &'a S::Elem;
-    type IntoIter = Elements<'a, S::Elem, D>;
+    type IntoIter = Iter<'a, S::Elem, D>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
@@ -139,7 +139,7 @@ impl<'a, S, D> IntoIterator for &'a mut ArrayBase<S, D>
           S: DataMut
 {
     type Item = &'a mut S::Elem;
-    type IntoIter = ElementsMut<'a, S::Elem, D>;
+    type IntoIter = IterMut<'a, S::Elem, D>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.iter_mut()
@@ -150,7 +150,7 @@ impl<'a, A, D> IntoIterator for ArrayView<'a, A, D>
     where D: Dimension
 {
     type Item = &'a A;
-    type IntoIter = Elements<'a, A, D>;
+    type IntoIter = Iter<'a, A, D>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.into_iter_()
@@ -161,7 +161,7 @@ impl<'a, A, D> IntoIterator for ArrayViewMut<'a, A, D>
     where D: Dimension
 {
     type Item = &'a mut A;
-    type IntoIter = ElementsMut<'a, A, D>;
+    type IntoIter = IterMut<'a, A, D>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.into_iter_()
@@ -221,7 +221,7 @@ impl<'a, A, Slice: ?Sized> From<&'a Slice> for ArrayBase<ViewRepr<&'a A>, Ix1>
     fn from(slice: &'a Slice) -> Self {
         let xs = slice.as_ref();
         unsafe {
-            Self::new_(xs.as_ptr(), xs.len(), 1)
+            Self::new_(xs.as_ptr(), Ix1(xs.len()), Ix1(1))
         }
     }
 }
@@ -247,7 +247,7 @@ impl<'a, A, Slice: ?Sized> From<&'a mut Slice> for ArrayBase<ViewRepr<&'a mut A>
     fn from(slice: &'a mut Slice) -> Self {
         let xs = slice.as_mut();
         unsafe {
-            Self::new_(xs.as_mut_ptr(), xs.len(), 1)
+            Self::new_(xs.as_mut_ptr(), Ix1(xs.len()), Ix1(1))
         }
     }
 }

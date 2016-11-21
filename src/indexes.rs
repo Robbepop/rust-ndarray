@@ -5,39 +5,55 @@
 // <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
+use {ArrayBase, Data};
 use super::Dimension;
+use dimension::IntoDimension;
 
 /// An iterator over the indexes of an array shape.
 ///
 /// Iterator element type is `D`.
 #[derive(Clone)]
-pub struct Indexes<D> {
+pub struct Indices<D> {
     dim: D,
     index: Option<D>,
 }
 
-impl<D: Dimension> Indexes<D> {
-    /// Create an iterator over the array shape `dim`.
-    pub fn new(dim: D) -> Indexes<D> {
-        Indexes {
-            index: dim.first_index(),
-            dim: dim,
-        }
+/// Create an iterator over the array shape `shape`.
+///
+/// *Note:* prefer higher order methods, arithmetic operations and
+/// non-indexed iteration before using indices.
+pub fn indices<E>(shape: E) -> Indices<E::Dim>
+    where E: IntoDimension,
+{
+    let dim = shape.into_dimension();
+    Indices {
+        index: dim.first_index(),
+        dim: dim,
     }
 }
 
-impl<D> Iterator for Indexes<D>
+/// Create an iterator over the indices of the passed-in array.
+///
+/// *Note:* prefer higher order methods, arithmetic operations and
+/// non-indexed iteration before using indices.
+pub fn indices_of<S, D>(array: &ArrayBase<S, D>) -> Indices<D>
+    where S: Data, D: Dimension,
+{
+    indices(array.dim())
+}
+
+impl<D> Iterator for Indices<D>
     where D: Dimension,
 {
-    type Item = D;
+    type Item = D::Pattern;
     #[inline]
-    fn next(&mut self) -> Option<D> {
+    fn next(&mut self) -> Option<Self::Item> {
         let index = match self.index {
             None => return None,
             Some(ref ix) => ix.clone(),
         };
         self.index = self.dim.next_for(index.clone());
-        Some(index)
+        Some(index.into_pattern())
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -57,6 +73,6 @@ impl<D> Iterator for Indexes<D>
     }
 }
 
-impl<D> ExactSizeIterator for Indexes<D>
+impl<D> ExactSizeIterator for Indices<D>
     where D: Dimension
 {}

@@ -6,7 +6,6 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use std::any::Any;
 use num_complex::Complex;
 
 /// Elements that can be used as direct operands in arithmetic with arrays.
@@ -30,7 +29,7 @@ use num_complex::Complex;
 /// This trait ***does not*** limit which elements can be stored in an array in general.
 /// Non-`ScalarOperand` types can still participate in arithmetic as array elements in
 /// in array-array operations.
-pub trait ScalarOperand : Any + Clone { }
+pub trait ScalarOperand : 'static + Clone { }
 impl ScalarOperand for bool { }
 impl ScalarOperand for i8 { }
 impl ScalarOperand for u8 { }
@@ -40,14 +39,12 @@ impl ScalarOperand for i32 { }
 impl ScalarOperand for u32 { }
 impl ScalarOperand for i64 { }
 impl ScalarOperand for u64 { }
+impl ScalarOperand for isize { }
+impl ScalarOperand for usize { }
 impl ScalarOperand for f32 { }
 impl ScalarOperand for f64 { }
 impl ScalarOperand for Complex<f32> { }
 impl ScalarOperand for Complex<f64> { }
-
-macro_rules! as_expr(
-    ($e:expr) => ($e)
-);
 
 macro_rules! impl_binary_op(
     ($trt:ident, $operator:tt, $mth:ident, $iop:tt, $doc:expr) => (
@@ -94,7 +91,7 @@ impl<'a, A, S, S2, D, E> $trt<&'a ArrayBase<S2, E>> for ArrayBase<S, D>
     fn $mth(mut self, rhs: &ArrayBase<S2, E>) -> ArrayBase<S, D>
     {
         self.zip_mut_with(rhs, |x, y| {
-            *x = as_expr!(x.clone() $operator y.clone());
+            *x = x.clone() $operator y.clone();
         });
         self
     }
@@ -137,7 +134,7 @@ impl<A, S, D, B> $trt<B> for ArrayBase<S, D>
     type Output = ArrayBase<S, D>;
     fn $mth(mut self, x: B) -> ArrayBase<S, D> {
         self.unordered_foreach_mut(move |elt| {
-            *elt = as_expr!(elt.clone() $operator x.clone());
+            *elt = elt.clone() $operator x.clone();
         });
         self
     }
@@ -186,7 +183,7 @@ impl<S, D> $trt<ArrayBase<S, D>> for $scalar
         } or {{
             let mut rhs = rhs;
             rhs.unordered_foreach_mut(move |elt| {
-                *elt = as_expr!(self $operator *elt);
+                *elt = self $operator *elt;
             });
             rhs
         }})

@@ -9,6 +9,8 @@ use ndarray::{
     Array,
     Axis,
     Ix,
+    Array1,
+    Array2,
 };
 use ndarray::{arr0, arr1, arr2};
 
@@ -291,8 +293,8 @@ fn add_2d_cutout(bench: &mut test::Bencher)
 #[bench]
 fn add_2d_broadcast_1_to_2(bench: &mut test::Bencher)
 {
-    let mut a = Array::<i32, _>::zeros((64, 64));
-    let b = Array::<i32, _>::zeros(64);
+    let mut a = Array2::<i32>::zeros((64, 64));
+    let b = Array1::<i32>::zeros(64);
     let bv = b.view();
     bench.iter(|| {
         a += &bv;
@@ -460,7 +462,7 @@ fn assign_scalar_2d_corder(bench: &mut test::Bencher)
     let a = Array::zeros((64, 64));
     let mut a = black_box(a);
     let s = 3.;
-    bench.iter(move || a.assign_scalar(&s))
+    bench.iter(move || a.fill(s))
 }
 
 #[bench]
@@ -470,7 +472,7 @@ fn assign_scalar_2d_cutout(bench: &mut test::Bencher)
     let a = a.slice_mut(s![1..-1, 1..-1]);
     let mut a = black_box(a);
     let s = 3.;
-    bench.iter(move || a.assign_scalar(&s))
+    bench.iter(move || a.fill(s))
 }
 
 #[bench]
@@ -480,7 +482,7 @@ fn assign_scalar_2d_forder(bench: &mut test::Bencher)
     a.swap_axes(0, 1);
     let mut a = black_box(a);
     let s = 3.;
-    bench.iter(move || a.assign_scalar(&s))
+    bench.iter(move || a.fill(s))
 }
 
 #[bench]
@@ -488,7 +490,7 @@ fn assign_zero_2d_corder(bench: &mut test::Bencher)
 {
     let a = Array::zeros((64, 64));
     let mut a = black_box(a);
-    bench.iter(|| a.assign_scalar(&0.))
+    bench.iter(|| a.fill(0.))
 }
 
 #[bench]
@@ -497,7 +499,7 @@ fn assign_zero_2d_cutout(bench: &mut test::Bencher)
     let mut a = Array::zeros((66, 66));
     let a = a.slice_mut(s![1..-1, 1..-1]);
     let mut a = black_box(a);
-    bench.iter(|| a.assign_scalar(&0.))
+    bench.iter(|| a.fill(0.))
 }
 
 #[bench]
@@ -506,7 +508,7 @@ fn assign_zero_2d_forder(bench: &mut test::Bencher)
     let mut a = Array::zeros((64, 64));
     a.swap_axes(0, 1);
     let mut a = black_box(a);
-    bench.iter(|| a.assign_scalar(&0.))
+    bench.iter(|| a.fill(0.))
 }
 
 #[bench]
@@ -717,7 +719,7 @@ fn dot_extended(bench: &mut test::Bencher) {
 
 const MEAN_SUM_N: usize = 127;
 
-fn range_mat(m: Ix, n: Ix) -> Array<f32, (Ix, Ix)> {
+fn range_mat(m: Ix, n: Ix) -> Array2<f32> {
     assert!(m * n != 0);
     Array::linspace(0., (m * n - 1) as f32, m * n).into_shape((m, n)).unwrap()
 }

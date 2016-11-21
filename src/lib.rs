@@ -11,44 +11,40 @@
 //! The `ndarray` crate provides an N-dimensional container for general elements
 //! and for numerics.
 //!
-//! - [`ArrayBase`](struct.ArrayBase.html):
-//!   The N-dimensional array type itself.
-//! - [`Array`](type.Array.html):
-//!   An array where the data is owned uniquely.
-//! - [`RcArray`](type.RcArray.html):
-//!   An array where the data has shared ownership and is copy on write.
-//! - [`ArrayView`](type.ArrayView.html), [`ArrayViewMut`](type.ArrayViewMut.html):
-//!   Lightweight array views.
+//! - [**`ArrayBase`**](struct.ArrayBase.html):
+//!   The N-dimensional array type itself.<br>
+//!   It is used to implement both the owned arrays and the views; see its docs
+//!   for an overview of all array features.  
+//! - The main specific array type is [**`Array`**](type.Array.html), which owns
+//! its elements.
 //!
 //! ## Highlights
 //!
 //! - Generic N-dimensional array
 //! - Slicing, also with arbitrary step size, and negative indices to mean
 //!   elements from the end of the axis.
-//! - There is both a copy on write array (`RcArray`), or a regular uniquely owned array
-//!   (`Array`), and both can use read-only and read-write array views.
-//! - Iteration and most operations are efficient on arrays with contiguous
-//!   innermost dimension.
+//! - Views and subviews of arrays; iterators that yield subviews.
+//! - Higher order operations and arithmetic are performant
 //! - Array views can be used to slice and mutate any `[T]` data using
 //!   `ArrayView::from` and `ArrayViewMut::from`.
 //!
 //! ## Crate Status
 //!
-//! - Still iterating on and evolving the API
+//! - Still iterating on and evolving the crate
 //!   + The crate is continuously developing, and breaking changes are expected
-//!     during evolution from version to version. We adhere to semver,
-//!     but alpha releases break at will.
-//!   + We adopt the newest stable rust features we need.
-//! - Performance status:
-//!   + Performance of an operation depends on the memory layout of the array
-//!     or array view. Especially if it's a binary operation, which
-//!     needs matching memory layout to be efficient (with some exceptions).
-//!   + Arithmetic optimizes very well if the arrays are have contiguous inner dimension.
+//!     during evolution from version to version. We adopt the newest stable
+//!     rust features if we need them.
+//! - Performance:
+//!   + Prefer higher order methods and arithmetic operations on arrays first,
+//!     then iteration, and as a last priority using indexed algorithms.
 //!   + The higher order functions like ``.map()``, ``.map_inplace()`` and
 //!     ``.zip_mut_with()`` are the most efficient ways to
 //!     perform single traversal and lock step traversal respectively.
-//!   + ``.iter()`` is efficient for c-contiguous arrays.
-//!   + Can use BLAS in matrix multiplication.
+//!   + Performance of an operation depends on the memory layout of the array
+//!     or array view. Especially if it's a binary operation, which
+//!     needs matching memory layout to be efficient (with some exceptions).
+//!   + Efficient floating point matrix multiplication even for very large
+//!     matrices; can optionally use BLAS to improve it further.
 //!
 //! ## Crate Feature Flags
 //!
@@ -81,18 +77,22 @@ extern crate itertools;
 extern crate num_traits as libnum;
 extern crate num_complex;
 
-use std::rc::Rc;
-use std::slice::{self, Iter, IterMut};
+use std::iter::Zip;
 use std::marker::PhantomData;
+use std::rc::Rc;
+use std::slice::{self, Iter as SliceIter, IterMut as SliceIterMut};
 
 pub use dimension::{
     Dimension,
+    IntoDimension,
     RemoveAxis,
     Axis,
 };
+pub use dimension::dim::*;
 
 pub use dimension::NdIndex;
-pub use indexes::Indexes;
+pub use indexes::Indices;
+pub use indexes::{indices, indices_of};
 pub use error::{ShapeError, ErrorKind};
 pub use si::{Si, S};
 
@@ -110,7 +110,7 @@ pub use arraytraits::AsArray;
 pub use linalg_traits::{LinalgScalar, NdFloat};
 pub use stacking::stack;
 
-pub use shape_builder::{ ShapeBuilder };
+pub use shape_builder::{ ShapeBuilder};
 
 mod aliases;
 mod arraytraits;
@@ -149,7 +149,6 @@ mod stacking;
 /// Implementation's prelude. Common types used everywhere.
 mod imp_prelude {
     pub use prelude::*;
-    pub use aliases::*;
     pub use {
         RemoveAxis,
         Data,
@@ -190,60 +189,120 @@ pub type Ixs = isize;
 ///
 /// ## Contents
 ///
-/// + [Array and RcArray](#ownedarray-and-rcarray)
+/// + [Array](#array)
+/// + [RcArray](#rcarray)
+/// + [Array Views](#array-views)
 /// + [Indexing and Dimension](#indexing-and-dimension)
 /// + [Slicing](#slicing)
 /// + [Subviews](#subviews)
 /// + [Arithmetic Operations](#arithmetic-operations)
 /// + [Broadcasting](#broadcasting)
-/// + [Methods](#methods)
-/// + [Methods for Array Views](#methods-for-array-views)
+/// + [Constructor Methods for Owned Arrays](#constructor-methods-for-owned-arrays)
+/// + [Methods For All Array Types](#methods-for-all-array-types)
+/// + [Methods Specific to Array Views](#methods-specific-to-array-views)
 ///
-/// ## `Array` and `RcArray`
 ///
-/// `Array` owns the underlying array elements directly (just like
-/// a `Vec`), while [`RcArray`](type.RcArray.html) is a an array with reference
-/// counted data. `RcArray` can act both as an owner or as a view in that regard.
+///
+///
+/// ## `Array`
+///
+/// [`Array`](type.Array.html) is an owned array that ows the underlying array
+/// elements directly (just like a `Vec`) and it is the default way to create and
+/// store n-dimensional data. `Array<A, D>` has two type parameters: `A` for
+/// the element type, and `D` for the dimensionality. A particular
+/// dimensionality's type alias like `Array3<A>` just has the type parameter
+/// `A` for element type.
+///
+/// An example:
+///
+/// ```
+/// // Create a three-dimensional f64 array, initialized with zeros
+/// use ndarray::Array3;
+/// let mut temperature = Array3::<f64>::zeros((3, 4, 5));
+/// // Increase the temperature in this location
+/// temperature[[2, 2, 2]] += 0.5;
+/// ```
+///
+/// ## `RcArray`
+///
+/// [`RcArray`](type.RcArray.html) is an owned array with reference counted
+/// data (shared ownership).
 /// Sharing requires that it uses copy-on-write for mutable operations.
 /// Calling a method for mutating elements on `RcArray`, for example
 /// [`view_mut()`](#method.view_mut) or [`get_mut()`](#method.get_mut),
 /// will break sharing and require a clone of the data (if it is not uniquely held).
+///
+/// ## Array Views
+///
+/// `ArrayView` and `ArrayViewMut` are read-only and read-write array views
+/// respectively. They use dimensionality, indexing, and almost all other
+/// methods the same was as the other array types.
+///
+/// A view is created from an array using `.view()`, `.view_mut()`, using
+/// slicing (`.slice()`, `.slice_mut()`) or from one of the many iterators
+/// that yield array views.
+///
+/// You can also create an array view from a regular slice of data not
+/// allocated with `Array` — see [Methods Specific to Array
+/// Views](#methods-specific-to-array-views).
 ///
 /// Note that all `ArrayBase` variants can change their view (slicing) of the
 /// data freely, even when their data can’t be mutated.
 ///
 /// ## Indexing and Dimension
 ///
-/// Array indexes are represented by the types `Ix` and `Ixs` (signed).
-///
 /// The dimensionality of the array determines the number of *axes*, for example
 /// a 2D array has two axes. These are listed in “big endian” order, so that
 /// the greatest dimension is listed first, the lowest dimension with the most
 /// rapidly varying index is the last.
 ///
-/// In a 2D array the index of each element is `(row, column)`
-/// as seen in this 3 × 3 example:
+/// In a 2D array the index of each element is `[row, column]` as seen in this
+/// 4 × 3 example:
 ///
 /// ```ignore
-/// [[ (0, 0), (0, 1), (0, 2)],  // row 0
-///  [ (1, 0), (1, 1), (1, 2)],  // row 1
-///  [ (2, 0), (2, 1), (2, 2)]]  // row 2
+/// [[ [0, 0], [0, 1], [0, 2] ],  // row 0
+///  [ [1, 0], [1, 1], [1, 2] ],  // row 1
+///  [ [2, 0], [2, 1], [2, 2] ],  // row 2
+///  [ [3, 0], [3, 1], [3, 2] ]]  // row 3
 /// //    \       \       \
 /// //   column 0  \     column 2
 /// //            column 1
 /// ```
 ///
-/// The number of axes for an array is fixed by the `D` parameter: `Ix` for
-/// a 1D array, `(Ix, Ix)` for a 2D array etc. The `D` type is also used
-/// for element indices in `.get()` and `array[index]`. The dimension type `Vec<Ix>`
-/// allows a dynamic number of axes.
+/// The number of axes for an array is fixed by its `D` type parameter: `Ix1`
+/// for a 1D array, `Ix2` for a 2D array etc. The dimension type `IxDyn` allows
+/// a dynamic number of axes.
+///
+/// A fixed size array (`[usize; N]`) of the corresponding dimensionality is
+/// used to index the `Array`, making the syntax `array[[` i, j,  ...`]]`
+///
+/// ```
+/// use ndarray::Array2;
+/// let mut array = Array2::zeros((4, 3));
+/// array[[1, 1]] = 7;
+/// ```
+///
+/// Important traits and types for dimension and indexing:
+///
+/// - A [`Dim`](Dim.t.html) value represents a dimensionality or index.
+/// - Trait [`Dimension`](Dimension.t.html) is implemented by all
+/// dimensionalities. It defines many operations for dimensions and indices.
+/// - Trait [`IntoDimension`](IntoDimension.t.html) is used to convert into a
+/// `Dim` value.
+/// - Trait [`ShapeBuilder`](ShapeBuilder.t.html) is an extension of
+/// `IntoDimension` and is used when constructing an array. A shape describes
+/// not just the extent of each axis but also their strides.
+/// - Trait [`NdIndex`](NdIndex.t.html) is an extension of `Dimension` and is
+/// for values that can be used with indexing syntax.
+///
 ///
 /// The default memory order of an array is *row major* order (a.k.a “c” order),
 /// where each row is contiguous in memory.
 /// A *column major* (a.k.a. “f” or fortran) memory order array has
 /// columns (or, in general, the outermost axis) with contiguous elements.
 ///
-/// The logical order of any array’s elements is the row major order.
+/// The logical order of any array’s elements is the row major order 
+/// (the rightmost index is varying the fastest).
 /// The iterators `.iter(), .iter_mut()` always adhere to this order, for example.
 ///
 /// ## Slicing
@@ -391,12 +450,18 @@ pub type Ixs = isize;
 /// use ndarray::arr2;
 ///
 /// let a = arr2(&[[1., 1.],
-///                [1., 2.]]);
+///                [1., 2.],
+///                [0., 3.],
+///                [0., 4.]]);
+///
 /// let b = arr2(&[[0., 1.]]);
 ///
 /// let c = arr2(&[[1., 2.],
-///                [1., 3.]]);
+///                [1., 3.],
+///                [0., 4.],
+///                [0., 5.]]);
 /// // We can add because the shapes are compatible even if not equal.
+/// // The `b` array is shape 1 × 2 but acts like a 4 × 2 array.
 /// assert!(
 ///     c == a + b
 /// );
@@ -416,11 +481,27 @@ pub struct ArrayBase<S, D>
     strides: D,
 }
 
-/// Array where the data is reference counted and copy on write, it
-/// can act as both an owner as the data as well as a lightweight view.
+/// An array where the data has shared ownership and is copy on write.
+/// It can act as both an owner as the data as well as a shared reference (view
+/// like).
 pub type RcArray<A, D> = ArrayBase<Rc<Vec<A>>, D>;
 
-/// Array where the data is owned uniquely.
+/// An array that owns its data uniquely.
+///
+/// `Array` is the main n-dimensional array type, and it owns all its array
+/// elements.
+///
+/// [**`ArrayBase`**](struct.ArrayBase.html) is used to implement both the owned
+/// arrays and the views; see its docs for an overview of all array features.  
+///
+/// See also:
+///
+/// + [Constructor Methods for Owned Arrays](struct.ArrayBase.html#constructor-methods-for-owned-arrays)
+/// + [Methods For All Array Types](struct.ArrayBase.html#methods-for-all-array-types)
+/// + Dimensionality-specific type alises
+/// [`Array1`](Array1.t.html),
+/// [`Array2`](Array2.t.html),
+/// [`Array3`](Array3.t.html) and so on.
 pub type Array<A, D> = ArrayBase<Vec<A>, D>;
 
 #[deprecated(note="Use the type alias `Array` instead")]
@@ -434,7 +515,7 @@ pub type OwnedArray<A, D> = ArrayBase<Vec<A>, D>;
 ///
 /// Array views have all the methods of an array (see [`ArrayBase`][ab]).
 ///
-/// See also specific [**Methods for Array Views**](struct.ArrayBase.html#methods-for-array-views).
+/// See also [**Methods Specific To Array Views**](struct.ArrayBase.html#methods-specific-to-array-views)
 ///
 /// [ab]: struct.ArrayBase.html
 pub type ArrayView<'a, A, D> = ArrayBase<ViewRepr<&'a A>, D>;
@@ -445,7 +526,7 @@ pub type ArrayView<'a, A, D> = ArrayBase<ViewRepr<&'a A>, D>;
 ///
 /// Array views have all the methods of an array (see [`ArrayBase`][ab]).
 ///
-/// See also specific [**Methods for Array Views**](struct.ArrayBase.html#methods-for-array-views).
+/// See also [**Methods Specific To Array Views**](struct.ArrayBase.html#methods-specific-to-array-views)
 ///
 /// [ab]: struct.ArrayBase.html
 pub type ArrayViewMut<'a, A, D> = ArrayBase<ViewRepr<&'a mut A>, D>;
@@ -557,23 +638,13 @@ impl<'a, A, D> ArrayBase<ViewRepr<&'a A>, D>
         ElementsBase { inner: self.into_base_iter() }
     }
 
-    fn into_iter_(self) -> Elements<'a, A, D> {
-        Elements {
+    fn into_iter_(self) -> Iter<'a, A, D> {
+        Iter {
             inner: if let Some(slc) = self.into_slice() {
                 ElementsRepr::Slice(slc.iter())
             } else {
                 ElementsRepr::Counted(self.into_elements_base())
             },
-        }
-    }
-
-    fn into_slice(&self) -> Option<&'a [A]> {
-        if self.is_standard_layout() {
-            unsafe {
-                Some(slice::from_raw_parts(self.ptr, self.len()))
-            }
-        } else {
-            None
         }
     }
 
@@ -616,8 +687,8 @@ impl<'a, A, D> ArrayBase<ViewRepr<&'a mut A>, D>
         ElementsBaseMut { inner: self.into_base_iter() }
     }
 
-    fn into_iter_(self) -> ElementsMut<'a, A, D> {
-        ElementsMut {
+    fn into_iter_(self) -> IterMut<'a, A, D> {
+        IterMut {
             inner:
                 if self.is_standard_layout() {
                     let slc = unsafe {
@@ -627,17 +698,6 @@ impl<'a, A, D> ArrayBase<ViewRepr<&'a mut A>, D>
                 } else {
                     ElementsRepr::Counted(self.into_elements_base())
                 }
-        }
-    }
-
-    fn _into_slice_mut(self) -> Option<&'a mut [A]>
-    {
-        if self.is_standard_layout() {
-            unsafe {
-                Some(slice::from_raw_parts_mut(self.ptr, self.len()))
-            }
-        } else {
-            None
         }
     }
 
@@ -657,8 +717,8 @@ impl<'a, A, D> ArrayBase<ViewRepr<&'a mut A>, D>
 /// Iterator element type is `&'a A`.
 ///
 /// See [`.iter()`](struct.ArrayBase.html#method.iter) for more information.
-pub struct Elements<'a, A: 'a, D> {
-    inner: ElementsRepr<Iter<'a, A>, ElementsBase<'a, A, D>>,
+pub struct Iter<'a, A: 'a, D> {
+    inner: ElementsRepr<SliceIter<'a, A>, ElementsBase<'a, A, D>>,
 }
 
 /// Counted read only iterator
@@ -671,8 +731,8 @@ struct ElementsBase<'a, A: 'a, D> {
 /// Iterator element type is `&'a mut A`.
 ///
 /// See [`.iter_mut()`](struct.ArrayBase.html#method.iter_mut) for more information.
-pub struct ElementsMut<'a, A: 'a, D> {
-    inner: ElementsRepr<IterMut<'a, A>, ElementsBaseMut<'a, A, D>>,
+pub struct IterMut<'a, A: 'a, D> {
+    inner: ElementsRepr<SliceIterMut<'a, A>, ElementsBaseMut<'a, A, D>>,
 }
 
 /// An iterator over the elements of an array.
@@ -686,15 +746,12 @@ struct ElementsBaseMut<'a, A: 'a, D> {
 ///
 /// See [`.indexed_iter()`](struct.ArrayBase.html#method.indexed_iter) for more information.
 #[derive(Clone)]
-pub struct Indexed<'a, A: 'a, D>(ElementsBase<'a, A, D>);
+pub struct IndexedIter<'a, A: 'a, D>(ElementsBase<'a, A, D>);
 /// An iterator over the indexes and elements of an array (mutable).
 ///
 /// See [`.indexed_iter_mut()`](struct.ArrayBase.html#method.indexed_iter_mut) for more information.
-pub struct IndexedMut<'a, A: 'a, D>(ElementsBaseMut<'a, A, D>);
+pub struct IndexedIterMut<'a, A: 'a, D>(ElementsBaseMut<'a, A, D>);
 
-use std::slice::Iter as SliceIter;
-use std::slice::IterMut as SliceIterMut;
-use std::iter::Zip;
 fn zipsl<'a, 'b, A, B>(t: &'a [A], u: &'b [B])
     -> Zip<SliceIter<'a, A>, SliceIter<'b, B>> {
     t.iter().zip(u)
@@ -732,7 +789,7 @@ pub struct Shape<D> {
     is_c: bool,
 }
 
-/// An array shape of n dimensions c-order, f-order or custom strides.
+/// An array shape of n dimensions in c-order, f-order or custom strides.
 #[derive(Copy, Clone, Debug)]
 pub struct StrideShape<D> {
     dim: D,

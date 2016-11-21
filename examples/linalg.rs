@@ -12,14 +12,14 @@ use num_traits::Float;
 use num_complex::Complex;
 use std::ops::{Add, Sub, Mul, Div};
 
-use ndarray::{RcArray, Ix};
+use ndarray::{RcArray, Ix1, Ix2};
 use ndarray::{rcarr1, rcarr2};
 use ndarray::LinalgScalar;
 
 /// Column vector.
-pub type Col<A> = RcArray<A, Ix>;
+pub type Col<A> = RcArray<A, Ix1>;
 /// Rectangular matrix.
-pub type Mat<A> = RcArray<A, (Ix, Ix)>;
+pub type Mat<A> = RcArray<A, Ix2>;
 
 /// Trait union for a ring with 1.
 pub trait Ring : Clone + Zero + Add<Output=Self> + Sub<Output=Self>
@@ -261,7 +261,7 @@ pub fn subst_fw<A: Copy + Field>(l: &Mat<A>, b: &Col<A>) -> Col<A>
 {
     let (m, n) = l.dim();
     assert!(m == n);
-    assert!(m == b.dim());
+    assert!(m == b.len());
     let mut x = Col::zeros(m);
     for i in 0..m {
         // b_lx_sum = b[i] - Sum(for j = 0 .. i) L_ij x_j
@@ -279,7 +279,7 @@ pub fn subst_bw<A: Copy + Field>(u: &Mat<A>, b: &Col<A>) -> Col<A>
 {
     let (m, n) = u.dim();
     assert!(m == n);
-    assert!(m == b.dim());
+    assert!(m == b.len());
     let mut x = Col::zeros(m);
     for i in (0..m).rev() {
         // b_ux_sum = b[i] - Sum(for j = i .. m) U_ij x_j

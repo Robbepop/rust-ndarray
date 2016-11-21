@@ -8,10 +8,9 @@ use ndarray::{S, Si};
 use ndarray::prelude::*;
 use ndarray::{
     rcarr2,
-    arr0, arr3,
-    aview_mut1,
+    arr3,
 };
-use ndarray::Indexes;
+use ndarray::indices;
 use itertools::free::enumerate;
 
 #[test]
@@ -60,7 +59,7 @@ fn test_slice()
     }
 
     let vi = A.slice(s![1.., ..;2]);
-    assert_eq!(vi.dim(), (2, 2));
+    assert_eq!(vi.shape(), &[2, 2]);
     let vi = A.slice(&[S, S]);
     assert_eq!(vi.shape(), A.shape());
     assert!(vi.iter().zip(A.iter()).all(|(a, b)| a == b));
@@ -89,16 +88,26 @@ fn test_index()
         *elt = i;
     }
 
-    for ((i, j), a) in Indexes::new((2, 3)).zip(A.iter()) {
+    for ((i, j), a) in indices((2, 3)).zip(A.iter()) {
         assert_eq!(*a, A[[i, j]]);
     }
 
     let vi = A.slice(&[Si(1, None, 1), Si(0, None, 2)]);
     let mut it = vi.iter();
-    for ((i, j), x) in Indexes::new((1, 2)).zip(it.by_ref()) {
+    for ((i, j), x) in indices((1, 2)).zip(it.by_ref()) {
         assert_eq!(*x, vi[[i, j]]);
     }
     assert!(it.next().is_none());
+}
+
+#[test]
+fn test_index_arrays() {
+    let a = Array1::from_iter(0..12);
+    assert_eq!(a[1], a[[1]]);
+    let v = a.view().into_shape((3, 4)).unwrap();
+    assert_eq!(a[1], v[[0, 1]]);
+    let w = v.into_shape((2, 2, 3)).unwrap();
+    assert_eq!(a[1], w[[0, 0, 1]]);
 }
 
 #[test]
@@ -127,7 +136,7 @@ fn test_multidim()
             *elt = i as u8;
         }
     }
-    assert_eq!(mat.dim(), (2,3,4,5,6));
+    assert_eq!(mat.shape(), &[2,3,4,5,6]);
 }
 
 
@@ -153,7 +162,7 @@ fn test_negative_stride_rcarray()
 
     {
         let vi = mat.slice(&[S, Si(0, None, -1), Si(0, None, -1)]);
-        assert_eq!(vi.dim(), (2,4,2));
+        assert_eq!(vi.shape(), &[2, 4, 2]);
         // Test against sequential iterator
         let seq = [7f32,6., 5.,4.,3.,2.,1.,0.,15.,14.,13., 12.,11.,  10.,   9.,   8.];
         for (a, b) in vi.clone().iter().zip(seq.iter()) {
@@ -206,10 +215,10 @@ fn test_cow()
 fn test_sub()
 {
     let mat = RcArray::linspace(0., 15., 16).reshape((2, 4, 2));
-    let s1 = mat.subview(Axis(0),0);
-    let s2 = mat.subview(Axis(0),1);
-    assert_eq!(s1.dim(), (4, 2));
-    assert_eq!(s2.dim(), (4, 2));
+    let s1 = mat.subview(Axis(0), 0);
+    let s2 = mat.subview(Axis(0), 1);
+    assert_eq!(s1.shape(), &[4, 2]);
+    assert_eq!(s2.shape(), &[4, 2]);
     let n = RcArray::linspace(8., 15., 8).reshape((4,2));
     assert_eq!(n, s2);
     let m = RcArray::from_vec(vec![2., 3., 10., 11.]).reshape((2, 2));
@@ -307,7 +316,7 @@ fn assign()
     {
         let mut v = a.view_mut();
         v.islice(&[Si(0, Some(1), 1), S]);
-        v.assign_scalar(&0);
+        v.fill(0);
     }
     assert_eq!(a, arr2(&[[0, 0], [3, 4]]));
 }
@@ -485,7 +494,7 @@ fn from_vec_dim_stride_0d() {
 #[test]
 fn from_vec_dim_stride_2d_1() {
     let two = [1., 2.];
-    let d = (2, 1);
+    let d = Ix2(2, 1);
     let s = d.default_strides();
     assert_matches!(Array::from_shape_vec(d.strides(s), two.to_vec()), Ok(_));
 }
@@ -493,7 +502,7 @@ fn from_vec_dim_stride_2d_1() {
 #[test]
 fn from_vec_dim_stride_2d_2() {
     let two = [1., 2.];
-    let d = (1, 2);
+    let d = Ix2(1, 2);
     let s = d.default_strides();
     assert_matches!(Array::from_shape_vec(d.strides(s), two.to_vec()), Ok(_));
 }
@@ -503,7 +512,7 @@ fn from_vec_dim_stride_2d_3() {
     let a = arr3(&[[[1]],
                    [[2]],
                    [[3]]]);
-    let d = a.dim();
+    let d = a.raw_dim();
     let s = d.default_strides();
     assert_matches!(Array::from_shape_vec(d.strides(s), a.as_slice().unwrap().to_vec()), Ok(_));
 }
@@ -513,7 +522,7 @@ fn from_vec_dim_stride_2d_4() {
     let a = arr3(&[[[1]],
                    [[2]],
                    [[3]]]);
-    let d = a.dim();
+    let d = a.raw_dim();
     let s = d.fortran_strides();
     assert_matches!(Array::from_shape_vec(d.strides(s), a.as_slice().unwrap().to_vec()), Ok(_));
 }
@@ -521,7 +530,7 @@ fn from_vec_dim_stride_2d_4() {
 #[test]
 fn from_vec_dim_stride_2d_5() {
     let a = arr3(&[[[1, 2, 3]]]);
-    let d = a.dim();
+    let d = a.raw_dim();
     let s = d.fortran_strides();
     assert_matches!(Array::from_shape_vec(d.strides(s), a.as_slice().unwrap().to_vec()), Ok(_));
 }
@@ -1053,13 +1062,13 @@ fn test_view_from_shape_ptr() {
 
 #[test]
 fn test_default() {
-    let a = <Array<f32, (Ix, Ix)> as Default>::default();
+    let a = <Array<f32, Ix2> as Default>::default();
     assert_eq!(a, aview2(&[[0.0; 0]; 0]));
 
 
     #[derive(Default, Debug, PartialEq)]
     struct Foo(i32);
-    let b = <Array<Foo, ()> as Default>::default();
+    let b = <Array<Foo, Ix0> as Default>::default();
     assert_eq!(b, arr0(Foo::default()));
 }
 
