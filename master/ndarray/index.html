@@ -7,7 +7,7 @@
     <meta name="description" content="API documentation for the Rust `ndarray` crate.">
     <meta name="keywords" content="rust, rustlang, rust-lang, ndarray">
 
-    <title>0.6.9 - ndarray - Rust</title>
+    <title>0.7.0 - ndarray - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
@@ -47,19 +47,17 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-0' class='srclink' href='../src/ndarray/src/lib.rs.html#8-741' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-0' class='srclink' href='../src/ndarray/src/lib.rs.html#8-798' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>The <code>ndarray</code> crate provides an N-dimensional container for general elements
 and for numerics.</p>
 
 <ul>
-<li><a href="struct.ArrayBase.html"><code>ArrayBase</code></a>:
-The N-dimensional array type itself.</li>
-<li><a href="type.Array.html"><code>Array</code></a>:
-An array where the data is owned uniquely.</li>
-<li><a href="type.RcArray.html"><code>RcArray</code></a>:
-An array where the data has shared ownership and is copy on write.</li>
-<li><a href="type.ArrayView.html"><code>ArrayView</code></a>, <a href="type.ArrayViewMut.html"><code>ArrayViewMut</code></a>:
-Lightweight array views.</li>
+<li><a href="struct.ArrayBase.html"><strong><code>ArrayBase</code></strong></a>:
+The N-dimensional array type itself.<br>
+It is used to implement both the owned arrays and the views; see its docs
+for an overview of all array features.<br></li>
+<li>The main specific array type is <a href="type.Array.html"><strong><code>Array</code></strong></a>, which owns
+its elements.</li>
 </ul>
 
 <h2 id='highlights' class='section-header'><a href='#highlights'>Highlights</a></h2>
@@ -67,36 +65,34 @@ Lightweight array views.</li>
 <li>Generic N-dimensional array</li>
 <li>Slicing, also with arbitrary step size, and negative indices to mean
 elements from the end of the axis.</li>
-<li>There is both a copy on write array (<code>RcArray</code>), or a regular uniquely owned array
-(<code>Array</code>), and both can use read-only and read-write array views.</li>
-<li>Iteration and most operations are efficient on arrays with contiguous
-innermost dimension.</li>
+<li>Views and subviews of arrays; iterators that yield subviews.</li>
+<li>Higher order operations and arithmetic are performant</li>
 <li>Array views can be used to slice and mutate any <code>[T]</code> data using
 <code>ArrayView::from</code> and <code>ArrayViewMut::from</code>.</li>
 </ul>
 
 <h2 id='crate-status' class='section-header'><a href='#crate-status'>Crate Status</a></h2>
 <ul>
-<li>Still iterating on and evolving the API
+<li>Still iterating on and evolving the crate
 
 <ul>
 <li>The crate is continuously developing, and breaking changes are expected
-during evolution from version to version. We adhere to semver,
-but alpha releases break at will.</li>
-<li>We adopt the newest stable rust features we need.</li>
+during evolution from version to version. We adopt the newest stable
+rust features if we need them.</li>
 </ul></li>
-<li>Performance status:
+<li>Performance:
 
 <ul>
-<li>Performance of an operation depends on the memory layout of the array
-or array view. Especially if it&#39;s a binary operation, which
-needs matching memory layout to be efficient (with some exceptions).</li>
-<li>Arithmetic optimizes very well if the arrays are have contiguous inner dimension.</li>
+<li>Prefer higher order methods and arithmetic operations on arrays first,
+then iteration, and as a last priority using indexed algorithms.</li>
 <li>The higher order functions like <code>.map()</code>, <code>.map_inplace()</code> and
 <code>.zip_mut_with()</code> are the most efficient ways to
 perform single traversal and lock step traversal respectively.</li>
-<li><code>.iter()</code> is efficient for c-contiguous arrays.</li>
-<li>Can use BLAS in matrix multiplication.</li>
+<li>Performance of an operation depends on the memory layout of the array
+or array view. Especially if it&#39;s a binary operation, which
+needs matching memory layout to be efficient (with some exceptions).</li>
+<li>Efficient floating point matrix multiplication even for very large
+matrices; can optionally use BLAS to improve it further.</li>
 </ul></li>
 </ul>
 
@@ -204,36 +200,29 @@ and yields each subview (mutable)</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.Elements.html'
-                                  title='ndarray::Elements'>Elements</a></td>
+                           <td><a class='struct' href='struct.Dim.html'
+                                  title='ndarray::Dim'>Dim</a></td>
                            <td class='docblock-short'>
-                                <p>An iterator over the elements of an array.</p>
+                                <p>Dimension description.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.ElementsMut.html'
-                                  title='ndarray::ElementsMut'>ElementsMut</a></td>
-                           <td class='docblock-short'>
-                                <p>An iterator over the elements of an array (mutable).</p>
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.Indexed.html'
-                                  title='ndarray::Indexed'>Indexed</a></td>
+                           <td><a class='struct' href='struct.IndexedIter.html'
+                                  title='ndarray::IndexedIter'>IndexedIter</a></td>
                            <td class='docblock-short'>
                                 <p>An iterator over the indexes and elements of an array.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.IndexedMut.html'
-                                  title='ndarray::IndexedMut'>IndexedMut</a></td>
+                           <td><a class='struct' href='struct.IndexedIterMut.html'
+                                  title='ndarray::IndexedIterMut'>IndexedIterMut</a></td>
                            <td class='docblock-short'>
                                 <p>An iterator over the indexes and elements of an array (mutable).</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.Indexes.html'
-                                  title='ndarray::Indexes'>Indexes</a></td>
+                           <td><a class='struct' href='struct.Indices.html'
+                                  title='ndarray::Indices'>Indices</a></td>
                            <td class='docblock-short'>
                                 <p>An iterator over the indexes of an array shape.</p>
                            </td>
@@ -252,6 +241,20 @@ and yields each inner row.</p>
                            <td class='docblock-short'>
                                 <p>An iterator that traverses over all dimensions but the innermost,
 and yields each inner row (mutable).</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.Iter.html'
+                                  title='ndarray::Iter'>Iter</a></td>
+                           <td class='docblock-short'>
+                                <p>An iterator over the elements of an array.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.IterMut.html'
+                                  title='ndarray::IterMut'>IterMut</a></td>
+                           <td class='docblock-short'>
+                                <p>An iterator over the elements of an array (mutable).</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -279,7 +282,7 @@ and yields each inner row (mutable).</p>
                            <td><a class='struct' href='struct.StrideShape.html'
                                   title='ndarray::StrideShape'>StrideShape</a></td>
                            <td class='docblock-short'>
-                                <p>An array shape of n dimensions c-order, f-order or custom strides.</p>
+                                <p>An array shape of n dimensions in c-order, f-order or custom strides.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -363,6 +366,13 @@ and yields each inner row (mutable).</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class='trait' href='trait.IntoDimension.html'
+                                  title='ndarray::IntoDimension'>IntoDimension</a></td>
+                           <td class='docblock-short'>
+                                <p>Convert a value into a dimension.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class='trait' href='trait.LinalgScalar.html'
                                   title='ndarray::LinalgScalar'>LinalgScalar</a></td>
                            <td class='docblock-short'>
@@ -406,6 +416,62 @@ customizing the memory layout (strides) of an array shape.</p>
                            </td>
                        </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.Dim.html'
+                                  title='ndarray::Dim'>Dim</a></td>
+                           <td class='docblock-short'>
+                                <p>Create a new dimension value.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.Ix0.html'
+                                  title='ndarray::Ix0'>Ix0</a></td>
+                           <td class='docblock-short'>
+                                <p>Create a zero-dimensional index</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.Ix1.html'
+                                  title='ndarray::Ix1'>Ix1</a></td>
+                           <td class='docblock-short'>
+                                <p>Create a one-dimensional index</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.Ix2.html'
+                                  title='ndarray::Ix2'>Ix2</a></td>
+                           <td class='docblock-short'>
+                                <p>Create a two-dimensional index</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.Ix3.html'
+                                  title='ndarray::Ix3'>Ix3</a></td>
+                           <td class='docblock-short'>
+                                <p>Create a three-dimensional index</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.Ix4.html'
+                                  title='ndarray::Ix4'>Ix4</a></td>
+                           <td class='docblock-short'>
+                                <p>Create a four-dimensional index</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.Ix5.html'
+                                  title='ndarray::Ix5'>Ix5</a></td>
+                           <td class='docblock-short'>
+                                <p>Create a five-dimensional index</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.Ix6.html'
+                                  title='ndarray::Ix6'>Ix6</a></td>
+                           <td class='docblock-short'>
+                                <p>Create a six-dimensional index</p>
+                           </td>
+                       </tr>
                        <tr class=' module-item'>
                            <td><a class='fn' href='fn.arr0.html'
                                   title='ndarray::arr0'>arr0</a></td>
@@ -463,6 +529,20 @@ customizing the memory layout (strides) of an array shape.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class='fn' href='fn.indices.html'
+                                  title='ndarray::indices'>indices</a></td>
+                           <td class='docblock-short'>
+                                <p>Create an iterator over the array shape <code>shape</code>.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.indices_of.html'
+                                  title='ndarray::indices_of'>indices_of</a></td>
+                           <td class='docblock-short'>
+                                <p>Create an iterator over the indices of the passed-in array.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class='fn' href='fn.rcarr1.html'
                                   title='ndarray::rcarr1'>rcarr1</a></td>
                            <td class='docblock-short'>
@@ -495,7 +575,7 @@ customizing the memory layout (strides) of an array shape.</p>
                            <td><a class='type' href='type.Array.html'
                                   title='ndarray::Array'>Array</a></td>
                            <td class='docblock-short'>
-                                <p>Array where the data is owned uniquely.</p>
+                                <p>An array that owns its data uniquely.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -531,6 +611,20 @@ customizing the memory layout (strides) of an array shape.</p>
                                   title='ndarray::Array4'>Array4</a></td>
                            <td class='docblock-short'>
                                 <p>four-dimensional array</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.Array5.html'
+                                  title='ndarray::Array5'>Array5</a></td>
+                           <td class='docblock-short'>
+                                <p>five-dimensional array</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.Array6.html'
+                                  title='ndarray::Array6'>Array6</a></td>
+                           <td class='docblock-short'>
+                                <p>six-dimensional array</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -583,6 +677,20 @@ customizing the memory layout (strides) of an array shape.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class='type' href='type.ArrayView5.html'
+                                  title='ndarray::ArrayView5'>ArrayView5</a></td>
+                           <td class='docblock-short'>
+                                <p>five-dimensional array view</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ArrayView6.html'
+                                  title='ndarray::ArrayView6'>ArrayView6</a></td>
+                           <td class='docblock-short'>
+                                <p>six-dimensional array view</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class='type' href='type.ArrayViewD.html'
                                   title='ndarray::ArrayViewD'>ArrayViewD</a></td>
                            <td class='docblock-short'>
@@ -629,6 +737,20 @@ customizing the memory layout (strides) of an array shape.</p>
                                   title='ndarray::ArrayViewMut4'>ArrayViewMut4</a></td>
                            <td class='docblock-short'>
                                 <p>four-dimensional read-write array view</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ArrayViewMut5.html'
+                                  title='ndarray::ArrayViewMut5'>ArrayViewMut5</a></td>
+                           <td class='docblock-short'>
+                                <p>five-dimensional read-write array view</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.ArrayViewMut6.html'
+                                  title='ndarray::ArrayViewMut6'>ArrayViewMut6</a></td>
+                           <td class='docblock-short'>
+                                <p>six-dimensional read-write array view</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -681,6 +803,20 @@ customizing the memory layout (strides) of an array shape.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class='type' href='type.Ix5.html'
+                                  title='ndarray::Ix5'>Ix5</a></td>
+                           <td class='docblock-short'>
+                                <p>five-dimensional</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.Ix6.html'
+                                  title='ndarray::Ix6'>Ix6</a></td>
+                           <td class='docblock-short'>
+                                <p>six-dimensional</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class='type' href='type.IxDyn.html'
                                   title='ndarray::IxDyn'>IxDyn</a></td>
                            <td class='docblock-short'>
@@ -705,8 +841,23 @@ customizing the memory layout (strides) of an array shape.</p>
                            <td><a class='type' href='type.RcArray.html'
                                   title='ndarray::RcArray'>RcArray</a></td>
                            <td class='docblock-short'>
-                                <p>Array where the data is reference counted and copy on write, it
-can act as both an owner as the data as well as a lightweight view.</p>
+                                <p>An array where the data has shared ownership and is copy on write.
+It can act as both an owner as the data as well as a shared reference (view
+like).</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RcArray1.html'
+                                  title='ndarray::RcArray1'>RcArray1</a></td>
+                           <td class='docblock-short'>
+                                <p>one-dimensional shared ownership array</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='type' href='type.RcArray2.html'
+                                  title='ndarray::RcArray2'>RcArray2</a></td>
+                           <td class='docblock-short'>
+                                <p>two-dimensional shared ownership array</p>
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>

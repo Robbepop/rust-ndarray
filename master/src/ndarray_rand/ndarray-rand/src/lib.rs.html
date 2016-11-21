@@ -164,6 +164,12 @@
 <span id="120">120</span>
 <span id="121">121</span>
 <span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -188,6 +194,7 @@
     <span class='ident'>Dimension</span>,
     <span class='ident'>DataOwned</span>,
 };
+<span class='kw'>use</span> <span class='ident'>ndarray</span>::<span class='ident'>ShapeBuilder</span>;
 
 <span class='doccomment'>/// Constructors for n-dimensional arrays with random elements.</span>
 <span class='doccomment'>///</span>
@@ -220,34 +227,39 @@
     <span class='doccomment'>/// // [[  8.6900,   6.9824,   3.8922,   6.5861,   2.4890],</span>
     <span class='doccomment'>/// //  [  0.0914,   5.5186,   5.8135,   5.2361,   3.1879]]</span>
     <span class='doccomment'>/// # }</span>
-    <span class='kw'>fn</span> <span class='ident'>random</span><span class='op'>&lt;</span><span class='ident'>IdS</span><span class='op'>&gt;</span>(<span class='ident'>dim</span>: <span class='ident'>D</span>, <span class='ident'>distribution</span>: <span class='ident'>IdS</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
-        <span class='kw'>where</span> <span class='ident'>IdS</span>: <span class='ident'>IndependentSample</span><span class='op'>&lt;</span><span class='ident'>S</span>::<span class='ident'>Elem</span><span class='op'>&gt;</span>;
+    <span class='kw'>fn</span> <span class='ident'>random</span><span class='op'>&lt;</span><span class='ident'>Sh</span>, <span class='ident'>IdS</span><span class='op'>&gt;</span>(<span class='ident'>shape</span>: <span class='ident'>Sh</span>, <span class='ident'>distribution</span>: <span class='ident'>IdS</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>IdS</span>: <span class='ident'>IndependentSample</span><span class='op'>&lt;</span><span class='ident'>S</span>::<span class='ident'>Elem</span><span class='op'>&gt;</span>,
+              <span class='ident'>Sh</span>: <span class='ident'>ShapeBuilder</span><span class='op'>&lt;</span><span class='ident'>Dim</span><span class='op'>=</span><span class='ident'>D</span><span class='op'>&gt;</span>;
 
     <span class='doccomment'>/// Create an array with shape `dim` with elements drawn from</span>
     <span class='doccomment'>/// `distribution`, using a specific Rng `rng`.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ***Panics*** if the number of elements overflows usize.</span>
-    <span class='kw'>fn</span> <span class='ident'>random_using</span><span class='op'>&lt;</span><span class='ident'>IdS</span>, <span class='ident'>R</span><span class='op'>&gt;</span>(<span class='ident'>dim</span>: <span class='ident'>D</span>, <span class='ident'>distribution</span>: <span class='ident'>IdS</span>, <span class='ident'>rng</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
+    <span class='kw'>fn</span> <span class='ident'>random_using</span><span class='op'>&lt;</span><span class='ident'>Sh</span>, <span class='ident'>IdS</span>, <span class='ident'>R</span><span class='op'>&gt;</span>(<span class='ident'>shape</span>: <span class='ident'>Sh</span>, <span class='ident'>distribution</span>: <span class='ident'>IdS</span>, <span class='ident'>rng</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>IdS</span>: <span class='ident'>IndependentSample</span><span class='op'>&lt;</span><span class='ident'>S</span>::<span class='ident'>Elem</span><span class='op'>&gt;</span>,
-              <span class='ident'>R</span>: <span class='ident'>Rng</span>;
+              <span class='ident'>R</span>: <span class='ident'>Rng</span>,
+              <span class='ident'>Sh</span>: <span class='ident'>ShapeBuilder</span><span class='op'>&lt;</span><span class='ident'>Dim</span><span class='op'>=</span><span class='ident'>D</span><span class='op'>&gt;</span>;
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='ident'>RandomExt</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>DataOwned</span>,
           <span class='ident'>D</span>: <span class='ident'>Dimension</span>,
 {
-    <span class='kw'>fn</span> <span class='ident'>random</span><span class='op'>&lt;</span><span class='ident'>IdS</span><span class='op'>&gt;</span>(<span class='ident'>dim</span>: <span class='ident'>D</span>, <span class='ident'>dist</span>: <span class='ident'>IdS</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
-        <span class='kw'>where</span> <span class='ident'>IdS</span>: <span class='ident'>IndependentSample</span><span class='op'>&lt;</span><span class='ident'>S</span>::<span class='ident'>Elem</span><span class='op'>&gt;</span>
+    <span class='kw'>fn</span> <span class='ident'>random</span><span class='op'>&lt;</span><span class='ident'>Sh</span>, <span class='ident'>IdS</span><span class='op'>&gt;</span>(<span class='ident'>shape</span>: <span class='ident'>Sh</span>, <span class='ident'>dist</span>: <span class='ident'>IdS</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>IdS</span>: <span class='ident'>IndependentSample</span><span class='op'>&lt;</span><span class='ident'>S</span>::<span class='ident'>Elem</span><span class='op'>&gt;</span>,
+              <span class='ident'>Sh</span>: <span class='ident'>ShapeBuilder</span><span class='op'>&lt;</span><span class='ident'>Dim</span><span class='op'>=</span><span class='ident'>D</span><span class='op'>&gt;</span>,
     {
-        <span class='self'>Self</span>::<span class='ident'>random_using</span>(<span class='ident'>dim</span>, <span class='ident'>dist</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rand</span>::<span class='ident'>weak_rng</span>())
+        <span class='self'>Self</span>::<span class='ident'>random_using</span>(<span class='ident'>shape</span>, <span class='ident'>dist</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rand</span>::<span class='ident'>weak_rng</span>())
     }
 
-    <span class='kw'>fn</span> <span class='ident'>random_using</span><span class='op'>&lt;</span><span class='ident'>IdS</span>, <span class='ident'>R</span><span class='op'>&gt;</span>(<span class='ident'>dim</span>: <span class='ident'>D</span>, <span class='ident'>dist</span>: <span class='ident'>IdS</span>, <span class='ident'>rng</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
+    <span class='kw'>fn</span> <span class='ident'>random_using</span><span class='op'>&lt;</span><span class='ident'>Sh</span>, <span class='ident'>IdS</span>, <span class='ident'>R</span><span class='op'>&gt;</span>(<span class='ident'>shape</span>: <span class='ident'>Sh</span>, <span class='ident'>dist</span>: <span class='ident'>IdS</span>, <span class='ident'>rng</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>IdS</span>: <span class='ident'>IndependentSample</span><span class='op'>&lt;</span><span class='ident'>S</span>::<span class='ident'>Elem</span><span class='op'>&gt;</span>,
-              <span class='ident'>R</span>: <span class='ident'>Rng</span>
+              <span class='ident'>R</span>: <span class='ident'>Rng</span>,
+              <span class='ident'>Sh</span>: <span class='ident'>ShapeBuilder</span><span class='op'>&lt;</span><span class='ident'>Dim</span><span class='op'>=</span><span class='ident'>D</span><span class='op'>&gt;</span>,
     {
-        <span class='kw'>let</span> <span class='ident'>elements</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>from_iter</span>((<span class='number'>0</span>..<span class='ident'>dim</span>.<span class='ident'>size</span>()).<span class='ident'>map</span>(<span class='kw'>move</span> <span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>dist</span>.<span class='ident'>ind_sample</span>(<span class='ident'>rng</span>)));
-        <span class='self'>Self</span>::<span class='ident'>from_shape_vec</span>(<span class='ident'>dim</span>, <span class='ident'>elements</span>).<span class='ident'>unwrap</span>()
+        <span class='kw'>let</span> <span class='ident'>shape</span> <span class='op'>=</span> <span class='ident'>shape</span>.<span class='ident'>into_shape</span>();
+        <span class='kw'>let</span> <span class='ident'>elements</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>from_iter</span>((<span class='number'>0</span>..<span class='ident'>shape</span>.<span class='ident'>size</span>()).<span class='ident'>map</span>(<span class='kw'>move</span> <span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>dist</span>.<span class='ident'>ind_sample</span>(<span class='ident'>rng</span>)));
+        <span class='self'>Self</span>::<span class='ident'>from_shape_vec</span>(<span class='ident'>shape</span>, <span class='ident'>elements</span>).<span class='ident'>unwrap</span>()
     }
 }
 

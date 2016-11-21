@@ -783,6 +783,63 @@
 <span id="739">739</span>
 <span id="740">740</span>
 <span id="741">741</span>
+<span id="742">742</span>
+<span id="743">743</span>
+<span id="744">744</span>
+<span id="745">745</span>
+<span id="746">746</span>
+<span id="747">747</span>
+<span id="748">748</span>
+<span id="749">749</span>
+<span id="750">750</span>
+<span id="751">751</span>
+<span id="752">752</span>
+<span id="753">753</span>
+<span id="754">754</span>
+<span id="755">755</span>
+<span id="756">756</span>
+<span id="757">757</span>
+<span id="758">758</span>
+<span id="759">759</span>
+<span id="760">760</span>
+<span id="761">761</span>
+<span id="762">762</span>
+<span id="763">763</span>
+<span id="764">764</span>
+<span id="765">765</span>
+<span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014-2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -797,44 +854,40 @@
 <span class='doccomment'>//! The `ndarray` crate provides an N-dimensional container for general elements</span>
 <span class='doccomment'>//! and for numerics.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! - [`ArrayBase`](struct.ArrayBase.html):</span>
-<span class='doccomment'>//!   The N-dimensional array type itself.</span>
-<span class='doccomment'>//! - [`Array`](type.Array.html):</span>
-<span class='doccomment'>//!   An array where the data is owned uniquely.</span>
-<span class='doccomment'>//! - [`RcArray`](type.RcArray.html):</span>
-<span class='doccomment'>//!   An array where the data has shared ownership and is copy on write.</span>
-<span class='doccomment'>//! - [`ArrayView`](type.ArrayView.html), [`ArrayViewMut`](type.ArrayViewMut.html):</span>
-<span class='doccomment'>//!   Lightweight array views.</span>
+<span class='doccomment'>//! - [**`ArrayBase`**](struct.ArrayBase.html):</span>
+<span class='doccomment'>//!   The N-dimensional array type itself.&lt;br&gt;</span>
+<span class='doccomment'>//!   It is used to implement both the owned arrays and the views; see its docs</span>
+<span class='doccomment'>//!   for an overview of all array features.  </span>
+<span class='doccomment'>//! - The main specific array type is [**`Array`**](type.Array.html), which owns</span>
+<span class='doccomment'>//! its elements.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ## Highlights</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! - Generic N-dimensional array</span>
 <span class='doccomment'>//! - Slicing, also with arbitrary step size, and negative indices to mean</span>
 <span class='doccomment'>//!   elements from the end of the axis.</span>
-<span class='doccomment'>//! - There is both a copy on write array (`RcArray`), or a regular uniquely owned array</span>
-<span class='doccomment'>//!   (`Array`), and both can use read-only and read-write array views.</span>
-<span class='doccomment'>//! - Iteration and most operations are efficient on arrays with contiguous</span>
-<span class='doccomment'>//!   innermost dimension.</span>
+<span class='doccomment'>//! - Views and subviews of arrays; iterators that yield subviews.</span>
+<span class='doccomment'>//! - Higher order operations and arithmetic are performant</span>
 <span class='doccomment'>//! - Array views can be used to slice and mutate any `[T]` data using</span>
 <span class='doccomment'>//!   `ArrayView::from` and `ArrayViewMut::from`.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ## Crate Status</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! - Still iterating on and evolving the API</span>
+<span class='doccomment'>//! - Still iterating on and evolving the crate</span>
 <span class='doccomment'>//!   + The crate is continuously developing, and breaking changes are expected</span>
-<span class='doccomment'>//!     during evolution from version to version. We adhere to semver,</span>
-<span class='doccomment'>//!     but alpha releases break at will.</span>
-<span class='doccomment'>//!   + We adopt the newest stable rust features we need.</span>
-<span class='doccomment'>//! - Performance status:</span>
-<span class='doccomment'>//!   + Performance of an operation depends on the memory layout of the array</span>
-<span class='doccomment'>//!     or array view. Especially if it&#39;s a binary operation, which</span>
-<span class='doccomment'>//!     needs matching memory layout to be efficient (with some exceptions).</span>
-<span class='doccomment'>//!   + Arithmetic optimizes very well if the arrays are have contiguous inner dimension.</span>
+<span class='doccomment'>//!     during evolution from version to version. We adopt the newest stable</span>
+<span class='doccomment'>//!     rust features if we need them.</span>
+<span class='doccomment'>//! - Performance:</span>
+<span class='doccomment'>//!   + Prefer higher order methods and arithmetic operations on arrays first,</span>
+<span class='doccomment'>//!     then iteration, and as a last priority using indexed algorithms.</span>
 <span class='doccomment'>//!   + The higher order functions like ``.map()``, ``.map_inplace()`` and</span>
 <span class='doccomment'>//!     ``.zip_mut_with()`` are the most efficient ways to</span>
 <span class='doccomment'>//!     perform single traversal and lock step traversal respectively.</span>
-<span class='doccomment'>//!   + ``.iter()`` is efficient for c-contiguous arrays.</span>
-<span class='doccomment'>//!   + Can use BLAS in matrix multiplication.</span>
+<span class='doccomment'>//!   + Performance of an operation depends on the memory layout of the array</span>
+<span class='doccomment'>//!     or array view. Especially if it&#39;s a binary operation, which</span>
+<span class='doccomment'>//!     needs matching memory layout to be efficient (with some exceptions).</span>
+<span class='doccomment'>//!   + Efficient floating point matrix multiplication even for very large</span>
+<span class='doccomment'>//!     matrices; can optionally use BLAS to improve it further.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ## Crate Feature Flags</span>
 <span class='doccomment'>//!</span>
@@ -867,18 +920,22 @@
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>num_traits</span> <span class='kw'>as</span> <span class='ident'>libnum</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>num_complex</span>;
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rc</span>::<span class='ident'>Rc</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>::{<span class='self'>self</span>, <span class='ident'>Iter</span>, <span class='ident'>IterMut</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>Zip</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>marker</span>::<span class='ident'>PhantomData</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rc</span>::<span class='ident'>Rc</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>::{<span class='self'>self</span>, <span class='ident'>Iter</span> <span class='kw'>as</span> <span class='ident'>SliceIter</span>, <span class='ident'>IterMut</span> <span class='kw'>as</span> <span class='ident'>SliceIterMut</span>};
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>dimension</span>::{
     <span class='ident'>Dimension</span>,
+    <span class='ident'>IntoDimension</span>,
     <span class='ident'>RemoveAxis</span>,
     <span class='ident'>Axis</span>,
 };
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>dimension</span>::<span class='ident'>dim</span>::<span class='op'>*</span>;
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>dimension</span>::<span class='ident'>NdIndex</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>indexes</span>::<span class='ident'>Indexes</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>indexes</span>::<span class='ident'>Indices</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>indexes</span>::{<span class='ident'>indices</span>, <span class='ident'>indices_of</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>error</span>::{<span class='ident'>ShapeError</span>, <span class='ident'>ErrorKind</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>si</span>::{<span class='ident'>Si</span>, <span class='ident'>S</span>};
 
@@ -896,7 +953,7 @@
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>linalg_traits</span>::{<span class='ident'>LinalgScalar</span>, <span class='ident'>NdFloat</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>stacking</span>::<span class='ident'>stack</span>;
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>shape_builder</span>::{ <span class='ident'>ShapeBuilder</span> };
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>shape_builder</span>::{ <span class='ident'>ShapeBuilder</span>};
 
 <span class='kw'>mod</span> <span class='ident'>aliases</span>;
 <span class='kw'>mod</span> <span class='ident'>arraytraits</span>;
@@ -935,7 +992,6 @@
 <span class='doccomment'>/// Implementation&#39;s prelude. Common types used everywhere.</span>
 <span class='kw'>mod</span> <span class='ident'>imp_prelude</span> {
     <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>prelude</span>::<span class='op'>*</span>;
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>aliases</span>::<span class='op'>*</span>;
     <span class='kw'>pub</span> <span class='kw'>use</span> {
         <span class='ident'>RemoveAxis</span>,
         <span class='ident'>Data</span>,
@@ -976,60 +1032,120 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ## Contents</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// + [Array and RcArray](#ownedarray-and-rcarray)</span>
+<span class='doccomment'>/// + [Array](#array)</span>
+<span class='doccomment'>/// + [RcArray](#rcarray)</span>
+<span class='doccomment'>/// + [Array Views](#array-views)</span>
 <span class='doccomment'>/// + [Indexing and Dimension](#indexing-and-dimension)</span>
 <span class='doccomment'>/// + [Slicing](#slicing)</span>
 <span class='doccomment'>/// + [Subviews](#subviews)</span>
 <span class='doccomment'>/// + [Arithmetic Operations](#arithmetic-operations)</span>
 <span class='doccomment'>/// + [Broadcasting](#broadcasting)</span>
-<span class='doccomment'>/// + [Methods](#methods)</span>
-<span class='doccomment'>/// + [Methods for Array Views](#methods-for-array-views)</span>
+<span class='doccomment'>/// + [Constructor Methods for Owned Arrays](#constructor-methods-for-owned-arrays)</span>
+<span class='doccomment'>/// + [Methods For All Array Types](#methods-for-all-array-types)</span>
+<span class='doccomment'>/// + [Methods Specific to Array Views](#methods-specific-to-array-views)</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// ## `Array` and `RcArray`</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// `Array` owns the underlying array elements directly (just like</span>
-<span class='doccomment'>/// a `Vec`), while [`RcArray`](type.RcArray.html) is a an array with reference</span>
-<span class='doccomment'>/// counted data. `RcArray` can act both as an owner or as a view in that regard.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// ## `Array`</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// [`Array`](type.Array.html) is an owned array that ows the underlying array</span>
+<span class='doccomment'>/// elements directly (just like a `Vec`) and it is the default way to create and</span>
+<span class='doccomment'>/// store n-dimensional data. `Array&lt;A, D&gt;` has two type parameters: `A` for</span>
+<span class='doccomment'>/// the element type, and `D` for the dimensionality. A particular</span>
+<span class='doccomment'>/// dimensionality&#39;s type alias like `Array3&lt;A&gt;` just has the type parameter</span>
+<span class='doccomment'>/// `A` for element type.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// An example:</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// ```</span>
+<span class='doccomment'>/// // Create a three-dimensional f64 array, initialized with zeros</span>
+<span class='doccomment'>/// use ndarray::Array3;</span>
+<span class='doccomment'>/// let mut temperature = Array3::&lt;f64&gt;::zeros((3, 4, 5));</span>
+<span class='doccomment'>/// // Increase the temperature in this location</span>
+<span class='doccomment'>/// temperature[[2, 2, 2]] += 0.5;</span>
+<span class='doccomment'>/// ```</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// ## `RcArray`</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// [`RcArray`](type.RcArray.html) is an owned array with reference counted</span>
+<span class='doccomment'>/// data (shared ownership).</span>
 <span class='doccomment'>/// Sharing requires that it uses copy-on-write for mutable operations.</span>
 <span class='doccomment'>/// Calling a method for mutating elements on `RcArray`, for example</span>
 <span class='doccomment'>/// [`view_mut()`](#method.view_mut) or [`get_mut()`](#method.get_mut),</span>
 <span class='doccomment'>/// will break sharing and require a clone of the data (if it is not uniquely held).</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// ## Array Views</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// `ArrayView` and `ArrayViewMut` are read-only and read-write array views</span>
+<span class='doccomment'>/// respectively. They use dimensionality, indexing, and almost all other</span>
+<span class='doccomment'>/// methods the same was as the other array types.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// A view is created from an array using `.view()`, `.view_mut()`, using</span>
+<span class='doccomment'>/// slicing (`.slice()`, `.slice_mut()`) or from one of the many iterators</span>
+<span class='doccomment'>/// that yield array views.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// You can also create an array view from a regular slice of data not</span>
+<span class='doccomment'>/// allocated with `Array` — see [Methods Specific to Array</span>
+<span class='doccomment'>/// Views](#methods-specific-to-array-views).</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// Note that all `ArrayBase` variants can change their view (slicing) of the</span>
 <span class='doccomment'>/// data freely, even when their data can’t be mutated.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ## Indexing and Dimension</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// Array indexes are represented by the types `Ix` and `Ixs` (signed).</span>
-<span class='doccomment'>///</span>
 <span class='doccomment'>/// The dimensionality of the array determines the number of *axes*, for example</span>
 <span class='doccomment'>/// a 2D array has two axes. These are listed in “big endian” order, so that</span>
 <span class='doccomment'>/// the greatest dimension is listed first, the lowest dimension with the most</span>
 <span class='doccomment'>/// rapidly varying index is the last.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// In a 2D array the index of each element is `(row, column)`</span>
-<span class='doccomment'>/// as seen in this 3 × 3 example:</span>
+<span class='doccomment'>/// In a 2D array the index of each element is `[row, column]` as seen in this</span>
+<span class='doccomment'>/// 4 × 3 example:</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ```ignore</span>
-<span class='doccomment'>/// [[ (0, 0), (0, 1), (0, 2)],  // row 0</span>
-<span class='doccomment'>///  [ (1, 0), (1, 1), (1, 2)],  // row 1</span>
-<span class='doccomment'>///  [ (2, 0), (2, 1), (2, 2)]]  // row 2</span>
+<span class='doccomment'>/// [[ [0, 0], [0, 1], [0, 2] ],  // row 0</span>
+<span class='doccomment'>///  [ [1, 0], [1, 1], [1, 2] ],  // row 1</span>
+<span class='doccomment'>///  [ [2, 0], [2, 1], [2, 2] ],  // row 2</span>
+<span class='doccomment'>///  [ [3, 0], [3, 1], [3, 2] ]]  // row 3</span>
 <span class='doccomment'>/// //    \       \       \</span>
 <span class='doccomment'>/// //   column 0  \     column 2</span>
 <span class='doccomment'>/// //            column 1</span>
 <span class='doccomment'>/// ```</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// The number of axes for an array is fixed by the `D` parameter: `Ix` for</span>
-<span class='doccomment'>/// a 1D array, `(Ix, Ix)` for a 2D array etc. The `D` type is also used</span>
-<span class='doccomment'>/// for element indices in `.get()` and `array[index]`. The dimension type `Vec&lt;Ix&gt;`</span>
-<span class='doccomment'>/// allows a dynamic number of axes.</span>
+<span class='doccomment'>/// The number of axes for an array is fixed by its `D` type parameter: `Ix1`</span>
+<span class='doccomment'>/// for a 1D array, `Ix2` for a 2D array etc. The dimension type `IxDyn` allows</span>
+<span class='doccomment'>/// a dynamic number of axes.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// A fixed size array (`[usize; N]`) of the corresponding dimensionality is</span>
+<span class='doccomment'>/// used to index the `Array`, making the syntax `array[[` i, j,  ...`]]`</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// ```</span>
+<span class='doccomment'>/// use ndarray::Array2;</span>
+<span class='doccomment'>/// let mut array = Array2::zeros((4, 3));</span>
+<span class='doccomment'>/// array[[1, 1]] = 7;</span>
+<span class='doccomment'>/// ```</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// Important traits and types for dimension and indexing:</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// - A [`Dim`](Dim.t.html) value represents a dimensionality or index.</span>
+<span class='doccomment'>/// - Trait [`Dimension`](Dimension.t.html) is implemented by all</span>
+<span class='doccomment'>/// dimensionalities. It defines many operations for dimensions and indices.</span>
+<span class='doccomment'>/// - Trait [`IntoDimension`](IntoDimension.t.html) is used to convert into a</span>
+<span class='doccomment'>/// `Dim` value.</span>
+<span class='doccomment'>/// - Trait [`ShapeBuilder`](ShapeBuilder.t.html) is an extension of</span>
+<span class='doccomment'>/// `IntoDimension` and is used when constructing an array. A shape describes</span>
+<span class='doccomment'>/// not just the extent of each axis but also their strides.</span>
+<span class='doccomment'>/// - Trait [`NdIndex`](NdIndex.t.html) is an extension of `Dimension` and is</span>
+<span class='doccomment'>/// for values that can be used with indexing syntax.</span>
+<span class='doccomment'>///</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// The default memory order of an array is *row major* order (a.k.a “c” order),</span>
 <span class='doccomment'>/// where each row is contiguous in memory.</span>
 <span class='doccomment'>/// A *column major* (a.k.a. “f” or fortran) memory order array has</span>
 <span class='doccomment'>/// columns (or, in general, the outermost axis) with contiguous elements.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// The logical order of any array’s elements is the row major order.</span>
+<span class='doccomment'>/// The logical order of any array’s elements is the row major order </span>
+<span class='doccomment'>/// (the rightmost index is varying the fastest).</span>
 <span class='doccomment'>/// The iterators `.iter(), .iter_mut()` always adhere to this order, for example.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ## Slicing</span>
@@ -1177,12 +1293,18 @@
 <span class='doccomment'>/// use ndarray::arr2;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// let a = arr2(&amp;[[1., 1.],</span>
-<span class='doccomment'>///                [1., 2.]]);</span>
+<span class='doccomment'>///                [1., 2.],</span>
+<span class='doccomment'>///                [0., 3.],</span>
+<span class='doccomment'>///                [0., 4.]]);</span>
+<span class='doccomment'>///</span>
 <span class='doccomment'>/// let b = arr2(&amp;[[0., 1.]]);</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// let c = arr2(&amp;[[1., 2.],</span>
-<span class='doccomment'>///                [1., 3.]]);</span>
+<span class='doccomment'>///                [1., 3.],</span>
+<span class='doccomment'>///                [0., 4.],</span>
+<span class='doccomment'>///                [0., 5.]]);</span>
 <span class='doccomment'>/// // We can add because the shapes are compatible even if not equal.</span>
+<span class='doccomment'>/// // The `b` array is shape 1 × 2 but acts like a 4 × 2 array.</span>
 <span class='doccomment'>/// assert!(</span>
 <span class='doccomment'>///     c == a + b</span>
 <span class='doccomment'>/// );</span>
@@ -1202,11 +1324,27 @@
     <span class='ident'>strides</span>: <span class='ident'>D</span>,
 }
 
-<span class='doccomment'>/// Array where the data is reference counted and copy on write, it</span>
-<span class='doccomment'>/// can act as both an owner as the data as well as a lightweight view.</span>
+<span class='doccomment'>/// An array where the data has shared ownership and is copy on write.</span>
+<span class='doccomment'>/// It can act as both an owner as the data as well as a shared reference (view</span>
+<span class='doccomment'>/// like).</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>RcArray</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;&gt;</span>, <span class='ident'>D</span><span class='op'>&gt;</span>;
 
-<span class='doccomment'>/// Array where the data is owned uniquely.</span>
+<span class='doccomment'>/// An array that owns its data uniquely.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// `Array` is the main n-dimensional array type, and it owns all its array</span>
+<span class='doccomment'>/// elements.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// [**`ArrayBase`**](struct.ArrayBase.html) is used to implement both the owned</span>
+<span class='doccomment'>/// arrays and the views; see its docs for an overview of all array features.  </span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// See also:</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// + [Constructor Methods for Owned Arrays](struct.ArrayBase.html#constructor-methods-for-owned-arrays)</span>
+<span class='doccomment'>/// + [Methods For All Array Types](struct.ArrayBase.html#methods-for-all-array-types)</span>
+<span class='doccomment'>/// + Dimensionality-specific type alises</span>
+<span class='doccomment'>/// [`Array1`](Array1.t.html),</span>
+<span class='doccomment'>/// [`Array2`](Array2.t.html),</span>
+<span class='doccomment'>/// [`Array3`](Array3.t.html) and so on.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Array</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span>, <span class='ident'>D</span><span class='op'>&gt;</span>;
 
 <span class='attribute'>#[<span class='ident'>deprecated</span>(<span class='ident'>note</span><span class='op'>=</span><span class='string'>&quot;Use the type alias `Array` instead&quot;</span>)]</span>
@@ -1220,7 +1358,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// Array views have all the methods of an array (see [`ArrayBase`][ab]).</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// See also specific [**Methods for Array Views**](struct.ArrayBase.html#methods-for-array-views).</span>
+<span class='doccomment'>/// See also [**Methods Specific To Array Views**](struct.ArrayBase.html#methods-specific-to-array-views)</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// [ab]: struct.ArrayBase.html</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ArrayView</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>ViewRepr</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>A</span><span class='op'>&gt;</span>, <span class='ident'>D</span><span class='op'>&gt;</span>;
@@ -1231,7 +1369,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// Array views have all the methods of an array (see [`ArrayBase`][ab]).</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// See also specific [**Methods for Array Views**](struct.ArrayBase.html#methods-for-array-views).</span>
+<span class='doccomment'>/// See also [**Methods Specific To Array Views**](struct.ArrayBase.html#methods-specific-to-array-views)</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// [ab]: struct.ArrayBase.html</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>ArrayViewMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>ViewRepr</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='ident'>A</span><span class='op'>&gt;</span>, <span class='ident'>D</span><span class='op'>&gt;</span>;
@@ -1343,23 +1481,13 @@
         <span class='ident'>ElementsBase</span> { <span class='ident'>inner</span>: <span class='self'>self</span>.<span class='ident'>into_base_iter</span>() }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>into_iter_</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Elements</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> {
-        <span class='ident'>Elements</span> {
+    <span class='kw'>fn</span> <span class='ident'>into_iter_</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> {
+        <span class='ident'>Iter</span> {
             <span class='ident'>inner</span>: <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>slc</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>into_slice</span>() {
                 <span class='ident'>ElementsRepr</span>::<span class='ident'>Slice</span>(<span class='ident'>slc</span>.<span class='ident'>iter</span>())
             } <span class='kw'>else</span> {
                 <span class='ident'>ElementsRepr</span>::<span class='ident'>Counted</span>(<span class='self'>self</span>.<span class='ident'>into_elements_base</span>())
             },
-        }
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>into_slice</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='ident'>A</span>]<span class='op'>&gt;</span> {
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is_standard_layout</span>() {
-            <span class='kw'>unsafe</span> {
-                <span class='prelude-val'>Some</span>(<span class='ident'>slice</span>::<span class='ident'>from_raw_parts</span>(<span class='self'>self</span>.<span class='ident'>ptr</span>, <span class='self'>self</span>.<span class='ident'>len</span>()))
-            }
-        } <span class='kw'>else</span> {
-            <span class='prelude-val'>None</span>
         }
     }
 
@@ -1402,8 +1530,8 @@
         <span class='ident'>ElementsBaseMut</span> { <span class='ident'>inner</span>: <span class='self'>self</span>.<span class='ident'>into_base_iter</span>() }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>into_iter_</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>ElementsMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> {
-        <span class='ident'>ElementsMut</span> {
+    <span class='kw'>fn</span> <span class='ident'>into_iter_</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>IterMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> {
+        <span class='ident'>IterMut</span> {
             <span class='ident'>inner</span>:
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is_standard_layout</span>() {
                     <span class='kw'>let</span> <span class='ident'>slc</span> <span class='op'>=</span> <span class='kw'>unsafe</span> {
@@ -1413,17 +1541,6 @@
                 } <span class='kw'>else</span> {
                     <span class='ident'>ElementsRepr</span>::<span class='ident'>Counted</span>(<span class='self'>self</span>.<span class='ident'>into_elements_base</span>())
                 }
-        }
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>_into_slice_mut</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> [<span class='ident'>A</span>]<span class='op'>&gt;</span>
-    {
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is_standard_layout</span>() {
-            <span class='kw'>unsafe</span> {
-                <span class='prelude-val'>Some</span>(<span class='ident'>slice</span>::<span class='ident'>from_raw_parts_mut</span>(<span class='self'>self</span>.<span class='ident'>ptr</span>, <span class='self'>self</span>.<span class='ident'>len</span>()))
-            }
-        } <span class='kw'>else</span> {
-            <span class='prelude-val'>None</span>
         }
     }
 
@@ -1443,8 +1560,8 @@
 <span class='doccomment'>/// Iterator element type is `&amp;&#39;a A`.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// See [`.iter()`](struct.ArrayBase.html#method.iter) for more information.</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Elements</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>: <span class='lifetime'>&#39;a</span>, <span class='ident'>D</span><span class='op'>&gt;</span> {
-    <span class='ident'>inner</span>: <span class='ident'>ElementsRepr</span><span class='op'>&lt;</span><span class='ident'>Iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span><span class='op'>&gt;</span>, <span class='ident'>ElementsBase</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;&gt;</span>,
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>: <span class='lifetime'>&#39;a</span>, <span class='ident'>D</span><span class='op'>&gt;</span> {
+    <span class='ident'>inner</span>: <span class='ident'>ElementsRepr</span><span class='op'>&lt;</span><span class='ident'>SliceIter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span><span class='op'>&gt;</span>, <span class='ident'>ElementsBase</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;&gt;</span>,
 }
 
 <span class='doccomment'>/// Counted read only iterator</span>
@@ -1457,8 +1574,8 @@
 <span class='doccomment'>/// Iterator element type is `&amp;&#39;a mut A`.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// See [`.iter_mut()`](struct.ArrayBase.html#method.iter_mut) for more information.</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ElementsMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>: <span class='lifetime'>&#39;a</span>, <span class='ident'>D</span><span class='op'>&gt;</span> {
-    <span class='ident'>inner</span>: <span class='ident'>ElementsRepr</span><span class='op'>&lt;</span><span class='ident'>IterMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span><span class='op'>&gt;</span>, <span class='ident'>ElementsBaseMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;&gt;</span>,
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>IterMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>: <span class='lifetime'>&#39;a</span>, <span class='ident'>D</span><span class='op'>&gt;</span> {
+    <span class='ident'>inner</span>: <span class='ident'>ElementsRepr</span><span class='op'>&lt;</span><span class='ident'>SliceIterMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span><span class='op'>&gt;</span>, <span class='ident'>ElementsBaseMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;&gt;</span>,
 }
 
 <span class='doccomment'>/// An iterator over the elements of an array.</span>
@@ -1472,15 +1589,12 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// See [`.indexed_iter()`](struct.ArrayBase.html#method.indexed_iter) for more information.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Indexed</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>: <span class='lifetime'>&#39;a</span>, <span class='ident'>D</span><span class='op'>&gt;</span>(<span class='ident'>ElementsBase</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span>);
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>IndexedIter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>: <span class='lifetime'>&#39;a</span>, <span class='ident'>D</span><span class='op'>&gt;</span>(<span class='ident'>ElementsBase</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span>);
 <span class='doccomment'>/// An iterator over the indexes and elements of an array (mutable).</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// See [`.indexed_iter_mut()`](struct.ArrayBase.html#method.indexed_iter_mut) for more information.</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>IndexedMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>: <span class='lifetime'>&#39;a</span>, <span class='ident'>D</span><span class='op'>&gt;</span>(<span class='ident'>ElementsBaseMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span>);
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>IndexedIterMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>: <span class='lifetime'>&#39;a</span>, <span class='ident'>D</span><span class='op'>&gt;</span>(<span class='ident'>ElementsBaseMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span>);
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>::<span class='ident'>Iter</span> <span class='kw'>as</span> <span class='ident'>SliceIter</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>::<span class='ident'>IterMut</span> <span class='kw'>as</span> <span class='ident'>SliceIterMut</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>Zip</span>;
 <span class='kw'>fn</span> <span class='ident'>zipsl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='lifetime'>&#39;b</span>, <span class='ident'>A</span>, <span class='ident'>B</span><span class='op'>&gt;</span>(<span class='ident'>t</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='ident'>A</span>], <span class='ident'>u</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;b</span> [<span class='ident'>B</span>])
     <span class='op'>-&gt;</span> <span class='ident'>Zip</span><span class='op'>&lt;</span><span class='ident'>SliceIter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>A</span><span class='op'>&gt;</span>, <span class='ident'>SliceIter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;b</span>, <span class='ident'>B</span><span class='op'>&gt;&gt;</span> {
     <span class='ident'>t</span>.<span class='ident'>iter</span>().<span class='ident'>zip</span>(<span class='ident'>u</span>)
@@ -1518,7 +1632,7 @@
     <span class='ident'>is_c</span>: <span class='ident'>bool</span>,
 }
 
-<span class='doccomment'>/// An array shape of n dimensions c-order, f-order or custom strides.</span>
+<span class='doccomment'>/// An array shape of n dimensions in c-order, f-order or custom strides.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>StrideShape</span><span class='op'>&lt;</span><span class='ident'>D</span><span class='op'>&gt;</span> {
     <span class='ident'>dim</span>: <span class='ident'>D</span>,

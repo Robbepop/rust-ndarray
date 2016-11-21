@@ -1337,6 +1337,42 @@
 <span id="1293">1293</span>
 <span id="1294">1294</span>
 <span id="1295">1295</span>
+<span id="1296">1296</span>
+<span id="1297">1297</span>
+<span id="1298">1298</span>
+<span id="1299">1299</span>
+<span id="1300">1300</span>
+<span id="1301">1301</span>
+<span id="1302">1302</span>
+<span id="1303">1303</span>
+<span id="1304">1304</span>
+<span id="1305">1305</span>
+<span id="1306">1306</span>
+<span id="1307">1307</span>
+<span id="1308">1308</span>
+<span id="1309">1309</span>
+<span id="1310">1310</span>
+<span id="1311">1311</span>
+<span id="1312">1312</span>
+<span id="1313">1313</span>
+<span id="1314">1314</span>
+<span id="1315">1315</span>
+<span id="1316">1316</span>
+<span id="1317">1317</span>
+<span id="1318">1318</span>
+<span id="1319">1319</span>
+<span id="1320">1320</span>
+<span id="1321">1321</span>
+<span id="1322">1322</span>
+<span id="1323">1323</span>
+<span id="1324">1324</span>
+<span id="1325">1325</span>
+<span id="1326">1326</span>
+<span id="1327">1327</span>
+<span id="1328">1328</span>
+<span id="1329">1329</span>
+<span id="1330">1330</span>
+<span id="1331">1331</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014-2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -1360,15 +1396,16 @@
 <span class='kw'>use</span> <span class='ident'>error</span>::{<span class='self'>self</span>, <span class='ident'>ShapeError</span>};
 <span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>zipsl</span>;
 <span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>ZipExt</span>;
+<span class='kw'>use</span> <span class='ident'>dimension</span>::<span class='ident'>IntoDimension</span>;
 
 <span class='kw'>use</span> {
     <span class='ident'>NdIndex</span>,
     <span class='ident'>AxisChunksIter</span>,
     <span class='ident'>AxisChunksIterMut</span>,
-    <span class='ident'>Elements</span>,
-    <span class='ident'>ElementsMut</span>,
-    <span class='ident'>Indexed</span>,
-    <span class='ident'>IndexedMut</span>,
+    <span class='ident'>Iter</span>,
+    <span class='ident'>IterMut</span>,
+    <span class='ident'>IndexedIter</span>,
+    <span class='ident'>IndexedIterMut</span>,
     <span class='ident'>InnerIter</span>,
     <span class='ident'>InnerIterMut</span>,
     <span class='ident'>AxisIter</span>,
@@ -1376,6 +1413,7 @@
 };
 <span class='kw'>use</span> <span class='ident'>stacking</span>::<span class='ident'>stack</span>;
 
+<span class='doccomment'>/// # Methods For All Array Types</span>
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>Data</span><span class='op'>&lt;</span><span class='ident'>Elem</span><span class='op'>=</span><span class='ident'>A</span><span class='op'>&gt;</span>, <span class='ident'>D</span>: <span class='ident'>Dimension</span>
 {
     <span class='doccomment'>/// Return the total number of elements in the array.</span>
@@ -1383,8 +1421,30 @@
         <span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>size</span>()
     }
 
-    <span class='doccomment'>/// Return the shape of the array.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>dim</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>D</span> {
+    <span class='doccomment'>/// Return the length of `axis`.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// The axis should be in the range `Axis(` 0 .. *n* `)` where *n* is the</span>
+    <span class='doccomment'>/// number of dimensions (axes) of the array.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// ***Panics*** if the axis is out of bounds.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>len_of</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>axis</span>: <span class='ident'>Axis</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+        <span class='self'>self</span>.<span class='ident'>dim</span>[<span class='ident'>axis</span>.<span class='ident'>axis</span>()]
+    }
+
+    <span class='doccomment'>/// Return the number of dimensions (axes) in the array</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ndim</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+        <span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>ndim</span>()
+    }
+
+    <span class='doccomment'>/// Return the shape of the array in its “pattern” form,</span>
+    <span class='doccomment'>/// an integer in the one-dimensional case, tuple in the n-dimensional cases</span>
+    <span class='doccomment'>/// and so on.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>dim</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>D</span>::<span class='ident'>Pattern</span> {
+        <span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>clone</span>().<span class='ident'>into_pattern</span>()
+    }
+
+    <span class='doccomment'>/// Return the shape of the array as it stored in the array.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>raw_dim</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>D</span> {
         <span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>clone</span>()
     }
 
@@ -1393,18 +1453,13 @@
         <span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>slice</span>()
     }
 
-    <span class='doccomment'>/// Return the strides of the array</span>
+    <span class='doccomment'>/// Return the strides of the array as a slice</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>strides</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span>[<span class='ident'>Ixs</span>] {
         <span class='kw'>let</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>strides</span>.<span class='ident'>slice</span>();
         <span class='comment'>// reinterpret unsigned integer as signed</span>
         <span class='kw'>unsafe</span> {
             <span class='ident'>slice</span>::<span class='ident'>from_raw_parts</span>(<span class='ident'>s</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _, <span class='ident'>s</span>.<span class='ident'>len</span>())
         }
-    }
-
-    <span class='doccomment'>/// Return the number of dimensions (axes) in the array</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ndim</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
-        <span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>ndim</span>()
     }
 
     <span class='doccomment'>/// Return a read-only view of the array</span>
@@ -1464,16 +1519,22 @@
 
     <span class='doccomment'>/// Return an iterator of references to the elements of the array.</span>
     <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Elements are visited in the *logical order* of the array, which</span>
+    <span class='doccomment'>/// is where the rightmost index is varying the fastest.</span>
+    <span class='doccomment'>///</span>
     <span class='doccomment'>/// Iterator element type is `&amp;A`.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>iter</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Elements</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>iter</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Iter</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> {
         <span class='macro'>debug_assert</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>pointer_is_inbounds</span>());
         <span class='self'>self</span>.<span class='ident'>view</span>().<span class='ident'>into_iter_</span>()
     }
 
     <span class='doccomment'>/// Return an iterator of mutable references to the elements of the array.</span>
     <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Elements are visited in the *logical order* of the array, which</span>
+    <span class='doccomment'>/// is where the rightmost index is varying the fastest.</span>
+    <span class='doccomment'>///</span>
     <span class='doccomment'>/// Iterator element type is `&amp;mut A`.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>iter_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>ElementsMut</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>iter_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>IterMut</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>DataMut</span>,
     {
         <span class='self'>self</span>.<span class='ident'>view_mut</span>().<span class='ident'>into_iter_</span>()
@@ -1481,18 +1542,24 @@
 
     <span class='doccomment'>/// Return an iterator of indexes and references to the elements of the array.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Iterator element type is `(D, &amp;A)`.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>indexed_iter</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Indexed</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> {
-        <span class='ident'>Indexed</span>(<span class='self'>self</span>.<span class='ident'>view</span>().<span class='ident'>into_elements_base</span>())
+    <span class='doccomment'>/// Elements are visited in the *logical order* of the array, which</span>
+    <span class='doccomment'>/// is where the rightmost index is varying the fastest.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Iterator element type is `(D::Pattern, &amp;A)`.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>indexed_iter</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>IndexedIter</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> {
+        <span class='ident'>IndexedIter</span>(<span class='self'>self</span>.<span class='ident'>view</span>().<span class='ident'>into_elements_base</span>())
     }
 
     <span class='doccomment'>/// Return an iterator of indexes and mutable references to the elements of the array.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Iterator element type is `(D, &amp;mut A)`.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>indexed_iter_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>IndexedMut</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
+    <span class='doccomment'>/// Elements are visited in the *logical order* of the array, which</span>
+    <span class='doccomment'>/// is where the rightmost index is varying the fastest.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Iterator element type is `(D::Pattern, &amp;mut A)`.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>indexed_iter_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>IndexedIterMut</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>DataMut</span>,
     {
-        <span class='ident'>IndexedMut</span>(<span class='self'>self</span>.<span class='ident'>view_mut</span>().<span class='ident'>into_elements_base</span>())
+        <span class='ident'>IndexedIterMut</span>(<span class='self'>self</span>.<span class='ident'>view_mut</span>().<span class='ident'>into_elements_base</span>())
     }
 
 
@@ -1504,7 +1571,7 @@
     <span class='doccomment'>/// [`D::SliceArg`]: trait.Dimension.html#associatedtype.SliceArg</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// **Panics** if an index is out of bounds or stride is zero.&lt;br&gt;</span>
-    <span class='doccomment'>/// (**Panics** if `D` is `Vec` and `indexes` does not match the number of array axes.)</span>
+    <span class='doccomment'>/// (**Panics** if `D` is `IxDyn` and `indexes` does not match the number of array axes.)</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>slice</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>indexes</span>: <span class='kw-2'>&amp;</span><span class='ident'>D</span>::<span class='ident'>SliceArg</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayView</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>arr</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>view</span>();
         <span class='ident'>arr</span>.<span class='ident'>islice</span>(<span class='ident'>indexes</span>);
@@ -1518,7 +1585,7 @@
     <span class='doccomment'>/// [`D::SliceArg`]: trait.Dimension.html#associatedtype.SliceArg</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// **Panics** if an index is out of bounds or stride is zero.&lt;br&gt;</span>
-    <span class='doccomment'>/// (**Panics** if `D` is `Vec` and `indexes` does not match the number of array axes.)</span>
+    <span class='doccomment'>/// (**Panics** if `D` is `IxDyn` and `indexes` does not match the number of array axes.)</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>slice_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>indexes</span>: <span class='kw-2'>&amp;</span><span class='ident'>D</span>::<span class='ident'>SliceArg</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayViewMut</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>DataMut</span>
     {
@@ -1534,7 +1601,7 @@
     <span class='doccomment'>/// [`D::SliceArg`]: trait.Dimension.html#associatedtype.SliceArg</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// **Panics** if an index is out of bounds or stride is zero.&lt;br&gt;</span>
-    <span class='doccomment'>/// (**Panics** if `D` is `Vec` and `indexes` does not match the number of array axes.)</span>
+    <span class='doccomment'>/// (**Panics** if `D` is `IxDyn` and `indexes` does not match the number of array axes.)</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>islice</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>indexes</span>: <span class='kw-2'>&amp;</span><span class='ident'>D</span>::<span class='ident'>SliceArg</span>) {
         <span class='kw'>let</span> <span class='ident'>offset</span> <span class='op'>=</span> <span class='ident'>D</span>::<span class='ident'>do_slices</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>dim</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>strides</span>, <span class='ident'>indexes</span>);
         <span class='kw'>unsafe</span> {
@@ -1564,7 +1631,7 @@
     <span class='doccomment'>/// );</span>
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>A</span><span class='op'>&gt;</span>
-        <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>NdIndex</span><span class='op'>&lt;</span><span class='ident'>Dim</span><span class='op'>=</span><span class='ident'>D</span><span class='op'>&gt;</span>,
+        <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>NdIndex</span><span class='op'>&lt;</span><span class='ident'>D</span><span class='op'>&gt;</span>,
     {
         <span class='kw'>let</span> <span class='ident'>ptr</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>ptr</span>;
         <span class='ident'>index</span>.<span class='ident'>index_checked</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>dim</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>strides</span>)
@@ -1575,7 +1642,7 @@
     <span class='doccomment'>/// if the index is out of bounds.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_mut</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>A</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>DataMut</span>,
-              <span class='ident'>I</span>: <span class='ident'>NdIndex</span><span class='op'>&lt;</span><span class='ident'>Dim</span><span class='op'>=</span><span class='ident'>D</span><span class='op'>&gt;</span>,
+              <span class='ident'>I</span>: <span class='ident'>NdIndex</span><span class='op'>&lt;</span><span class='ident'>D</span><span class='op'>&gt;</span>,
     {
         <span class='kw'>let</span> <span class='ident'>ptr</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>as_mut_ptr</span>();
         <span class='ident'>index</span>.<span class='ident'>index_checked</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>dim</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>strides</span>)
@@ -1588,9 +1655,11 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// **Note:** only unchecked for non-debug builds of ndarray.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>uget</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>D</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>A</span> {
+    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>uget</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>A</span>
+        <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>NdIndex</span><span class='op'>&lt;</span><span class='ident'>D</span><span class='op'>&gt;</span>,
+    {
         <span class='ident'>arraytraits</span>::<span class='ident'>debug_bounds_check</span>(<span class='self'>self</span>, <span class='kw-2'>&amp;</span><span class='ident'>index</span>);
-        <span class='kw'>let</span> <span class='ident'>off</span> <span class='op'>=</span> <span class='ident'>D</span>::<span class='ident'>stride_offset</span>(<span class='kw-2'>&amp;</span><span class='ident'>index</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>strides</span>);
+        <span class='kw'>let</span> <span class='ident'>off</span> <span class='op'>=</span> <span class='ident'>index</span>.<span class='ident'>index_unchecked</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>strides</span>);
         <span class='kw-2'>&amp;</span><span class='op'>*</span><span class='self'>self</span>.<span class='ident'>ptr</span>.<span class='ident'>offset</span>(<span class='ident'>off</span>)
     }
 
@@ -1601,12 +1670,13 @@
     <span class='doccomment'>/// **Note:** Only unchecked for non-debug builds of ndarray.&lt;br&gt;</span>
     <span class='doccomment'>/// **Note:** The array must be uniquely held when mutating it.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>uget_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>D</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>A</span>
-        <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>DataMut</span>
+    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>uget_mut</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>A</span>
+        <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>DataMut</span>,
+              <span class='ident'>I</span>: <span class='ident'>NdIndex</span><span class='op'>&lt;</span><span class='ident'>D</span><span class='op'>&gt;</span>,
     {
         <span class='macro'>debug_assert</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>is_unique</span>());
         <span class='ident'>arraytraits</span>::<span class='ident'>debug_bounds_check</span>(<span class='self'>self</span>, <span class='kw-2'>&amp;</span><span class='ident'>index</span>);
-        <span class='kw'>let</span> <span class='ident'>off</span> <span class='op'>=</span> <span class='ident'>D</span>::<span class='ident'>stride_offset</span>(<span class='kw-2'>&amp;</span><span class='ident'>index</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>strides</span>);
+        <span class='kw'>let</span> <span class='ident'>off</span> <span class='op'>=</span> <span class='ident'>index</span>.<span class='ident'>index_unchecked</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>strides</span>);
         <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='op'>*</span><span class='self'>self</span>.<span class='ident'>ptr</span>.<span class='ident'>offset</span>(<span class='ident'>off</span>)
     }
 
@@ -1617,7 +1687,7 @@
     <span class='doccomment'>/// ***Panics*** if an index is out of bounds.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>swap</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>index1</span>: <span class='ident'>I</span>, <span class='ident'>index2</span>: <span class='ident'>I</span>)
         <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>DataMut</span>,
-              <span class='ident'>I</span>: <span class='ident'>NdIndex</span><span class='op'>&lt;</span><span class='ident'>Dim</span><span class='op'>=</span><span class='ident'>D</span><span class='op'>&gt;</span>,
+              <span class='ident'>I</span>: <span class='ident'>NdIndex</span><span class='op'>&lt;</span><span class='ident'>D</span><span class='op'>&gt;</span>,
     {
         <span class='kw'>let</span> <span class='ident'>ptr1</span>: <span class='op'>*</span><span class='kw-2'>mut</span> _ <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>[<span class='ident'>index1</span>];
         <span class='kw'>let</span> <span class='ident'>ptr2</span>: <span class='op'>*</span><span class='kw-2'>mut</span> _ <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>[<span class='ident'>index2</span>];
@@ -1664,11 +1734,11 @@
     <span class='doccomment'>/// ```</span>
     <span class='doccomment'>/// use ndarray::{arr2, ArrayView, Axis};</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let a = arr2(&amp;[[1., 2.],    // -- axis 0, row 0</span>
-    <span class='doccomment'>///                [3., 4.],    // -- axis 0, row 1</span>
-    <span class='doccomment'>///                [5., 6.]]);  // -- axis 0, row 2</span>
-    <span class='doccomment'>/// //               \   \</span>
-    <span class='doccomment'>/// //                \   axis 1, column 1</span>
+    <span class='doccomment'>/// let a = arr2(&amp;[[1., 2. ],    // ... axis 0, row 0</span>
+    <span class='doccomment'>///                [3., 4. ],    // --- axis 0, row 1</span>
+    <span class='doccomment'>///                [5., 6. ]]);  // ... axis 0, row 2</span>
+    <span class='doccomment'>/// //               .   \</span>
+    <span class='doccomment'>/// //                .   axis 1, column 1</span>
     <span class='doccomment'>/// //                 axis 1, column 0</span>
     <span class='doccomment'>/// assert!(</span>
     <span class='doccomment'>///     a.subview(Axis(0), 1) == ArrayView::from(&amp;[3., 4.]) &amp;&amp;</span>
@@ -1690,8 +1760,11 @@
     <span class='doccomment'>/// ```</span>
     <span class='doccomment'>/// use ndarray::{arr2, aview2, Axis};</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let mut a = arr2(&amp;[[1., 2.],</span>
-    <span class='doccomment'>///                    [3., 4.]]);</span>
+    <span class='doccomment'>/// let mut a = arr2(&amp;[[1., 2. ],</span>
+    <span class='doccomment'>///                    [3., 4. ]]);</span>
+    <span class='doccomment'>/// //                   .   \</span>
+    <span class='doccomment'>/// //                    .   axis 1, column 1</span>
+    <span class='doccomment'>/// //                     axis 1, column 0</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// {</span>
     <span class='doccomment'>///     let mut column1 = a.subview_mut(Axis(1), 1);</span>
@@ -1769,7 +1842,7 @@
             <span class='ident'>sub</span>.<span class='ident'>isubview</span>(<span class='ident'>axis</span>, <span class='ident'>i</span>);
         }
         <span class='kw'>if</span> <span class='ident'>subs</span>.<span class='ident'>is_empty</span>() {
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dim</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dim</span>();
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>dim</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>raw_dim</span>();
             <span class='ident'>dim</span>.<span class='ident'>set_axis</span>(<span class='ident'>axis</span>, <span class='number'>0</span>);
             <span class='kw'>unsafe</span> {
                 <span class='ident'>Array</span>::<span class='ident'>from_shape_vec_unchecked</span>(<span class='ident'>dim</span>, <span class='macro'>vec</span><span class='macro'>!</span>[])
@@ -1814,6 +1887,7 @@
     <span class='doccomment'>/// Return an iterator that traverses over the outermost dimension</span>
     <span class='doccomment'>/// and yields each subview.</span>
     <span class='doccomment'>///</span>
+    <span class='doccomment'>/// The outer iterator is equivalent to `.axis_iter(Axis(0))`.</span>
     <span class='doccomment'>/// For example, in a 2 × 2 × 3 array, the iterator element</span>
     <span class='doccomment'>/// is a 2 × 3 subview (and there are 2 in total).</span>
     <span class='doccomment'>///</span>
@@ -1841,6 +1915,8 @@
     <span class='doccomment'>/// Return an iterator that traverses over the outermost dimension</span>
     <span class='doccomment'>/// and yields each subview.</span>
     <span class='doccomment'>///</span>
+    <span class='doccomment'>/// The outer iterator is equivalent to `.axis_iter_mut(Axis(0))`.</span>
+    <span class='doccomment'>///</span>
     <span class='doccomment'>/// Iterator element is `ArrayViewMut&lt;A, D::Smaller&gt;` (read-write array view).</span>
     <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>deprecated</span>)]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>outer_iter_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>AxisIterMut</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span>::<span class='ident'>Smaller</span><span class='op'>&gt;</span>
@@ -1853,9 +1929,9 @@
     <span class='doccomment'>/// Return an iterator that traverses over `axis`</span>
     <span class='doccomment'>/// and yields each subview along it.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// For example, in a 3 × 5 × 5 array, with `axis` equal to `Axis(2)`,</span>
+    <span class='doccomment'>/// For example, in a 3 × 4 × 5 array, with `axis` equal to `Axis(2)`,</span>
     <span class='doccomment'>/// the iterator element</span>
-    <span class='doccomment'>/// is a 3 × 5 subview (and there are 5 in total), as shown</span>
+    <span class='doccomment'>/// is a 3 × 4 subview (and there are 5 in total), as shown</span>
     <span class='doccomment'>/// in the picture below.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Iterator element is `ArrayView&lt;A, D::Smaller&gt;` (read-only array view).</span>
@@ -1864,7 +1940,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// **Panics** if `axis` is out of bounds.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// &lt;img src=&quot;https://bluss.github.io/ndarray/images/axis_iter.svg&quot; height=&quot;250px&quot;&gt;</span>
+    <span class='doccomment'>/// &lt;img src=&quot;https://bluss.github.io/ndarray/images/axis_iter_3_4_5.svg&quot; height=&quot;250px&quot;&gt;</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>axis_iter</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>axis</span>: <span class='ident'>Axis</span>) <span class='op'>-&gt;</span> <span class='ident'>AxisIter</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span>::<span class='ident'>Smaller</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>D</span>: <span class='ident'>RemoveAxis</span>,
     {
@@ -1961,8 +2037,8 @@
         <span class='ident'>ArrayBase</span> {
             <span class='ident'>data</span>: <span class='self'>self</span>.<span class='ident'>data</span>,
             <span class='ident'>ptr</span>: <span class='self'>self</span>.<span class='ident'>ptr</span>,
-            <span class='ident'>dim</span>: <span class='ident'>len</span>,
-            <span class='ident'>strides</span>: <span class='ident'>stride</span> <span class='kw'>as</span> <span class='ident'>Ix</span>,
+            <span class='ident'>dim</span>: <span class='ident'>Ix1</span>(<span class='ident'>len</span>),
+            <span class='ident'>strides</span>: <span class='ident'>Ix1</span>(<span class='ident'>stride</span> <span class='kw'>as</span> <span class='ident'>Ix</span>),
         }
     }
 
@@ -1984,7 +2060,7 @@
     <span class='doccomment'>/// contiguous in memory, it has custom strides, etc.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_standard_layout</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>let</span> <span class='ident'>defaults</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>default_strides</span>();
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>strides</span> <span class='op'>==</span> <span class='ident'>defaults</span> {
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>strides</span>.<span class='ident'>equal</span>(<span class='kw-2'>&amp;</span><span class='ident'>defaults</span>) {
             <span class='kw'>return</span> <span class='bool-val'>true</span>;
         }
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>ndim</span>() <span class='op'>==</span> <span class='number'>1</span> { <span class='kw'>return</span> <span class='bool-val'>false</span>; }
@@ -2000,25 +2076,7 @@
     }
 
     <span class='kw'>fn</span> <span class='ident'>is_contiguous</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='kw'>let</span> <span class='ident'>defaults</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>default_strides</span>();
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>strides</span> <span class='op'>==</span> <span class='ident'>defaults</span> {
-            <span class='kw'>return</span> <span class='bool-val'>true</span>;
-        }
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>ndim</span>() <span class='op'>==</span> <span class='number'>1</span> { <span class='kw'>return</span> <span class='bool-val'>false</span>; }
-        <span class='kw'>let</span> <span class='ident'>order</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>strides</span>.<span class='ident'>_fastest_varying_stride_order</span>();
-        <span class='kw'>let</span> <span class='ident'>strides</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>strides</span>.<span class='ident'>slice</span>();
-
-        <span class='comment'>// FIXME: Negative strides</span>
-        <span class='kw'>let</span> <span class='ident'>dim</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>slice</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>cstride</span> <span class='op'>=</span> <span class='number'>1</span>;
-        <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>order</span>.<span class='ident'>slice</span>() {
-            <span class='comment'>// a dimension of length 1 can have unequal strides</span>
-            <span class='kw'>if</span> <span class='ident'>dim</span>[<span class='ident'>i</span>] <span class='op'>!=</span> <span class='number'>1</span> <span class='op'>&amp;&amp;</span> <span class='ident'>strides</span>[<span class='ident'>i</span>] <span class='op'>!=</span> <span class='ident'>cstride</span> {
-                <span class='kw'>return</span> <span class='bool-val'>false</span>;
-            }
-            <span class='ident'>cstride</span> <span class='op'>*=</span> <span class='ident'>dim</span>[<span class='ident'>i</span>];
-        }
-        <span class='bool-val'>true</span>
+        <span class='ident'>D</span>::<span class='ident'>is_contiguous</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>dim</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>strides</span>)
     }
 
     <span class='doccomment'>/// Return a pointer to the first element in the array.</span>
@@ -2107,50 +2165,6 @@
     }
 
     <span class='doccomment'>/// Transform the array into `shape`; any shape with the same number of</span>
-    <span class='doccomment'>/// elements is accepted.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// May clone all elements if needed to arrange elements in standard</span>
-    <span class='doccomment'>/// layout (and break sharing).</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// **Panics** if shapes are incompatible.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use ndarray::{rcarr1, rcarr2};</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// assert!(</span>
-    <span class='doccomment'>///     rcarr1(&amp;[1., 2., 3., 4.]).reshape((2, 2))</span>
-    <span class='doccomment'>///     == rcarr2(&amp;[[1., 2.],</span>
-    <span class='doccomment'>///                 [3., 4.]])</span>
-    <span class='doccomment'>/// );</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>reshape</span><span class='op'>&lt;</span><span class='ident'>E</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>shape</span>: <span class='ident'>E</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>E</span><span class='op'>&gt;</span>
-        <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>DataShared</span> <span class='op'>+</span> <span class='ident'>DataOwned</span>,
-              <span class='ident'>A</span>: <span class='ident'>Clone</span>,
-              <span class='ident'>E</span>: <span class='ident'>Dimension</span>,
-    {
-        <span class='kw'>if</span> <span class='ident'>shape</span>.<span class='ident'>size_checked</span>() <span class='op'>!=</span> <span class='prelude-val'>Some</span>(<span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>size</span>()) {
-            <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;ndarray: incompatible shapes in reshape, attempted from: {:?}, to: {:?}&quot;</span>,
-                   <span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>slice</span>(),
-                   <span class='ident'>shape</span>.<span class='ident'>slice</span>())
-        }
-        <span class='comment'>// Check if contiguous, if not =&gt; copy all, else just adapt strides</span>
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is_standard_layout</span>() {
-            <span class='kw'>let</span> <span class='ident'>cl</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>clone</span>();
-            <span class='ident'>ArrayBase</span> {
-                <span class='ident'>data</span>: <span class='ident'>cl</span>.<span class='ident'>data</span>,
-                <span class='ident'>ptr</span>: <span class='ident'>cl</span>.<span class='ident'>ptr</span>,
-                <span class='ident'>strides</span>: <span class='ident'>shape</span>.<span class='ident'>default_strides</span>(),
-                <span class='ident'>dim</span>: <span class='ident'>shape</span>,
-            }
-        } <span class='kw'>else</span> {
-            <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>clone</span>()).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;&gt;</span>();
-            <span class='kw'>unsafe</span> {
-                <span class='ident'>ArrayBase</span>::<span class='ident'>from_shape_vec_unchecked</span>(<span class='ident'>shape</span>, <span class='ident'>v</span>)
-            }
-        }
-    }
-
-    <span class='doccomment'>/// Transform the array into `shape`; any shape with the same number of</span>
     <span class='doccomment'>/// elements is accepted, but the source array or view must be</span>
     <span class='doccomment'>/// contiguous, otherwise we cannot rearrange the dimension.</span>
     <span class='doccomment'>///</span>
@@ -2166,9 +2180,10 @@
     <span class='doccomment'>///                 [3., 4.]])</span>
     <span class='doccomment'>/// );</span>
     <span class='doccomment'>/// ```</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>into_shape</span><span class='op'>&lt;</span><span class='ident'>E</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>shape</span>: <span class='ident'>E</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>E</span><span class='op'>&gt;</span>, <span class='ident'>ShapeError</span><span class='op'>&gt;</span>
-        <span class='kw'>where</span> <span class='ident'>E</span>: <span class='ident'>Dimension</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>into_shape</span><span class='op'>&lt;</span><span class='ident'>E</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>shape</span>: <span class='ident'>E</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>E</span>::<span class='ident'>Dim</span><span class='op'>&gt;</span>, <span class='ident'>ShapeError</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>E</span>: <span class='ident'>IntoDimension</span>,
     {
+        <span class='kw'>let</span> <span class='ident'>shape</span> <span class='op'>=</span> <span class='ident'>shape</span>.<span class='ident'>into_dimension</span>();
         <span class='kw'>if</span> <span class='ident'>shape</span>.<span class='ident'>size_checked</span>() <span class='op'>!=</span> <span class='prelude-val'>Some</span>(<span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>size</span>()) {
             <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>error</span>::<span class='ident'>incompatible_shapes</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>dim</span>, <span class='kw-2'>&amp;</span><span class='ident'>shape</span>));
         }
@@ -2189,6 +2204,54 @@
             })
         } <span class='kw'>else</span> {
             <span class='prelude-val'>Err</span>(<span class='ident'>error</span>::<span class='ident'>from_kind</span>(<span class='ident'>error</span>::<span class='ident'>ErrorKind</span>::<span class='ident'>IncompatibleLayout</span>))
+        }
+    }
+
+    <span class='doccomment'>/// *Note: Reshape is for `RcArray` only. Use `.into_shape()` for</span>
+    <span class='doccomment'>/// other arrays and array views.*</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Transform the array into `shape`; any shape with the same number of</span>
+    <span class='doccomment'>/// elements is accepted.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// May clone all elements if needed to arrange elements in standard</span>
+    <span class='doccomment'>/// layout (and break sharing).</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// **Panics** if shapes are incompatible.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// ```</span>
+    <span class='doccomment'>/// use ndarray::{rcarr1, rcarr2};</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// assert!(</span>
+    <span class='doccomment'>///     rcarr1(&amp;[1., 2., 3., 4.]).reshape((2, 2))</span>
+    <span class='doccomment'>///     == rcarr2(&amp;[[1., 2.],</span>
+    <span class='doccomment'>///                 [3., 4.]])</span>
+    <span class='doccomment'>/// );</span>
+    <span class='doccomment'>/// ```</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>reshape</span><span class='op'>&lt;</span><span class='ident'>E</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>shape</span>: <span class='ident'>E</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>S</span>, <span class='ident'>E</span>::<span class='ident'>Dim</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>DataShared</span> <span class='op'>+</span> <span class='ident'>DataOwned</span>,
+              <span class='ident'>A</span>: <span class='ident'>Clone</span>,
+              <span class='ident'>E</span>: <span class='ident'>IntoDimension</span>,
+    {
+        <span class='kw'>let</span> <span class='ident'>shape</span> <span class='op'>=</span> <span class='ident'>shape</span>.<span class='ident'>into_dimension</span>();
+        <span class='kw'>if</span> <span class='ident'>shape</span>.<span class='ident'>size_checked</span>() <span class='op'>!=</span> <span class='prelude-val'>Some</span>(<span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>size</span>()) {
+            <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;ndarray: incompatible shapes in reshape, attempted from: {:?}, to: {:?}&quot;</span>,
+                   <span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>slice</span>(),
+                   <span class='ident'>shape</span>.<span class='ident'>slice</span>())
+        }
+        <span class='comment'>// Check if contiguous, if not =&gt; copy all, else just adapt strides</span>
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is_standard_layout</span>() {
+            <span class='kw'>let</span> <span class='ident'>cl</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>clone</span>();
+            <span class='ident'>ArrayBase</span> {
+                <span class='ident'>data</span>: <span class='ident'>cl</span>.<span class='ident'>data</span>,
+                <span class='ident'>ptr</span>: <span class='ident'>cl</span>.<span class='ident'>ptr</span>,
+                <span class='ident'>strides</span>: <span class='ident'>shape</span>.<span class='ident'>default_strides</span>(),
+                <span class='ident'>dim</span>: <span class='ident'>shape</span>,
+            }
+        } <span class='kw'>else</span> {
+            <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>clone</span>()).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;&gt;</span>();
+            <span class='kw'>unsafe</span> {
+                <span class='ident'>ArrayBase</span>::<span class='ident'>from_shape_vec_unchecked</span>(<span class='ident'>shape</span>, <span class='ident'>v</span>)
+            }
         }
     }
 
@@ -2221,8 +2284,8 @@
     <span class='doccomment'>///     == aview2(&amp;[[1., 0.]; 10])</span>
     <span class='doccomment'>/// );</span>
     <span class='doccomment'>/// ```</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>broadcast</span><span class='op'>&lt;</span><span class='ident'>E</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>dim</span>: <span class='ident'>E</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>ArrayView</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>E</span><span class='op'>&gt;&gt;</span>
-        <span class='kw'>where</span> <span class='ident'>E</span>: <span class='ident'>Dimension</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>broadcast</span><span class='op'>&lt;</span><span class='ident'>E</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>dim</span>: <span class='ident'>E</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>ArrayView</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>E</span>::<span class='ident'>Dim</span><span class='op'>&gt;&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>E</span>: <span class='ident'>IntoDimension</span>
     {
         <span class='doccomment'>/// Return new stride when trying to grow `from` into shape `to`</span>
         <span class='doccomment'>///</span>
@@ -2241,9 +2304,10 @@
             }
 
             {
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>new_stride_iter</span> <span class='op'>=</span> <span class='ident'>new_stride</span>.<span class='ident'>slice_mut</span>().<span class='ident'>iter_mut</span>().<span class='ident'>rev</span>();
                 <span class='kw'>for</span> ((<span class='ident'>er</span>, <span class='ident'>es</span>), <span class='ident'>dr</span>) <span class='kw'>in</span> <span class='ident'>from</span>.<span class='ident'>slice</span>().<span class='ident'>iter</span>().<span class='ident'>rev</span>()
                                         .<span class='ident'>zip</span>(<span class='ident'>stride</span>.<span class='ident'>slice</span>().<span class='ident'>iter</span>().<span class='ident'>rev</span>())
-                                        .<span class='ident'>zip</span>(<span class='ident'>new_stride</span>.<span class='ident'>slice_mut</span>().<span class='ident'>iter_mut</span>().<span class='ident'>rev</span>())
+                                        .<span class='ident'>zip</span>(<span class='ident'>new_stride_iter</span>.<span class='ident'>by_ref</span>())
                 {
                     <span class='comment'>/* update strides */</span>
                     <span class='kw'>if</span> <span class='op'>*</span><span class='ident'>dr</span> <span class='op'>==</span> <span class='op'>*</span><span class='ident'>er</span> {
@@ -2258,13 +2322,13 @@
                 }
 
                 <span class='comment'>/* set remaining strides to zero */</span>
-                <span class='kw'>let</span> <span class='ident'>tail_len</span> <span class='op'>=</span> <span class='ident'>to</span>.<span class='ident'>ndim</span>() <span class='op'>-</span> <span class='ident'>from</span>.<span class='ident'>ndim</span>();
-                <span class='kw'>for</span> <span class='ident'>dr</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>new_stride</span>.<span class='ident'>slice_mut</span>()[..<span class='ident'>tail_len</span>] {
+                <span class='kw'>for</span> <span class='ident'>dr</span> <span class='kw'>in</span> <span class='ident'>new_stride_iter</span> {
                     <span class='op'>*</span><span class='ident'>dr</span> <span class='op'>=</span> <span class='number'>0</span>;
                 }
             }
             <span class='prelude-val'>Some</span>(<span class='ident'>new_stride</span>)
         }
+        <span class='kw'>let</span> <span class='ident'>dim</span> <span class='op'>=</span> <span class='ident'>dim</span>.<span class='ident'>into_dimension</span>();
 
         <span class='comment'>// Note: zero strides are safe precisely because we return an read-only view</span>
         <span class='kw'>let</span> <span class='ident'>broadcast_strides</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>upcast</span>(<span class='kw-2'>&amp;</span><span class='ident'>dim</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>dim</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>strides</span>) {
@@ -2341,7 +2405,15 @@
     }
 
     <span class='doccomment'>/// Perform an elementwise assigment to `self` from scalar `x`.</span>
+    <span class='attribute'>#[<span class='ident'>deprecated</span>(<span class='ident'>note</span><span class='op'>=</span><span class='string'>&quot;This method is replaced with ArrayBase::fill and will be removed.&quot;</span>)]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>assign_scalar</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>x</span>: <span class='kw-2'>&amp;</span><span class='ident'>A</span>)
+        <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>DataMut</span>, <span class='ident'>A</span>: <span class='ident'>Clone</span>,
+    {
+        <span class='self'>self</span>.<span class='ident'>unordered_foreach_mut</span>(<span class='kw'>move</span> <span class='op'>|</span><span class='ident'>elt</span><span class='op'>|</span> <span class='op'>*</span><span class='ident'>elt</span> <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>clone</span>());
+    }
+
+    <span class='doccomment'>/// Perform an elementwise assigment to `self` from element `x`.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>fill</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>x</span>: <span class='ident'>A</span>)
         <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>DataMut</span>, <span class='ident'>A</span>: <span class='ident'>Clone</span>,
     {
         <span class='self'>self</span>.<span class='ident'>unordered_foreach_mut</span>(<span class='kw'>move</span> <span class='op'>|</span><span class='ident'>elt</span><span class='op'>|</span> <span class='op'>*</span><span class='ident'>elt</span> <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>clone</span>());
@@ -2390,8 +2462,8 @@
         }
         <span class='comment'>// otherwise, break the arrays up into their inner rows</span>
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>try_slices</span> <span class='op'>=</span> <span class='bool-val'>true</span>;
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rows</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>inner_iter_mut</span>().<span class='ident'>zip</span>(<span class='ident'>rhs</span>.<span class='ident'>inner_iter</span>());
-        <span class='kw'>for</span> (<span class='kw-2'>mut</span> <span class='ident'>s_row</span>, <span class='ident'>r_row</span>) <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rows</span> {
+        <span class='kw'>let</span> <span class='ident'>rows</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>inner_iter_mut</span>().<span class='ident'>zip</span>(<span class='ident'>rhs</span>.<span class='ident'>inner_iter</span>());
+        <span class='kw'>for</span> (<span class='kw-2'>mut</span> <span class='ident'>s_row</span>, <span class='ident'>r_row</span>) <span class='kw'>in</span> <span class='ident'>rows</span> {
             <span class='kw'>if</span> <span class='ident'>try_slices</span> {
                 <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>self_s</span>) <span class='op'>=</span> <span class='ident'>s_row</span>.<span class='ident'>as_slice_mut</span>() {
                     <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>rhs_s</span>) <span class='op'>=</span> <span class='ident'>r_row</span>.<span class='ident'>as_slice</span>() {
@@ -2440,7 +2512,7 @@
         } <span class='kw'>else</span> <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>dim</span>.<span class='ident'>ndim</span>() <span class='op'>==</span> <span class='ident'>rhs</span>.<span class='ident'>dim</span>.<span class='ident'>ndim</span>() <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>shape</span>() <span class='op'>==</span> <span class='ident'>rhs</span>.<span class='ident'>shape</span>() {
             <span class='self'>self</span>.<span class='ident'>zip_mut_with_same_shape</span>(<span class='ident'>rhs</span>, <span class='ident'>f</span>);
         } <span class='kw'>else</span> {
-            <span class='kw'>let</span> <span class='ident'>rhs_broadcast</span> <span class='op'>=</span> <span class='ident'>rhs</span>.<span class='ident'>broadcast_unwrap</span>(<span class='self'>self</span>.<span class='ident'>dim</span>());
+            <span class='kw'>let</span> <span class='ident'>rhs_broadcast</span> <span class='op'>=</span> <span class='ident'>rhs</span>.<span class='ident'>broadcast_unwrap</span>(<span class='self'>self</span>.<span class='ident'>raw_dim</span>());
             <span class='self'>self</span>.<span class='ident'>zip_mut_with_by_rows</span>(<span class='kw-2'>&amp;</span><span class='ident'>rhs_broadcast</span>, <span class='ident'>f</span>);
         }
     }
@@ -2601,7 +2673,7 @@
               <span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='ident'>B</span>, <span class='kw-2'>&amp;</span><span class='ident'>A</span>) <span class='op'>-&gt;</span> <span class='ident'>B</span>,
               <span class='ident'>B</span>: <span class='ident'>Clone</span>,
     {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>Array</span>::<span class='ident'>from_elem</span>(<span class='self'>self</span>.<span class='ident'>dim</span>().<span class='ident'>remove_axis</span>(<span class='ident'>axis</span>), <span class='ident'>init</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>Array</span>::<span class='ident'>from_elem</span>(<span class='self'>self</span>.<span class='ident'>raw_dim</span>().<span class='ident'>remove_axis</span>(<span class='ident'>axis</span>), <span class='ident'>init</span>);
         <span class='kw'>for</span> <span class='ident'>subview</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>axis_iter</span>(<span class='ident'>axis</span>) {
             <span class='ident'>res</span>.<span class='ident'>zip_mut_with</span>(<span class='kw-2'>&amp;</span><span class='ident'>subview</span>, <span class='op'>|</span><span class='ident'>x</span>, <span class='ident'>y</span><span class='op'>|</span> <span class='op'>*</span><span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>fold</span>(<span class='ident'>x</span>, <span class='ident'>y</span>));
         }
@@ -2628,7 +2700,7 @@
         <span class='comment'>// the 0th element.</span>
         <span class='self'>self</span>.<span class='ident'>subview</span>(<span class='ident'>axis</span>, <span class='number'>0</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>first_elt</span><span class='op'>|</span> {
             <span class='kw'>unsafe</span> {
-                <span class='ident'>mapping</span>(<span class='ident'>ArrayView</span>::<span class='ident'>new_</span>(<span class='ident'>first_elt</span>, <span class='ident'>view_len</span>, <span class='ident'>view_stride</span>))
+                <span class='ident'>mapping</span>(<span class='ident'>ArrayView</span>::<span class='ident'>new_</span>(<span class='ident'>first_elt</span>, <span class='ident'>Ix1</span>(<span class='ident'>view_len</span>), <span class='ident'>Ix1</span>(<span class='ident'>view_stride</span>)))
             }
         })
     }

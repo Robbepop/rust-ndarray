@@ -7,7 +7,7 @@
     <meta name="description" content="API documentation for the Rust `Array` type in crate `ndarray`.">
     <meta name="keywords" content="rust, rustlang, rust-lang, Array">
 
-    <title>0.6.9 - ndarray::Array - Rust</title>
+    <title>0.7.0 - ndarray::Array - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
@@ -47,8 +47,25 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1741' class='srclink' href='../src/ndarray/src/lib.rs.html#424' title='goto source code'>[src]</a></span></h1>
-<pre class='rust typedef'>type Array&lt;A, D&gt; = <a class='struct' href='../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;A&gt;, D&gt;;</pre><div class='docblock'><p>Array where the data is owned uniquely.</p>
+               </span><a id='src-2098' class='srclink' href='../src/ndarray/src/lib.rs.html#505' title='goto source code'>[src]</a></span></h1>
+<pre class='rust typedef'>type Array&lt;A, D&gt; = <a class='struct' href='../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;A&gt;, D&gt;;</pre><div class='docblock'><p>An array that owns its data uniquely.</p>
+
+<p><code>Array</code> is the main n-dimensional array type, and it owns all its array
+elements.</p>
+
+<p><a href="struct.ArrayBase.html"><strong><code>ArrayBase</code></strong></a> is used to implement both the owned
+arrays and the views; see its docs for an overview of all array features.  </p>
+
+<p>See also:</p>
+
+<ul>
+<li><a href="struct.ArrayBase.html#constructor-methods-for-owned-arrays">Constructor Methods for Owned Arrays</a></li>
+<li><a href="struct.ArrayBase.html#methods-for-all-array-types">Methods For All Array Types</a></li>
+<li>Dimensionality-specific type alises
+<a href="Array1.t.html"><code>Array1</code></a>,
+<a href="Array2.t.html"><code>Array2</code></a>,
+<a href="Array3.t.html"><code>Array3</code></a> and so on.</li>
+</ul>
 </div></section>
     <section id='search' class="content hidden"></section>
 

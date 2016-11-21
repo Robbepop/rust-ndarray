@@ -252,7 +252,7 @@
 
 <span class='doccomment'>/// Create a zero-dimensional array view borrowing `x`.</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>aview0</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span>(<span class='ident'>x</span>: <span class='kw-2'>&amp;</span><span class='ident'>A</span>) <span class='op'>-&gt;</span> <span class='ident'>ArrayView0</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span> {
-    <span class='kw'>unsafe</span> { <span class='ident'>ArrayView</span>::<span class='ident'>new_</span>(<span class='ident'>x</span>, (), ()) }
+    <span class='kw'>unsafe</span> { <span class='ident'>ArrayView</span>::<span class='ident'>new_</span>(<span class='ident'>x</span>, <span class='ident'>Ix0</span>(), <span class='ident'>Ix0</span>()) }
 }
 
 <span class='doccomment'>/// Create a one-dimensional array view with elements borrowing `xs`.</span>
@@ -280,7 +280,7 @@
     <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='kw'>unsafe</span> {
         <span class='ident'>slice</span>::<span class='ident'>from_raw_parts</span>(<span class='ident'>xs</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>A</span>, <span class='ident'>cols</span> <span class='op'>*</span> <span class='ident'>rows</span>)
     };
-    <span class='kw'>let</span> <span class='ident'>dim</span> <span class='op'>=</span> (<span class='ident'>rows</span> <span class='kw'>as</span> <span class='ident'>Ix</span>, <span class='ident'>cols</span> <span class='kw'>as</span> <span class='ident'>Ix</span>);
+    <span class='kw'>let</span> <span class='ident'>dim</span> <span class='op'>=</span> <span class='ident'>Ix2</span>(<span class='ident'>rows</span>, <span class='ident'>cols</span>);
     <span class='kw'>unsafe</span> {
         <span class='kw'>let</span> <span class='ident'>strides</span> <span class='op'>=</span> <span class='ident'>dim</span>.<span class='ident'>default_strides</span>();
         <span class='ident'>ArrayView</span>::<span class='ident'>new_</span>(<span class='ident'>data</span>.<span class='ident'>as_ptr</span>(), <span class='ident'>dim</span>, <span class='ident'>strides</span>)
@@ -300,7 +300,7 @@
 <span class='doccomment'>///     let mut data = [0; 1024];</span>
 <span class='doccomment'>///     {</span>
 <span class='doccomment'>///         let mut a = aview_mut1(&amp;mut data).into_shape((32, 32)).unwrap();</span>
-<span class='doccomment'>///         a.slice_mut(s![.., ..;3]).assign_scalar(&amp;5);</span>
+<span class='doccomment'>///         a.slice_mut(s![.., ..;3]).fill(5);</span>
 <span class='doccomment'>///     }</span>
 <span class='doccomment'>///     assert_eq!(&amp;data[..10], [5, 0, 0, 5, 0, 0, 5, 0, 0, 5]);</span>
 <span class='doccomment'>/// }</span>
@@ -346,8 +346,8 @@
 <span class='doccomment'>/// );</span>
 <span class='doccomment'>/// ```</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>arr2</span><span class='op'>&lt;</span><span class='ident'>A</span>: <span class='ident'>Clone</span>, <span class='ident'>V</span>: <span class='ident'>FixedInitializer</span><span class='op'>&lt;</span><span class='ident'>Elem</span> <span class='op'>=</span> <span class='ident'>A</span><span class='op'>&gt;&gt;</span>(<span class='ident'>xs</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>V</span>]) <span class='op'>-&gt;</span> <span class='ident'>Array2</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span> {
-    <span class='kw'>let</span> (<span class='ident'>m</span>, <span class='ident'>n</span>) <span class='op'>=</span> (<span class='ident'>xs</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>Ix</span>, <span class='ident'>V</span>::<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>Ix</span>);
-    <span class='kw'>let</span> <span class='ident'>dim</span> <span class='op'>=</span> (<span class='ident'>m</span>, <span class='ident'>n</span>);
+    <span class='kw'>let</span> (<span class='ident'>m</span>, <span class='ident'>n</span>) <span class='op'>=</span> (<span class='ident'>xs</span>.<span class='ident'>len</span>(), <span class='ident'>V</span>::<span class='ident'>len</span>());
+    <span class='kw'>let</span> <span class='ident'>dim</span> <span class='op'>=</span> <span class='ident'>Ix2</span>(<span class='ident'>m</span>, <span class='ident'>n</span>);
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span>::<span class='ident'>with_capacity</span>(<span class='ident'>dim</span>.<span class='ident'>size</span>());
     <span class='kw'>for</span> <span class='ident'>snd</span> <span class='kw'>in</span> <span class='ident'>xs</span> {
         <span class='ident'>result</span>.<span class='ident'>extend_from_slice</span>(<span class='ident'>snd</span>.<span class='ident'>as_init_slice</span>());
@@ -383,7 +383,7 @@
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>arr3</span><span class='op'>&lt;</span><span class='ident'>A</span>: <span class='ident'>Clone</span>, <span class='ident'>V</span>: <span class='ident'>FixedInitializer</span><span class='op'>&lt;</span><span class='ident'>Elem</span><span class='op'>=</span><span class='ident'>U</span><span class='op'>&gt;</span>, <span class='ident'>U</span>: <span class='ident'>FixedInitializer</span><span class='op'>&lt;</span><span class='ident'>Elem</span><span class='op'>=</span><span class='ident'>A</span><span class='op'>&gt;&gt;</span>(<span class='ident'>xs</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>V</span>])
     <span class='op'>-&gt;</span> <span class='ident'>Array3</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span>
 {
-    <span class='kw'>let</span> <span class='ident'>dim</span> <span class='op'>=</span> (<span class='ident'>xs</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>Ix</span>, <span class='ident'>V</span>::<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>Ix</span>, <span class='ident'>U</span>::<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>Ix</span>);
+    <span class='kw'>let</span> <span class='ident'>dim</span> <span class='op'>=</span> <span class='ident'>Ix3</span>(<span class='ident'>xs</span>.<span class='ident'>len</span>(), <span class='ident'>V</span>::<span class='ident'>len</span>(), <span class='ident'>U</span>::<span class='ident'>len</span>());
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span>::<span class='ident'>with_capacity</span>(<span class='ident'>dim</span>.<span class='ident'>size</span>());
     <span class='kw'>for</span> <span class='ident'>snd</span> <span class='kw'>in</span> <span class='ident'>xs</span> {
         <span class='kw'>for</span> <span class='ident'>thr</span> <span class='kw'>in</span> <span class='ident'>snd</span>.<span class='ident'>as_init_slice</span>() {
