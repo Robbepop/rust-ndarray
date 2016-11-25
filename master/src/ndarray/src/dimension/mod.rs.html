@@ -290,6 +290,8 @@
 <span id="246">246</span>
 <span id="247">247</span>
 <span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014-2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -309,6 +311,7 @@
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>dimension_trait</span>::<span class='ident'>Dimension</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>ndindex</span>::<span class='ident'>NdIndex</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>remove_axis</span>::<span class='ident'>RemoveAxis</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>axes</span>::{<span class='ident'>axes_of</span>, <span class='ident'>Axes</span>, <span class='ident'>AxisDescription</span>};
 
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>mod</span> <span class='ident'>macros</span>;
 <span class='kw'>mod</span> <span class='ident'>axis</span>;
@@ -317,6 +320,7 @@
 <span class='kw'>mod</span> <span class='ident'>dimension_trait</span>;
 <span class='kw'>mod</span> <span class='ident'>ndindex</span>;
 <span class='kw'>mod</span> <span class='ident'>remove_axis</span>;
+<span class='kw'>mod</span> <span class='ident'>axes</span>;
 
 <span class='doccomment'>/// Private constructor and accessors for Dim</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>DimPrivate</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span> {

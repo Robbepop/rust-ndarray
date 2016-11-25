@@ -184,11 +184,6 @@
 <span id="140">140</span>
 <span id="141">141</span>
 <span id="142">142</span>
-<span id="143">143</span>
-<span id="144">144</span>
-<span id="145">145</span>
-<span id="146">146</span>
-<span id="147">147</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014-2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -204,7 +199,7 @@
 <span class='comment'>// [0,:] -- first row of matrix</span>
 <span class='comment'>// [:,0] -- first column of matrix</span>
 
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>, <span class='ident'>Hash</span>, <span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>, <span class='ident'>Hash</span>, <span class='ident'>Debug</span>)]</span>
 <span class='doccomment'>/// A slice, a description of a range of an array axis.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// Fields are `begin`, `end` and `stride`, where</span>
@@ -268,12 +263,7 @@
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>Clone</span> <span class='kw'>for</span> <span class='ident'>Si</span> {
-    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>clone</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
-        <span class='op'>*</span><span class='self'>self</span>
-    }
-}
+<span class='macro'>copy_and_clone</span><span class='macro'>!</span>{<span class='ident'>Si</span>}
 
 <span class='doccomment'>/// Slice value for the full range of an axis.</span>
 <span class='kw'>pub</span> <span class='kw'>const</span> <span class='ident'>S</span>: <span class='ident'>Si</span> <span class='op'>=</span> <span class='ident'>Si</span>(<span class='number'>0</span>, <span class='prelude-val'>None</span>, <span class='number'>1</span>);

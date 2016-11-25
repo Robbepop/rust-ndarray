@@ -83,14 +83,6 @@
 <span id="39">39</span>
 <span id="40">40</span>
 <span id="41">41</span>
-<span id="42">42</span>
-<span id="43">43</span>
-<span id="44">44</span>
-<span id="45">45</span>
-<span id="46">46</span>
-<span id="47">47</span>
-<span id="48">48</span>
-<span id="49">49</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -109,7 +101,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// All array axis arguments use this type to make the code easier to write</span>
 <span class='doccomment'>/// correctly and easier to understand.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Eq</span>, <span class='ident'>Ord</span>, <span class='ident'>Hash</span>, <span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Eq</span>, <span class='ident'>Ord</span>, <span class='ident'>Hash</span>, <span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Axis</span>(<span class='kw'>pub</span> <span class='ident'>usize</span>);
 
 <span class='kw'>impl</span> <span class='ident'>Axis</span> {
@@ -117,14 +109,7 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>axis</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> { <span class='self'>self</span>.<span class='number'>0</span> }
 }
 
-<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>clone_from_copy</span> {
-    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>typename</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
-        <span class='kw'>impl</span> <span class='ident'>Clone</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>typename</span> {
-            <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-            <span class='kw'>fn</span> <span class='ident'>clone</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> { <span class='op'>*</span><span class='self'>self</span> }
-        }
-    }
-}
+<span class='macro'>copy_and_clone</span><span class='macro'>!</span>{<span class='ident'>Axis</span>}
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>derive_cmp</span> {
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>traitname</span>:<span class='ident'>ident</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>typename</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>method</span>:<span class='ident'>ident</span> <span class='op'>-&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ret</span>:<span class='ident'>ty</span>) <span class='op'>=&gt;</span> {
@@ -139,7 +124,6 @@
 
 <span class='macro'>derive_cmp</span><span class='macro'>!</span>{<span class='ident'>PartialEq</span> <span class='kw'>for</span> <span class='ident'>Axis</span>, <span class='ident'>eq</span> <span class='op'>-&gt;</span> <span class='ident'>bool</span>}
 <span class='macro'>derive_cmp</span><span class='macro'>!</span>{<span class='ident'>PartialOrd</span> <span class='kw'>for</span> <span class='ident'>Axis</span>, <span class='ident'>partial_cmp</span> <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Ordering</span><span class='op'>&gt;</span>}
-<span class='macro'>clone_from_copy</span><span class='macro'>!</span>{<span class='ident'>Axis</span>}
 
 </pre>
 </section>

@@ -840,6 +840,9 @@
 <span id="796">796</span>
 <span id="797">797</span>
 <span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
+<span id="801">801</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014-2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -930,6 +933,8 @@
     <span class='ident'>IntoDimension</span>,
     <span class='ident'>RemoveAxis</span>,
     <span class='ident'>Axis</span>,
+    <span class='ident'>Axes</span>,
+    <span class='ident'>AxisDescription</span>,
 };
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>dimension</span>::<span class='ident'>dim</span>::<span class='op'>*</span>;
 
@@ -955,6 +960,7 @@
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>shape_builder</span>::{ <span class='ident'>ShapeBuilder</span>};
 
+<span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>mod</span> <span class='ident'>macro_utils</span>;
 <span class='kw'>mod</span> <span class='ident'>aliases</span>;
 <span class='kw'>mod</span> <span class='ident'>arraytraits</span>;
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;serde&quot;</span>)]</span>
