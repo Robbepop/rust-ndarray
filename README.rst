@@ -94,6 +94,19 @@ How to use with cargo::
 Recent Changes (ndarray)
 ------------------------
 
+- 0.7.1
+
+  - Fix two bugs in ``Array::clone()``; it did not support zero-size elements
+    like ``()``, and it did not update the offset of the first element correctly.
+  - Add ``.axes()`` which is an iterator over the axes of an array, yielding
+    its index, length and stride.
+  - Add method ``.max_stride_axis()``.
+
+- 0.6.10
+
+  - Fix two bugs in ``Array::clone()``; it did not support zero-size elements
+    like ``()``, and it did not update the offset of the first element correctly.
+
 - 0.7.0
 
   - Big overhaul of dimensions: Add type ``Dim`` with aliases
@@ -117,6 +130,8 @@ Recent Changes (ndarray)
     static type dispatch.
   - Serialization with ``serde`` now supports binary encoders like bincode
     and others.
+  - ``.assign_scalar()`` was deprecated and replaced by ``.fill()``, which
+    takes an element by value.
   - Require Rust 1.13
 
 - 0.6.9
@@ -553,13 +568,6 @@ __ https://bluss.github.io/rust-ndarray/master/ndarray/struct.ArrayBase.html#ari
 
   - First release on crates.io
   - Starting point for evolution to come
-
-Recent Changes (ndarray-rblas)
-------------------------------
-
-- 0.1.0
-
-  - Initial release, identical to ndarray 0.4.1's version.
 
 Recent Changes (ndarray-rand)
 -----------------------------
