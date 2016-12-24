@@ -21,7 +21,7 @@ use error::{self, ShapeError};
 use super::zipsl;
 use super::ZipExt;
 use dimension::IntoDimension;
-use dimension::{axes_of, Axes};
+use dimension::{axes_of, Axes, merge_axes, stride_offset};
 
 use {
     NdIndex,
@@ -53,7 +53,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     ///
     /// ***Panics*** if the axis is out of bounds.
     pub fn len_of(&self, axis: Axis) -> usize {
-        self.dim[axis.axis()]
+        self.dim[axis.index()]
     }
 
     /// Return the number of dimensions (axes) in the array
@@ -109,14 +109,14 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     pub fn to_owned(&self) -> Array<A, D>
         where A: Clone
     {
-        let (data, strides) = if let Some(slc) = self.as_slice_memory_order() {
-            (slc.to_vec(), self.strides.clone())
+        if let Some(slc) = self.as_slice_memory_order() {
+            unsafe {
+                Array::from_shape_vec_unchecked(self.dim.clone()
+                                                .strides(self.strides.clone()),
+                                                slc.to_vec())
+            }
         } else {
-            (iterators::to_vec_mapped(self.iter(), Clone::clone),
-             self.dim.default_strides())
-        };
-        unsafe {
-            ArrayBase::from_shape_vec_unchecked(self.dim.clone().strides(strides), data)
+            self.map(|x| x.clone())
         }
     }
 
@@ -415,26 +415,18 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// **Panics** if `index` is past the length of the axis.
     pub fn isubview(&mut self, axis: Axis, index: Ix) {
         dimension::do_sub(&mut self.dim, &mut self.ptr, &self.strides,
-                          axis.axis(), index)
+                          axis.index(), index)
     }
 
     /// Along `axis`, select the subview `index` and return `self`
     /// with that axis removed.
     ///
     /// See [`.subview()`](#method.subview) and [*Subviews*](#subviews) for full documentation.
-    pub fn into_subview(mut self, axis: Axis, index: Ix)
-        -> ArrayBase<S, <D as RemoveAxis>::Smaller>
+    pub fn into_subview(mut self, axis: Axis, index: Ix) -> ArrayBase<S, D::Smaller>
         where D: RemoveAxis,
     {
         self.isubview(axis, index);
-        // don't use reshape -- we always know it will fit the size,
-        // and we can use remove_axis on the strides as well
-        ArrayBase {
-            data: self.data,
-            ptr: self.ptr,
-            dim: self.dim.remove_axis(axis),
-            strides: self.strides.remove_axis(axis),
-        }
+        self.remove_axis(axis)
     }
 
     /// Along `axis`, select arbitrary subviews corresponding to `indices`
@@ -554,7 +546,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     pub fn axis_iter(&self, axis: Axis) -> AxisIter<A, D::Smaller>
         where D: RemoveAxis,
     {
-        iterators::new_axis_iter(self.view(), axis.axis())
+        iterators::new_axis_iter(self.view(), axis.index())
     }
 
 
@@ -569,7 +561,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         where S: DataMut,
               D: RemoveAxis,
     {
-        iterators::new_axis_iter_mut(self.view_mut(), axis.axis())
+        iterators::new_axis_iter_mut(self.view_mut(), axis.index())
     }
 
 
@@ -600,7 +592,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     ///                                              [[26, 27]]]));
     /// ```
     pub fn axis_chunks_iter(&self, axis: Axis, size: usize) -> AxisChunksIter<A, D> {
-        iterators::new_chunk_iter(self.view(), axis.axis(), size)
+        iterators::new_chunk_iter(self.view(), axis.index(), size)
     }
 
     /// Return an iterator that traverses over `axis` by chunks of `size`,
@@ -613,7 +605,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         -> AxisChunksIterMut<A, D>
         where S: DataMut
     {
-        iterators::new_chunk_iter_mut(self.view_mut(), axis.axis(), size)
+        iterators::new_chunk_iter_mut(self.view_mut(), axis.index(), size)
     }
 
     // Return (length, stride) for diagonal
@@ -669,20 +661,23 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// Return `false` otherwise, i.e the array is possibly not
     /// contiguous in memory, it has custom strides, etc.
     pub fn is_standard_layout(&self) -> bool {
-        let defaults = self.dim.default_strides();
-        if self.strides.equal(&defaults) {
-            return true;
-        }
-        if self.ndim() == 1 { return false; }
-        // check all dimensions -- a dimension of length 1 can have unequal strides
-        for (&dim, &s, &ds) in zipsl(self.dim.slice(), self.strides())
-            .zip_cons(defaults.slice())
-        {
-            if dim != 1 && s != (ds as Ixs) {
-                return false;
+        fn is_standard_layout<D: Dimension>(dim: &D, strides: &D) -> bool {
+            let defaults = dim.default_strides();
+            if strides.equal(&defaults) {
+                return true;
             }
+            if dim.ndim() == 1 { return false; }
+            // check all dimensions -- a dimension of length 1 can have unequal strides
+            for (&dim, &s, &ds) in zipsl(dim.slice(), strides.slice())
+                .zip_cons(defaults.slice())
+            {
+                if dim != 1 && s != ds {
+                    return false;
+                }
+            }
+            true
         }
-        true
+        is_standard_layout(&self.dim, &self.strides)
     }
 
     fn is_contiguous(&self) -> bool {
@@ -1006,6 +1001,50 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         self.dim.max_stride_axis(&self.strides)
     }
 
+    /// Reverse the stride of `axis`.
+    ///
+    /// ***Panics*** if the axis is out of bounds.
+    pub fn invert_axis(&mut self, axis: Axis) {
+        unsafe {
+            let s = self.strides.axis(axis) as Ixs;
+            let m = self.dim.axis(axis);
+            if m != 0 {
+                self.ptr = self.ptr.offset(stride_offset(m - 1, s as Ix));
+            }
+            self.strides.set_axis(axis, (-s) as Ix);
+        }
+    }
+
+    /// If possible, merge in the axis `take` to `into`.
+    ///
+    /// ```
+    /// use ndarray::Array3;
+    /// use ndarray::Axis;
+    ///
+    /// let mut a = Array3::<f64>::zeros((2, 3, 4));
+    /// a.merge_axes(Axis(1), Axis(2));
+    /// assert_eq!(a.shape(), &[2, 1, 12]);
+    /// ```
+    ///
+    /// ***Panics*** if an axis is out of bounds.
+    pub fn merge_axes(&mut self, take: Axis, into: Axis) -> bool {
+        merge_axes(&mut self.dim, &mut self.strides, take, into)
+    }
+
+    /// Remove array axis `axis` and return the result.
+    pub fn remove_axis(self, axis: Axis) -> ArrayBase<S, D::Smaller>
+        where D: RemoveAxis,
+    {
+        assert!(self.ndim() != 0);
+        let d = self.dim.remove_axis(axis);
+        let s = self.strides.remove_axis(axis);
+        ArrayBase {
+            ptr: self.ptr,
+            data: self.data,
+            dim: d,
+            strides: s,
+        }
+    }
 
     fn pointer_is_inbounds(&self) -> bool {
         let slc = self.data._data_slice();
@@ -1150,16 +1189,23 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     /// returning the resulting value.
     ///
     /// Elements are visited in arbitrary order.
-    pub fn fold<'a, F, B>(&'a self, mut init: B, mut f: F) -> B
+    pub fn fold<'a, F, B>(&'a self, init: B, f: F) -> B
         where F: FnMut(B, &'a A) -> B, A: 'a
     {
         if let Some(slc) = self.as_slice_memory_order() {
             slc.iter().fold(init, f)
         } else {
-            for row in self.inner_iter() {
-                init = row.into_iter_().fold(init, &mut f);
+            let mut v = self.view();
+            // put the narrowest axis at the last position
+            if v.ndim() > 1 {
+                let last = v.ndim() - 1;
+                let narrow_axis = v.axes()
+                                   .filter(|ax| ax.len() > 1)
+                                   .min_by_key(|ax| ax.stride().abs())
+                                   .map_or(last, |ax| ax.axis().index());
+                v.swap_axes(last, narrow_axis);
             }
-            init
+            v.into_elements_base().fold(init, f)
         }
     }
 
@@ -1181,13 +1227,18 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
     ///               [false, true]])
     /// );
     /// ```
-    pub fn map<'a, B, F>(&'a self, f: F) -> Array<B, D>
+    pub fn map<'a, B, F>(&'a self, mut f: F) -> Array<B, D>
         where F: FnMut(&'a A) -> B,
               A: 'a,
     {
         if let Some(slc) = self.as_slice_memory_order() {
-            let v = ::iterators::to_vec(slc.iter().map(f));
+            // FIXME: Why is this (= indexed loop) optimizing the best?
+            let mut v = Vec::with_capacity(slc.len());
             unsafe {
+                for i in 0..slc.len() {
+                    *v.get_unchecked_mut(i) = f(&slc[i]);
+                    v.set_len(i + 1);
+                }
                 ArrayBase::from_shape_vec_unchecked(
                     self.dim.clone().strides(self.strides.clone()), v)
             }
@@ -1278,16 +1329,7 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         where F: FnMut(&'a A),
               A: 'a,
     {
-        if let Some(slc) = self.as_slice_memory_order() {
-            // FIXME: Use for loop when slice iterator is perf is restored
-            for i in 0..slc.len() {
-                f(&slc[i]);
-            }
-        } else {
-            for row in self.inner_iter() {
-                row.into_iter_().fold((), |(), elt| f(elt));
-            }
-        }
+        self.fold((), move |(), elt| f(elt))
     }
 
     /// Fold along an axis.
@@ -1330,6 +1372,41 @@ impl<A, S, D> ArrayBase<S, D> where S: Data<Elem=A>, D: Dimension
         self.subview(axis, 0).map(|first_elt| {
             unsafe {
                 mapping(ArrayView::new_(first_elt, Ix1(view_len), Ix1(view_stride)))
+            }
+        })
+    }
+
+    #[cfg(lanes_along)]
+    fn lanes_along<'a, F>(&'a self, axis: Axis, mut visit: F)
+        where D: RemoveAxis,
+              F: FnMut(ArrayView1<'a, A>),
+              A: 'a,
+    {
+        let view_len = self.shape().axis(axis);
+        let view_stride = self.strides.axis(axis);
+        // use the 0th subview as a map to each 1d array view extended from
+        // the 0th element.
+        self.subview(axis, 0).visit(move |first_elt| {
+            unsafe {
+                visit(ArrayView::new_(first_elt, Ix1(view_len), Ix1(view_stride)))
+            }
+        })
+    }
+
+    #[cfg(lanes_along)]
+    fn lanes_along_mut<'a, F>(&'a mut self, axis: Axis, mut visit: F)
+        where D: RemoveAxis,
+              S: DataMut,
+              F: FnMut(ArrayViewMut1<'a, A>),
+              A: 'a,
+    {
+        let view_len = self.shape().axis(axis);
+        let view_stride = self.strides.axis(axis);
+        // use the 0th subview as a map to each 1d array view extended from
+        // the 0th element.
+        self.subview_mut(axis, 0).unordered_foreach_mut(move |first_elt| {
+            unsafe {
+                visit(ArrayViewMut::new_(first_elt, Ix1(view_len), Ix1(view_stride)))
             }
         })
     }

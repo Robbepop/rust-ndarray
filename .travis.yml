@@ -4,6 +4,9 @@ sudo: required
 dist: trusty
 matrix:
   include:
+    - rust: 1.13.0
+      env:
+       - FEATURES='test'
     - rust: stable
       env:
        - FEATURES='test'
@@ -23,6 +26,7 @@ addons:
       - libopenblas-dev
 script:
   - |
+      cargo build --verbose --no-default-features &&
       cargo build --verbose --features "$FEATURES" &&
       cargo test --verbose --features "$FEATURES" &&
       cargo test --release --verbose --features "" &&
