@@ -7,8 +7,48 @@
 // except according to those terms.
 
 use std::slice;
+use std::mem::{size_of, forget};
 
 use imp_prelude::*;
+
+/// Create an [**`Array`**](type.Array.html) with one, two or
+/// three dimensions.
+///
+/// ```
+/// #[macro_use(array)]
+/// extern crate ndarray;
+///
+/// fn main() {
+///     let a1 = array![1, 2, 3, 4];
+///
+///     let a2 = array![[1, 2],
+///                     [3, 4]];
+///
+///     let a3 = array![[[1, 2], [3, 4]],
+///                     [[5, 6], [7, 8]]];
+///
+///     assert_eq!(a1.shape(), &[4]);
+///     assert_eq!(a2.shape(), &[2, 2]);
+///     assert_eq!(a3.shape(), &[2, 2, 2]);
+/// }
+/// ```
+///
+/// This macro uses `vec![]`, and has the same ownership semantics;
+/// elements are moved into the resulting `Array`.
+///
+/// Use `array![...].into_shared()` to create an `RcArray`.
+#[macro_export]
+macro_rules! array {
+    ($([$([$($x:expr),*]),+]),+) => {{
+        $crate::Array3::from(vec![$([$([$($x,)*],)*],)*])
+    }};
+    ($([$($x:expr),*]),+) => {{
+        $crate::Array2::from(vec![$([$($x,)*],)*])
+    }};
+    ($($x:expr),*) => {{
+        $crate::Array::from_vec(vec![$($x,)*])
+    }};
+}
 
 /// Create a zero-dimensional array with the element `x`.
 pub fn arr0<A>(x: A) -> Array0<A>
@@ -121,21 +161,71 @@ impl_arr_init!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,);
 ///     a.shape() == [2, 3]
 /// );
 /// ```
-pub fn arr2<A: Clone, V: FixedInitializer<Elem = A>>(xs: &[V]) -> Array2<A> {
-    let (m, n) = (xs.len(), V::len());
-    let dim = Ix2(m, n);
-    let mut result = Vec::<A>::with_capacity(dim.size());
-    for snd in xs {
-        result.extend_from_slice(snd.as_init_slice());
+pub fn arr2<A: Clone, V: FixedInitializer<Elem = A>>(xs: &[V]) -> Array2<A>
+    where V: Clone,
+{
+    Array2::from(xs.to_vec())
+}
+
+impl<A> From<Vec<A>> for Array1<A> {
+    fn from(xs: Vec<A>) -> Self {
+        Array1::from_vec(xs)
     }
-    unsafe {
-        ArrayBase::from_shape_vec_unchecked(dim, result)
+}
+
+impl<A, V> From<Vec<V>> for Array2<A>
+    where V: FixedInitializer<Elem = A>
+{
+    fn from(mut xs: Vec<V>) -> Self {
+        let (m, n) = (xs.len(), V::len());
+        let dim = Ix2(m, n);
+        let ptr = xs.as_mut_ptr();
+        let len = xs.len();
+        let cap = xs.capacity();
+        let expand_len = len * V::len();
+        forget(xs);
+        unsafe {
+            let v = if size_of::<A>() == 0 {
+                Vec::from_raw_parts(ptr as *mut A, expand_len, expand_len)
+            } else if V::len() == 0 {
+                Vec::new()
+            } else {
+                let expand_cap = cap * V::len();
+                Vec::from_raw_parts(ptr as *mut A, expand_len, expand_cap)
+            };
+            ArrayBase::from_shape_vec_unchecked(dim, v)
+        }
+    }
+}
+
+impl<A, V, U> From<Vec<V>> for Array3<A>
+    where V: FixedInitializer<Elem=U>,
+          U: FixedInitializer<Elem=A>
+{
+    fn from(mut xs: Vec<V>) -> Self {
+        let dim = Ix3(xs.len(), V::len(), U::len());
+        let ptr = xs.as_mut_ptr();
+        let len = xs.len();
+        let cap = xs.capacity();
+        let expand_len = len * V::len() * U::len();
+        forget(xs);
+        unsafe {
+            let v = if size_of::<A>() == 0 {
+                Vec::from_raw_parts(ptr as *mut A, expand_len, expand_len)
+            } else if V::len() == 0 || U::len() == 0 {
+                Vec::new()
+            } else {
+                let expand_cap = cap * V::len() * U::len();
+                Vec::from_raw_parts(ptr as *mut A, expand_len, expand_cap)
+            };
+            ArrayBase::from_shape_vec_unchecked(dim, v)
+        }
     }
 }
 
 /// Create a two-dimensional array with elements from `xs`.
 ///
-pub fn rcarr2<A: Clone, V: FixedInitializer<Elem = A>>(xs: &[V]) -> RcArray<A, Ix2> {
+pub fn rcarr2<A: Clone, V: Clone + FixedInitializer<Elem = A>>(xs: &[V]) -> RcArray<A, Ix2> {
     arr2(xs).into_shared()
 }
 
@@ -158,22 +248,16 @@ pub fn rcarr2<A: Clone, V: FixedInitializer<Elem = A>>(xs: &[V]) -> RcArray<A, I
 /// ```
 pub fn arr3<A: Clone, V: FixedInitializer<Elem=U>, U: FixedInitializer<Elem=A>>(xs: &[V])
     -> Array3<A>
+    where V: Clone,
+          U: Clone,
 {
-    let dim = Ix3(xs.len(), V::len(), U::len());
-    let mut result = Vec::<A>::with_capacity(dim.size());
-    for snd in xs {
-        for thr in snd.as_init_slice() {
-            result.extend_from_slice(thr.as_init_slice());
-        }
-    }
-    unsafe {
-        ArrayBase::from_shape_vec_unchecked(dim, result)
-    }
+    Array3::from(xs.to_vec())
 }
 
 /// Create a three-dimensional array with elements from `xs`.
 pub fn rcarr3<A: Clone, V: FixedInitializer<Elem=U>, U: FixedInitializer<Elem=A>>(xs: &[V])
     -> RcArray<A, Ix3>
+    where V: Clone, U: Clone,
 {
     arr3(xs).into_shared()
 }

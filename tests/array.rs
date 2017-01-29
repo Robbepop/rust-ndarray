@@ -1097,6 +1097,20 @@ fn test_map_axis() {
 }
 
 #[test]
+fn test_to_vec() {
+    let mut a = arr2(&[[1, 2, 3],
+                       [4, 5, 6],
+                       [7, 8, 9],
+                       [10,11,12]]);
+
+    a.islice(s![..;-1, ..]);
+    assert_eq!(a.row(3).to_vec(), vec![1, 2, 3]);
+    assert_eq!(a.column(2).to_vec(), vec![12, 9, 6, 3]);
+    a.islice(s![.., ..;-1]);
+    assert_eq!(a.row(3).to_vec(), vec![3, 2, 1]);
+}
+
+#[test]
 fn test_array_clone_unalias() {
     let a = Array::<i32, _>::zeros((3, 3));
     let mut b = a.clone();
@@ -1111,4 +1125,28 @@ fn test_array_clone_same_view() {
     a.islice(s![..;-1, ..;-1]);
     let b = a.clone();
     assert_eq!(a, b);
+}
+
+#[test]
+fn array_macros() {
+    // array
+    let a1 = array![1, 2, 3];
+    assert_eq!(a1, arr1(&[1, 2, 3]));
+    let a2 = array![[1, 2], [3, 4], [5, 6]];
+    assert_eq!(a2, arr2(&[[1, 2], [3, 4], [5, 6]]));
+    let a3 = array![[[1, 2], [3, 4]], [[5, 6], [7, 8]]];
+    assert_eq!(a3, arr3(&[[[1, 2], [3, 4]], [[5, 6], [7, 8]]]));
+
+    let s = String::from("abc");
+    let a2s = array![[String::from("w"), s],
+                     [String::from("x"), String::from("y")]];
+    assert_eq!(a2s[[0, 0]], "w");
+    assert_eq!(a2s[[0, 1]], "abc");
+    assert_eq!(a2s[[1, 0]], "x");
+    assert_eq!(a2s[[1, 1]], "y");
+
+    let empty1: Array<f32, Ix1> = array![];
+    assert_eq!(empty1, array![]);
+    let empty2: Array<f32, Ix2> = array![[]];
+    assert_eq!(empty2, array![[]]);
 }
