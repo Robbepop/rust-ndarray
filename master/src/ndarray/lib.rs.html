@@ -9,6 +9,7 @@
 
     <title>lib.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
     
@@ -844,6 +845,7 @@
 <span id="800">800</span>
 <span id="801">801</span>
 <span id="802">802</span>
+<span id="803">803</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014-2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -938,7 +940,7 @@
     <span class='ident'>Axes</span>,
     <span class='ident'>AxisDescription</span>,
 };
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>dimension</span>::<span class='ident'>dim</span>::<span class='op'>*</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>dimension</span>::<span class='ident'>dim</span>::<span class='kw-2'>*</span>;
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>dimension</span>::<span class='ident'>NdIndex</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>indexes</span>::<span class='ident'>Indices</span>;
@@ -972,7 +974,7 @@
 <span class='kw'>mod</span> <span class='ident'>arrayformat</span>;
 <span class='kw'>mod</span> <span class='ident'>data_traits</span>;
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>aliases</span>::<span class='op'>*</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>aliases</span>::<span class='kw-2'>*</span>;
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>data_traits</span>::{
     <span class='ident'>Data</span>,
@@ -985,7 +987,7 @@
 <span class='kw'>mod</span> <span class='ident'>dimension</span>;
 
 <span class='kw'>mod</span> <span class='ident'>free_functions</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>free_functions</span>::<span class='op'>*</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>free_functions</span>::<span class='kw-2'>*</span>;
 
 <span class='kw'>mod</span> <span class='ident'>indexes</span>;
 <span class='kw'>mod</span> <span class='ident'>iterators</span>;
@@ -999,7 +1001,7 @@
 
 <span class='doccomment'>/// Implementation&#39;s prelude. Common types used everywhere.</span>
 <span class='kw'>mod</span> <span class='ident'>imp_prelude</span> {
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>prelude</span>::<span class='op'>*</span>;
+    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>prelude</span>::<span class='kw-2'>*</span>;
     <span class='kw'>pub</span> <span class='kw'>use</span> {
         <span class='ident'>RemoveAxis</span>,
         <span class='ident'>Data</span>,
@@ -1325,7 +1327,7 @@
     <span class='ident'>data</span>: <span class='ident'>S</span>,
     <span class='doccomment'>/// A pointer into the buffer held by data, may point anywhere</span>
     <span class='doccomment'>/// in its range.</span>
-    <span class='ident'>ptr</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>S</span>::<span class='ident'>Elem</span>,
+    <span class='ident'>ptr</span>: <span class='kw-2'>*</span><span class='kw-2'>mut</span> <span class='ident'>S</span>::<span class='ident'>Elem</span>,
     <span class='doccomment'>/// The size of each axis</span>
     <span class='ident'>dim</span>: <span class='ident'>D</span>,
     <span class='doccomment'>/// The element count stride per axis. To be parsed as `isize`.</span>
@@ -1448,6 +1450,7 @@
 }
 
 
+<span class='kw'>mod</span> <span class='ident'>impl_1d</span>;
 <span class='kw'>mod</span> <span class='ident'>impl_2d</span>;
 
 <span class='kw'>mod</span> <span class='ident'>numeric</span>;
@@ -1468,10 +1471,10 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Unsafe because: `ptr` must be valid for the given dimension and strides.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>new_</span>(<span class='ident'>ptr</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>A</span>, <span class='ident'>dim</span>: <span class='ident'>D</span>, <span class='ident'>strides</span>: <span class='ident'>D</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
+    <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>new_</span>(<span class='ident'>ptr</span>: <span class='kw-2'>*</span><span class='kw'>const</span> <span class='ident'>A</span>, <span class='ident'>dim</span>: <span class='ident'>D</span>, <span class='ident'>strides</span>: <span class='ident'>D</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='ident'>ArrayView</span> {
             <span class='ident'>data</span>: <span class='ident'>ViewRepr</span>::<span class='ident'>new</span>(),
-            <span class='ident'>ptr</span>: <span class='ident'>ptr</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>A</span>,
+            <span class='ident'>ptr</span>: <span class='ident'>ptr</span> <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw-2'>mut</span> <span class='ident'>A</span>,
             <span class='ident'>dim</span>: <span class='ident'>dim</span>,
             <span class='ident'>strides</span>: <span class='ident'>strides</span>,
         }
@@ -1517,7 +1520,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Unsafe because: `ptr` must be valid for the given dimension and strides.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-    <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>new_</span>(<span class='ident'>ptr</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>A</span>, <span class='ident'>dim</span>: <span class='ident'>D</span>, <span class='ident'>strides</span>: <span class='ident'>D</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
+    <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>new_</span>(<span class='ident'>ptr</span>: <span class='kw-2'>*</span><span class='kw-2'>mut</span> <span class='ident'>A</span>, <span class='ident'>dim</span>: <span class='ident'>D</span>, <span class='ident'>strides</span>: <span class='ident'>D</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='ident'>ArrayViewMut</span> {
             <span class='ident'>data</span>: <span class='ident'>ViewRepr</span>::<span class='ident'>new</span>(),
             <span class='ident'>ptr</span>: <span class='ident'>ptr</span>,

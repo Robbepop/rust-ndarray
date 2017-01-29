@@ -9,6 +9,7 @@
 
     <title>remove_axis.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
     
@@ -158,7 +159,7 @@
 }
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>impl_remove_axis_array</span>(
-    ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>n</span>:<span class='ident'>expr</span>),<span class='op'>*</span>) <span class='op'>=&gt;</span> (
+    ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>n</span>:<span class='ident'>expr</span>),<span class='kw-2'>*</span>) <span class='op'>=&gt;</span> (
     $(
         <span class='kw'>impl</span> <span class='ident'>RemoveAxis</span> <span class='kw'>for</span> <span class='ident'>Dim</span><span class='op'>&lt;</span>[<span class='ident'>Ix</span>; <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>n</span>]<span class='op'>&gt;</span>
         {
@@ -173,7 +174,7 @@
                             <span class='kw'>continue</span>;
                         }
                         <span class='kw'>for</span> <span class='ident'>rr</span> <span class='kw'>in</span> <span class='ident'>it</span>.<span class='ident'>by_ref</span>() {
-                            <span class='op'>*</span><span class='ident'>rr</span> <span class='op'>=</span> <span class='ident'>d</span>;
+                            <span class='kw-2'>*</span><span class='ident'>rr</span> <span class='op'>=</span> <span class='ident'>d</span>;
                             <span class='kw'>break</span>
                         }
                     }

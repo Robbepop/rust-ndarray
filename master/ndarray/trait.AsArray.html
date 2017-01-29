@@ -7,8 +7,9 @@
     <meta name="description" content="API documentation for the Rust `AsArray` trait in crate `ndarray`.">
     <meta name="keywords" content="rust, rustlang, rust-lang, AsArray">
 
-    <title>0.7.2 - ndarray::AsArray - Rust</title>
+    <title>0.7.3 - ndarray::AsArray - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
     
@@ -48,7 +49,7 @@
                        [<span class='inner'>&#x2212;</span>]
                    </a>
                </span><a class='srclink' href='../src/ndarray/arraytraits.rs.html#288' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait AsArray&lt;'a, A:&nbsp;'a, D&nbsp;=&nbsp;<a class='type' href='../ndarray/type.Ix1.html' title='ndarray::Ix1'>Ix1</a>&gt;: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='type' href='../ndarray/type.ArrayView.html' title='ndarray::ArrayView'>ArrayView</a>&lt;'a, A, D&gt;&gt; <span class='where'>where D: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a></span> { }</pre><div class='docblock'><p>Argument conversion into an array view</p>
+<pre class='rust trait'>pub trait AsArray&lt;'a, A:&nbsp;'a, D&nbsp;=&nbsp;<a class='type' href='../ndarray/type.Ix1.html' title='ndarray::Ix1'>Ix1</a>&gt;: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='type' href='../ndarray/type.ArrayView.html' title='ndarray::ArrayView'>ArrayView</a>&lt;'a, A, D&gt;&gt; <span class='where fmt-newline'>where D: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a></span> { }</pre><div class='docblock'><p>Argument conversion into an array view</p>
 
 <p>The trait is parameterized over <code>A</code>, the element type, and <code>D</code>, the
 dimensionality of the array. <code>D</code> defaults to one-dimensional.</p>
@@ -71,7 +72,7 @@ dimensionality of the array. <code>D</code> defaults to one-dimensional.</p>
 </div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;'a, A:&nbsp;'a, D, T&gt; AsArray&lt;'a, A, D&gt; for T <span class='where'>where T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='type' href='../ndarray/type.ArrayView.html' title='ndarray::ArrayView'>ArrayView</a>&lt;'a, A, D&gt;&gt;, D: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a></span></code></li>
+    <li><code>impl&lt;'a, A:&nbsp;'a, D, T&gt; AsArray&lt;'a, A, D&gt; for T <span class='where fmt-newline'>where T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='type' href='../ndarray/type.ArrayView.html' title='ndarray::ArrayView'>ArrayView</a>&lt;'a, A, D&gt;&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D: <a class='trait' href='../ndarray/trait.Dimension.html' title='ndarray::Dimension'>Dimension</a></span></code></li>
 </ul><script type="text/javascript" async
                          src="../implementors/ndarray/trait.AsArray.js">
                  </script></section>

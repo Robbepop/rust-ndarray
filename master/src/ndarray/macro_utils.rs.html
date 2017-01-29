@@ -9,6 +9,7 @@
 
     <title>macro_utils.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
     
@@ -60,11 +61,11 @@
 
 <span class='doccomment'>/// Derive Copy and Clone using the parameters (and bounds) as specified in []</span>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>copy_and_clone</span> {
-    ([$(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>parm</span>:<span class='ident'>tt</span>)<span class='op'>*</span>] <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>type_</span>:<span class='ident'>ty</span>) <span class='op'>=&gt;</span> {
-        <span class='kw'>impl</span><span class='op'>&lt;</span>$(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>parm</span>)<span class='op'>*</span><span class='op'>&gt;</span> <span class='ident'>Copy</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>type_</span> { }
-        <span class='kw'>impl</span><span class='op'>&lt;</span>$(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>parm</span>)<span class='op'>*</span><span class='op'>&gt;</span> <span class='ident'>Clone</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>type_</span> {
+    ([$(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>parm</span>:<span class='ident'>tt</span>)<span class='kw-2'>*</span>] <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>type_</span>:<span class='ident'>ty</span>) <span class='op'>=&gt;</span> {
+        <span class='kw'>impl</span><span class='op'>&lt;</span>$(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>parm</span>)<span class='kw-2'>*</span><span class='op'>&gt;</span> <span class='ident'>Copy</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>type_</span> { }
+        <span class='kw'>impl</span><span class='op'>&lt;</span>$(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>parm</span>)<span class='kw-2'>*</span><span class='op'>&gt;</span> <span class='ident'>Clone</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>type_</span> {
             <span class='attribute'>#[<span class='ident'>inline</span>(<span class='ident'>always</span>)]</span>
-            <span class='kw'>fn</span> <span class='ident'>clone</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> { <span class='op'>*</span><span class='self'>self</span> }
+            <span class='kw'>fn</span> <span class='ident'>clone</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> { <span class='kw-2'>*</span><span class='self'>self</span> }
         }
     };
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>type_</span>:<span class='ident'>ty</span>) <span class='op'>=&gt;</span> {

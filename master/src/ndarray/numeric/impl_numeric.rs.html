@@ -9,6 +9,7 @@
 
     <title>impl_numeric.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
     
@@ -186,7 +187,7 @@
 <span class='kw'>use</span> <span class='ident'>libnum</span>::{<span class='self'>self</span>, <span class='ident'>Zero</span>, <span class='ident'>Float</span>};
 <span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>free</span>::<span class='ident'>enumerate</span>;
 
-<span class='kw'>use</span> <span class='ident'>imp_prelude</span>::<span class='op'>*</span>;
+<span class='kw'>use</span> <span class='ident'>imp_prelude</span>::<span class='kw-2'>*</span>;
 <span class='kw'>use</span> <span class='ident'>numeric_util</span>;
 
 <span class='kw'>use</span> {
@@ -251,7 +252,7 @@
             <span class='comment'>// contiguous along the axis we are summing</span>
             <span class='kw'>let</span> <span class='ident'>ax</span> <span class='op'>=</span> <span class='ident'>axis</span>.<span class='ident'>index</span>();
             <span class='kw'>for</span> (<span class='ident'>i</span>, <span class='ident'>elt</span>) <span class='kw'>in</span> <span class='ident'>enumerate</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>res</span>) {
-                <span class='op'>*</span><span class='ident'>elt</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>subview</span>(<span class='ident'>Axis</span>(<span class='number'>1</span> <span class='op'>-</span> <span class='ident'>ax</span>), <span class='ident'>i</span>).<span class='ident'>scalar_sum</span>();
+                <span class='kw-2'>*</span><span class='ident'>elt</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>subview</span>(<span class='ident'>Axis</span>(<span class='number'>1</span> <span class='op'>-</span> <span class='ident'>ax</span>), <span class='ident'>i</span>).<span class='ident'>scalar_sum</span>();
             }
         } <span class='kw'>else</span> {
             <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>1</span>..<span class='ident'>n</span> {
@@ -301,7 +302,7 @@
               <span class='ident'>E</span>: <span class='ident'>Dimension</span>,
     {
         <span class='kw'>let</span> <span class='ident'>rhs_broadcast</span> <span class='op'>=</span> <span class='ident'>rhs</span>.<span class='ident'>broadcast_unwrap</span>(<span class='self'>self</span>.<span class='ident'>raw_dim</span>());
-        <span class='self'>self</span>.<span class='ident'>iter</span>().<span class='ident'>zip</span>(<span class='ident'>rhs_broadcast</span>.<span class='ident'>iter</span>()).<span class='ident'>all</span>(<span class='op'>|</span>(<span class='ident'>x</span>, <span class='ident'>y</span>)<span class='op'>|</span> (<span class='op'>*</span><span class='ident'>x</span> <span class='op'>-</span> <span class='op'>*</span><span class='ident'>y</span>).<span class='ident'>abs</span>() <span class='op'>&lt;=</span> <span class='ident'>tol</span>)
+        <span class='self'>self</span>.<span class='ident'>iter</span>().<span class='ident'>zip</span>(<span class='ident'>rhs_broadcast</span>.<span class='ident'>iter</span>()).<span class='ident'>all</span>(<span class='op'>|</span>(<span class='ident'>x</span>, <span class='ident'>y</span>)<span class='op'>|</span> (<span class='kw-2'>*</span><span class='ident'>x</span> <span class='op'>-</span> <span class='kw-2'>*</span><span class='ident'>y</span>).<span class='ident'>abs</span>() <span class='op'>&lt;=</span> <span class='ident'>tol</span>)
     }
 }
 

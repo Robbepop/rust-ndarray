@@ -9,6 +9,7 @@
 
     <title>arraytraits.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
     
@@ -373,7 +374,7 @@
     <span class='ident'>IndexMut</span>,
 };
 
-<span class='kw'>use</span> <span class='ident'>imp_prelude</span>::<span class='op'>*</span>;
+<span class='kw'>use</span> <span class='ident'>imp_prelude</span>::<span class='kw-2'>*</span>;
 <span class='kw'>use</span> {
     <span class='ident'>Iter</span>,
     <span class='ident'>IterMut</span>,
@@ -410,7 +411,7 @@
           <span class='ident'>I</span>: <span class='ident'>NdIndex</span><span class='op'>&lt;</span><span class='ident'>D</span><span class='op'>&gt;</span>,
           <span class='ident'>S</span>: <span class='ident'>Data</span>,
 {
-    <span class='macro'>debug_bounds_check</span><span class='macro'>!</span>(<span class='ident'>_a</span>, <span class='op'>*</span><span class='ident'>_index</span>);
+    <span class='macro'>debug_bounds_check</span><span class='macro'>!</span>(<span class='ident'>_a</span>, <span class='kw-2'>*</span><span class='ident'>_index</span>);
 }
 
 <span class='doccomment'>/// Access the element at **index**.</span>

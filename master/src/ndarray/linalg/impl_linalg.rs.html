@@ -9,6 +9,7 @@
 
     <title>impl_linalg.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
     
@@ -616,7 +617,7 @@
 
 <span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>free</span>::<span class='ident'>enumerate</span>;
 
-<span class='kw'>use</span> <span class='ident'>imp_prelude</span>::<span class='op'>*</span>;
+<span class='kw'>use</span> <span class='ident'>imp_prelude</span>::<span class='kw-2'>*</span>;
 <span class='kw'>use</span> <span class='ident'>numeric_util</span>;
 
 <span class='kw'>use</span> {
@@ -713,9 +714,9 @@
                                                             <span class='ident'>rhs</span>.<span class='ident'>strides</span>()[<span class='number'>0</span>]);
                     <span class='kw'>let</span> <span class='ident'>ret</span> <span class='op'>=</span> <span class='ident'>blas_sys</span>::<span class='ident'>c</span>::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>func</span>(
                         <span class='ident'>n</span>,
-                        <span class='ident'>lhs_ptr</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>,
+                        <span class='ident'>lhs_ptr</span> <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw'>const</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>,
                         <span class='ident'>incx</span>,
-                        <span class='ident'>rhs_ptr</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>,
+                        <span class='ident'>rhs_ptr</span> <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw'>const</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>,
                         <span class='ident'>incy</span>);
                     <span class='kw'>return</span> <span class='ident'>cast_as</span>::<span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>, <span class='ident'>A</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='ident'>ret</span>);
                 }
@@ -736,8 +737,8 @@
 <span class='doccomment'>/// which agrees with our pointer for non-negative strides, but</span>
 <span class='doccomment'>/// is at the opposite end for negative strides.</span>
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;blas&quot;</span>)]</span>
-<span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>blas_1d_params</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span>(<span class='ident'>ptr</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>A</span>, <span class='ident'>len</span>: <span class='ident'>usize</span>, <span class='ident'>stride</span>: <span class='ident'>isize</span>)
-    <span class='op'>-&gt;</span> (<span class='op'>*</span><span class='kw'>const</span> <span class='ident'>A</span>, <span class='ident'>blas_index</span>, <span class='ident'>blas_index</span>)
+<span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>blas_1d_params</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span>(<span class='ident'>ptr</span>: <span class='kw-2'>*</span><span class='kw'>const</span> <span class='ident'>A</span>, <span class='ident'>len</span>: <span class='ident'>usize</span>, <span class='ident'>stride</span>: <span class='ident'>isize</span>)
+    <span class='op'>-&gt;</span> (<span class='kw-2'>*</span><span class='kw'>const</span> <span class='ident'>A</span>, <span class='ident'>blas_index</span>, <span class='ident'>blas_index</span>)
 {
     <span class='comment'>// [x x x x]</span>
     <span class='comment'>//        ^--ptr</span>
@@ -873,8 +874,8 @@
         }
         <span class='kw'>for</span> (<span class='ident'>i</span>, <span class='ident'>rr</span>) <span class='kw'>in</span> <span class='ident'>enumerate</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>res_elems</span>) {
             <span class='kw'>unsafe</span> {
-                <span class='op'>*</span><span class='ident'>rr</span> <span class='op'>=</span> (<span class='number'>0</span>..<span class='ident'>a</span>).<span class='ident'>fold</span>(<span class='ident'>A</span>::<span class='ident'>zero</span>(),
-                    <span class='kw'>move</span> <span class='op'>|</span><span class='ident'>s</span>, <span class='ident'>k</span><span class='op'>|</span> <span class='ident'>s</span> <span class='op'>+</span> <span class='op'>*</span><span class='self'>self</span>.<span class='ident'>uget</span>(<span class='ident'>Ix2</span>(<span class='ident'>i</span>, <span class='ident'>k</span>)) <span class='op'>*</span> <span class='op'>*</span><span class='ident'>rhs</span>.<span class='ident'>uget</span>(<span class='ident'>k</span>)
+                <span class='kw-2'>*</span><span class='ident'>rr</span> <span class='op'>=</span> (<span class='number'>0</span>..<span class='ident'>a</span>).<span class='ident'>fold</span>(<span class='ident'>A</span>::<span class='ident'>zero</span>(),
+                    <span class='kw'>move</span> <span class='op'>|</span><span class='ident'>s</span>, <span class='ident'>k</span><span class='op'>|</span> <span class='ident'>s</span> <span class='op'>+</span> <span class='kw-2'>*</span><span class='self'>self</span>.<span class='ident'>uget</span>(<span class='ident'>Ix2</span>(<span class='ident'>i</span>, <span class='ident'>k</span>)) <span class='op'>*</span> <span class='kw-2'>*</span><span class='ident'>rhs</span>.<span class='ident'>uget</span>(<span class='ident'>k</span>)
                 );
             }
         }
@@ -901,7 +902,7 @@
               <span class='ident'>A</span>: <span class='ident'>LinalgScalar</span>,
               <span class='ident'>E</span>: <span class='ident'>Dimension</span>,
     {
-        <span class='self'>self</span>.<span class='ident'>zip_mut_with</span>(<span class='ident'>rhs</span>, <span class='kw'>move</span> <span class='op'>|</span><span class='ident'>y</span>, <span class='kw-2'>&amp;</span><span class='ident'>x</span><span class='op'>|</span> <span class='op'>*</span><span class='ident'>y</span> <span class='op'>=</span> <span class='op'>*</span><span class='ident'>y</span> <span class='op'>+</span> (<span class='ident'>alpha</span> <span class='op'>*</span> <span class='ident'>x</span>));
+        <span class='self'>self</span>.<span class='ident'>zip_mut_with</span>(<span class='ident'>rhs</span>, <span class='kw'>move</span> <span class='op'>|</span><span class='ident'>y</span>, <span class='kw-2'>&amp;</span><span class='ident'>x</span><span class='op'>|</span> <span class='kw-2'>*</span><span class='ident'>y</span> <span class='op'>=</span> <span class='kw-2'>*</span><span class='ident'>y</span> <span class='op'>+</span> (<span class='ident'>alpha</span> <span class='op'>*</span> <span class='ident'>x</span>));
     }
 }
 
@@ -984,12 +985,12 @@
                         <span class='ident'>n</span> <span class='kw'>as</span> <span class='ident'>blas_index</span>, <span class='comment'>// n, cols of Op(b)</span>
                         <span class='ident'>k</span> <span class='kw'>as</span> <span class='ident'>blas_index</span>, <span class='comment'>// k, cols of Op(a)</span>
                         <span class='ident'>cast_as</span>(<span class='kw-2'>&amp;</span><span class='ident'>alpha</span>),        <span class='comment'>// alpha</span>
-                        <span class='ident'>lhs_</span>.<span class='ident'>ptr</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _,   <span class='comment'>// a</span>
+                        <span class='ident'>lhs_</span>.<span class='ident'>ptr</span> <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw'>const</span> _,   <span class='comment'>// a</span>
                         <span class='ident'>lhs_stride</span>, <span class='comment'>// lda</span>
-                        <span class='ident'>rhs_</span>.<span class='ident'>ptr</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _,   <span class='comment'>// b</span>
+                        <span class='ident'>rhs_</span>.<span class='ident'>ptr</span> <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw'>const</span> _,   <span class='comment'>// b</span>
                         <span class='ident'>rhs_stride</span>, <span class='comment'>// ldb</span>
                         <span class='ident'>cast_as</span>(<span class='kw-2'>&amp;</span><span class='ident'>beta</span>),         <span class='comment'>// beta</span>
-                        <span class='ident'>c_</span>.<span class='ident'>ptr</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _,       <span class='comment'>// c</span>
+                        <span class='ident'>c_</span>.<span class='ident'>ptr</span> <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw-2'>mut</span> _,       <span class='comment'>// c</span>
                         <span class='ident'>c_</span>.<span class='ident'>strides</span>()[<span class='number'>0</span>] <span class='kw'>as</span> <span class='ident'>blas_index</span>, <span class='comment'>// ldc</span>
                     );
                     }
@@ -1023,14 +1024,14 @@
             ::<span class='ident'>matrixmultiply</span>::<span class='ident'>sgemm</span>(
                 <span class='ident'>m</span>, <span class='ident'>k</span>, <span class='ident'>n</span>,
                 <span class='ident'>cast_as</span>(<span class='kw-2'>&amp;</span><span class='ident'>alpha</span>),
-                <span class='ident'>ap</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _,
+                <span class='ident'>ap</span> <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw'>const</span> _,
                 <span class='ident'>lhs</span>.<span class='ident'>strides</span>()[<span class='number'>0</span>],
                 <span class='ident'>lhs</span>.<span class='ident'>strides</span>()[<span class='number'>1</span>],
-                <span class='ident'>bp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _,
+                <span class='ident'>bp</span> <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw'>const</span> _,
                 <span class='ident'>rhs</span>.<span class='ident'>strides</span>()[<span class='number'>0</span>],
                 <span class='ident'>rhs</span>.<span class='ident'>strides</span>()[<span class='number'>1</span>],
                 <span class='ident'>cast_as</span>(<span class='kw-2'>&amp;</span><span class='ident'>beta</span>),
-                <span class='ident'>cp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _,
+                <span class='ident'>cp</span> <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw-2'>mut</span> _,
                 <span class='ident'>rsc</span>, <span class='ident'>csc</span>
             );
         }
@@ -1039,14 +1040,14 @@
             ::<span class='ident'>matrixmultiply</span>::<span class='ident'>dgemm</span>(
                 <span class='ident'>m</span>, <span class='ident'>k</span>, <span class='ident'>n</span>,
                 <span class='ident'>cast_as</span>(<span class='kw-2'>&amp;</span><span class='ident'>alpha</span>),
-                <span class='ident'>ap</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _,
+                <span class='ident'>ap</span> <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw'>const</span> _,
                 <span class='ident'>lhs</span>.<span class='ident'>strides</span>()[<span class='number'>0</span>],
                 <span class='ident'>lhs</span>.<span class='ident'>strides</span>()[<span class='number'>1</span>],
-                <span class='ident'>bp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _,
+                <span class='ident'>bp</span> <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw'>const</span> _,
                 <span class='ident'>rhs</span>.<span class='ident'>strides</span>()[<span class='number'>0</span>],
                 <span class='ident'>rhs</span>.<span class='ident'>strides</span>()[<span class='number'>1</span>],
                 <span class='ident'>cast_as</span>(<span class='kw-2'>&amp;</span><span class='ident'>beta</span>),
-                <span class='ident'>cp</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw-2'>mut</span> _,
+                <span class='ident'>cp</span> <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw-2'>mut</span> _,
                 <span class='ident'>rsc</span>, <span class='ident'>csc</span>
             );
         }
@@ -1061,8 +1062,8 @@
         <span class='kw'>loop</span> {
             <span class='kw'>unsafe</span> {
                 <span class='kw'>let</span> <span class='ident'>elt</span> <span class='op'>=</span> <span class='ident'>c</span>.<span class='ident'>uget_mut</span>((<span class='ident'>i</span>, <span class='ident'>j</span>));
-                <span class='op'>*</span><span class='ident'>elt</span> <span class='op'>=</span> <span class='op'>*</span><span class='ident'>elt</span> <span class='op'>*</span> <span class='ident'>beta</span> <span class='op'>+</span> <span class='ident'>alpha</span> <span class='op'>*</span> (<span class='number'>0</span>..<span class='ident'>k</span>).<span class='ident'>fold</span>(<span class='ident'>A</span>::<span class='ident'>zero</span>(),
-                    <span class='kw'>move</span> <span class='op'>|</span><span class='ident'>s</span>, <span class='ident'>x</span><span class='op'>|</span> <span class='ident'>s</span> <span class='op'>+</span> <span class='op'>*</span><span class='ident'>lhs</span>.<span class='ident'>uget</span>((<span class='ident'>i</span>, <span class='ident'>x</span>)) <span class='op'>*</span> <span class='op'>*</span><span class='ident'>rhs</span>.<span class='ident'>uget</span>((<span class='ident'>x</span>, <span class='ident'>j</span>)));
+                <span class='kw-2'>*</span><span class='ident'>elt</span> <span class='op'>=</span> <span class='kw-2'>*</span><span class='ident'>elt</span> <span class='op'>*</span> <span class='ident'>beta</span> <span class='op'>+</span> <span class='ident'>alpha</span> <span class='op'>*</span> (<span class='number'>0</span>..<span class='ident'>k</span>).<span class='ident'>fold</span>(<span class='ident'>A</span>::<span class='ident'>zero</span>(),
+                    <span class='kw'>move</span> <span class='op'>|</span><span class='ident'>s</span>, <span class='ident'>x</span><span class='op'>|</span> <span class='ident'>s</span> <span class='op'>+</span> <span class='kw-2'>*</span><span class='ident'>lhs</span>.<span class='ident'>uget</span>((<span class='ident'>i</span>, <span class='ident'>x</span>)) <span class='op'>*</span> <span class='kw-2'>*</span><span class='ident'>rhs</span>.<span class='ident'>uget</span>((<span class='ident'>x</span>, <span class='ident'>j</span>)));
             }
             <span class='ident'>j</span> <span class='op'>+=</span> <span class='number'>1</span>;
             <span class='kw'>if</span> <span class='ident'>j</span> <span class='op'>==</span> <span class='ident'>n</span> {
@@ -1115,7 +1116,7 @@
 <span class='kw'>fn</span> <span class='ident'>cast_as</span><span class='op'>&lt;</span><span class='ident'>A</span>: <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Copy</span>, <span class='ident'>B</span>: <span class='lifetime'>&#39;static</span> <span class='op'>+</span> <span class='ident'>Copy</span><span class='op'>&gt;</span>(<span class='ident'>a</span>: <span class='kw-2'>&amp;</span><span class='ident'>A</span>) <span class='op'>-&gt;</span> <span class='ident'>B</span> {
     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>same_type</span>::<span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>B</span><span class='op'>&gt;</span>());
     <span class='kw'>unsafe</span> {
-        ::<span class='ident'>std</span>::<span class='ident'>ptr</span>::<span class='ident'>read</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _ <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>B</span>)
+        ::<span class='ident'>std</span>::<span class='ident'>ptr</span>::<span class='ident'>read</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw'>const</span> _ <span class='kw'>as</span> <span class='kw-2'>*</span><span class='kw'>const</span> <span class='ident'>B</span>)
     }
 }
 

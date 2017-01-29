@@ -9,6 +9,7 @@
 
     <title>impl_views.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
     
@@ -295,7 +296,7 @@
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>;
 
-<span class='kw'>use</span> <span class='ident'>imp_prelude</span>::<span class='op'>*</span>;
+<span class='kw'>use</span> <span class='ident'>imp_prelude</span>::<span class='kw-2'>*</span>;
 <span class='kw'>use</span> <span class='ident'>dimension</span>::{<span class='self'>self</span>, <span class='ident'>stride_offset</span>};
 <span class='kw'>use</span> <span class='ident'>error</span>::<span class='ident'>ShapeError</span>;
 
@@ -353,7 +354,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Unsafe because caller is responsible for ensuring that the pointer is</span>
     <span class='doccomment'>/// valid, not mutably aliased and coherent with the dimension and stride information.</span>
-    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>from_shape_ptr</span><span class='op'>&lt;</span><span class='ident'>Sh</span><span class='op'>&gt;</span>(<span class='ident'>shape</span>: <span class='ident'>Sh</span>, <span class='ident'>ptr</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>A</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>
+    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>from_shape_ptr</span><span class='op'>&lt;</span><span class='ident'>Sh</span><span class='op'>&gt;</span>(<span class='ident'>shape</span>: <span class='ident'>Sh</span>, <span class='ident'>ptr</span>: <span class='kw-2'>*</span><span class='kw'>const</span> <span class='ident'>A</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>
         <span class='kw'>where</span> <span class='ident'>Sh</span>: <span class='ident'>Into</span><span class='op'>&lt;</span><span class='ident'>StrideShape</span><span class='op'>&lt;</span><span class='ident'>D</span><span class='op'>&gt;&gt;</span>
     {
         <span class='kw'>let</span> <span class='ident'>shape</span> <span class='op'>=</span> <span class='ident'>shape</span>.<span class='ident'>into</span>();
@@ -468,7 +469,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Unsafe because caller is responsible for ensuring that the pointer is</span>
     <span class='doccomment'>/// valid, not aliased and coherent with the dimension and stride information.</span>
-    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>from_shape_ptr</span><span class='op'>&lt;</span><span class='ident'>Sh</span><span class='op'>&gt;</span>(<span class='ident'>shape</span>: <span class='ident'>Sh</span>, <span class='ident'>ptr</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>A</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>
+    <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>from_shape_ptr</span><span class='op'>&lt;</span><span class='ident'>Sh</span><span class='op'>&gt;</span>(<span class='ident'>shape</span>: <span class='ident'>Sh</span>, <span class='ident'>ptr</span>: <span class='kw-2'>*</span><span class='kw-2'>mut</span> <span class='ident'>A</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>
         <span class='kw'>where</span> <span class='ident'>Sh</span>: <span class='ident'>Into</span><span class='op'>&lt;</span><span class='ident'>StrideShape</span><span class='op'>&lt;</span><span class='ident'>D</span><span class='op'>&gt;&gt;</span>
     {
         <span class='kw'>let</span> <span class='ident'>shape</span> <span class='op'>=</span> <span class='ident'>shape</span>.<span class='ident'>into</span>();

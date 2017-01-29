@@ -9,6 +9,7 @@
 
     <title>numeric_util.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
     
@@ -266,7 +267,7 @@
         <span class='kw'>if</span> <span class='ident'>i</span> <span class='op'>&gt;=</span> <span class='number'>7</span> { <span class='kw'>break</span>; }
         <span class='kw'>unsafe</span> {
             <span class='comment'>// get_unchecked is needed to avoid the bounds check</span>
-            <span class='ident'>sum</span> <span class='op'>=</span> <span class='ident'>sum</span> <span class='op'>+</span> <span class='ident'>xs</span>[<span class='ident'>i</span>] <span class='op'>*</span> <span class='op'>*</span><span class='ident'>ys</span>.<span class='ident'>get_unchecked</span>(<span class='ident'>i</span>);
+            <span class='ident'>sum</span> <span class='op'>=</span> <span class='ident'>sum</span> <span class='op'>+</span> <span class='ident'>xs</span>[<span class='ident'>i</span>] <span class='op'>*</span> <span class='kw-2'>*</span><span class='ident'>ys</span>.<span class='ident'>get_unchecked</span>(<span class='ident'>i</span>);
         }
     }
     <span class='ident'>sum</span>

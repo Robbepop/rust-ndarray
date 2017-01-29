@@ -9,6 +9,7 @@
 
     <title>dim.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
     
@@ -285,7 +286,7 @@
     <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>PartialEq</span>,
 {
     <span class='kw'>fn</span> <span class='ident'>eq</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='kw-2'>&amp;</span><span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='self'>self</span>.<span class='ident'>index</span> <span class='op'>==</span> <span class='op'>*</span><span class='ident'>rhs</span>
+        <span class='self'>self</span>.<span class='ident'>index</span> <span class='op'>==</span> <span class='kw-2'>*</span><span class='ident'>rhs</span>
     }
 }
 
@@ -315,7 +316,7 @@
         <span class='kw'>where</span> <span class='ident'>Dim</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span>: <span class='ident'>Dimension</span>,
     {
         <span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>opassign_m</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='self'>Self</span>) {
-            <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>expr</span><span class='op'>!</span>(<span class='op'>*</span><span class='self'>self</span>, <span class='kw-2'>&amp;</span><span class='ident'>rhs</span>);
+            <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>expr</span><span class='op'>!</span>(<span class='kw-2'>*</span><span class='self'>self</span>, <span class='kw-2'>&amp;</span><span class='ident'>rhs</span>);
         }
     }
 
@@ -324,7 +325,7 @@
     {
         <span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>opassign_m</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='kw-2'>&amp;</span><span class='self'>Self</span>) {
             <span class='kw'>for</span> (<span class='ident'>x</span>, <span class='kw-2'>&amp;</span><span class='ident'>y</span>) <span class='kw'>in</span> <span class='ident'>zip</span>(<span class='self'>self</span>.<span class='ident'>slice_mut</span>(), <span class='ident'>rhs</span>.<span class='ident'>slice</span>()) {
-                <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>expr</span><span class='op'>!</span>(<span class='op'>*</span><span class='ident'>x</span>, <span class='ident'>y</span>);
+                <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>expr</span><span class='op'>!</span>(<span class='kw-2'>*</span><span class='ident'>x</span>, <span class='ident'>y</span>);
             }
         }
     }
@@ -347,7 +348,7 @@
     <span class='kw'>impl</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>opassign</span><span class='op'>&lt;</span><span class='ident'>Ix</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Dim</span><span class='op'>&lt;</span>[<span class='ident'>Ix</span>; <span class='number'>1</span>]<span class='op'>&gt;</span> {
         <span class='attribute'>#[<span class='ident'>inline</span>]</span>
         <span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>opassign_m</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='ident'>Ix</span>) {
-            <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>expr</span><span class='op'>!</span>((<span class='op'>*</span><span class='self'>self</span>)[<span class='number'>0</span>], <span class='ident'>rhs</span>);
+            <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>expr</span><span class='op'>!</span>((<span class='kw-2'>*</span><span class='self'>self</span>)[<span class='number'>0</span>], <span class='ident'>rhs</span>);
         }
     }
     };
@@ -370,7 +371,7 @@
     {
         <span class='kw'>fn</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>opassign_m</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>rhs</span>: <span class='ident'>Ix</span>) {
             <span class='kw'>for</span> <span class='ident'>x</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>slice_mut</span>() {
-                <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>expr</span><span class='op'>!</span>(<span class='op'>*</span><span class='ident'>x</span>, <span class='ident'>rhs</span>);
+                <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>expr</span><span class='op'>!</span>(<span class='kw-2'>*</span><span class='ident'>x</span>, <span class='ident'>rhs</span>);
             }
         }
     }
