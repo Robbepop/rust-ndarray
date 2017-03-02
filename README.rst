@@ -4,9 +4,11 @@ ndarray
 The ``ndarray`` crate provides an N-dimensional container for general elements
 and for numerics.  Requires Rust 1.13.
 
-Please read the API documentation here: `(0.7)`__, `(0.6)`__, `(0.5)`__, `(0.4)`__, `(0.3)`__, `(0.2)`__
+Please read the API documentation here: `(0.8)`__, `(0.7)`__, `(0.6)`__,
+`(0.5)`__, `(0.4)`__, `(0.3)`__, `(0.2)`__
 
 __ http://bluss.github.io/rust-ndarray/
+__ http://bluss.github.io/rust-ndarray/0.7/
 __ http://bluss.github.io/rust-ndarray/0.6/
 __ http://bluss.github.io/rust-ndarray/0.5/
 __ http://bluss.github.io/rust-ndarray/0.4/
@@ -60,7 +62,7 @@ your `Cargo.toml`.
 - ``serde``
 
   - Optional, compatible with Rust stable
-  - Enables serialization support for serde 0.8
+  - Enables serialization support for serde 0.9
 
 - ``blas``
 
@@ -72,10 +74,16 @@ your `Cargo.toml`.
 How to use with cargo::
 
     [dependencies]
-    ndarray = "0.7.2"
+    ndarray = "0.8"
 
 Recent Changes (ndarray)
 ------------------------
+
+- 0.8
+
+  - Update serde dependency to 0.9
+  - Remove deprecated type alias ``OwnedArray`` (use ``Array``)
+  - Remove deprecated ``.assign_scalar()`` (use ``fill``)
 
 - 0.7.3
 
@@ -568,21 +576,6 @@ __ https://bluss.github.io/rust-ndarray/master/ndarray/struct.ArrayBase.html#ari
 
   - First release on crates.io
   - Starting point for evolution to come
-
-Recent Changes (ndarray-rand)
------------------------------
-
-- 0.3.0
-
-  - Require ndarray 0.7
-
-- 0.2.0
-
-  - Require ndarray 0.6
-
-- 0.1.0
-
-  - Initial release
 
 License
 =======

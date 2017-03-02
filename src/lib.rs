@@ -56,7 +56,7 @@
 //!   - Enables serialization support for rustc-serialize 0.3
 //! - `serde`
 //!   - Optional, compatible with Rust stable
-//!   - Enables serialization support for serde 0.8
+//!   - Enables serialization support for serde 0.9
 //! - `blas`
 //!   - Optional and experimental, compatible with Rust stable
 //!   - Enable transparent BLAS support for matrix multiplication.
@@ -507,10 +507,6 @@ pub type RcArray<A, D> = ArrayBase<Rc<Vec<A>>, D>;
 /// [`Array2`](Array2.t.html),
 /// [`Array3`](Array3.t.html) and so on.
 pub type Array<A, D> = ArrayBase<Vec<A>, D>;
-
-#[deprecated(note="Use the type alias `Array` instead")]
-/// Array where the data is owned uniquely.
-pub type OwnedArray<A, D> = ArrayBase<Vec<A>, D>;
 
 /// A lightweight array view.
 ///
