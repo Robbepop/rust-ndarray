@@ -842,10 +842,6 @@
 <span id="797">797</span>
 <span id="798">798</span>
 <span id="799">799</span>
-<span id="800">800</span>
-<span id="801">801</span>
-<span id="802">802</span>
-<span id="803">803</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014-2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -905,7 +901,7 @@
 <span class='doccomment'>//!   - Enables serialization support for rustc-serialize 0.3</span>
 <span class='doccomment'>//! - `serde`</span>
 <span class='doccomment'>//!   - Optional, compatible with Rust stable</span>
-<span class='doccomment'>//!   - Enables serialization support for serde 0.8</span>
+<span class='doccomment'>//!   - Enables serialization support for serde 0.9</span>
 <span class='doccomment'>//! - `blas`</span>
 <span class='doccomment'>//!   - Optional and experimental, compatible with Rust stable</span>
 <span class='doccomment'>//!   - Enable transparent BLAS support for matrix multiplication.</span>
@@ -1356,10 +1352,6 @@
 <span class='doccomment'>/// [`Array2`](Array2.t.html),</span>
 <span class='doccomment'>/// [`Array3`](Array3.t.html) and so on.</span>
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>Array</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span>, <span class='ident'>D</span><span class='op'>&gt;</span>;
-
-<span class='attribute'>#[<span class='ident'>deprecated</span>(<span class='ident'>note</span><span class='op'>=</span><span class='string'>&quot;Use the type alias `Array` instead&quot;</span>)]</span>
-<span class='doccomment'>/// Array where the data is owned uniquely.</span>
-<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>OwnedArray</span><span class='op'>&lt;</span><span class='ident'>A</span>, <span class='ident'>D</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ArrayBase</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>A</span><span class='op'>&gt;</span>, <span class='ident'>D</span><span class='op'>&gt;</span>;
 
 <span class='doccomment'>/// A lightweight array view.</span>
 <span class='doccomment'>///</span>

@@ -1448,14 +1448,6 @@
 <span id="1403">1403</span>
 <span id="1404">1404</span>
 <span id="1405">1405</span>
-<span id="1406">1406</span>
-<span id="1407">1407</span>
-<span id="1408">1408</span>
-<span id="1409">1409</span>
-<span id="1410">1410</span>
-<span id="1411">1411</span>
-<span id="1412">1412</span>
-<span id="1413">1413</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014-2016 bluss and ndarray developers.</span>
 <span class='comment'>//</span>
@@ -2529,14 +2521,6 @@
               <span class='ident'>S2</span>: <span class='ident'>Data</span><span class='op'>&lt;</span><span class='ident'>Elem</span><span class='op'>=</span><span class='ident'>A</span><span class='op'>&gt;</span>,
     {
         <span class='self'>self</span>.<span class='ident'>zip_mut_with</span>(<span class='ident'>rhs</span>, <span class='op'>|</span><span class='ident'>x</span>, <span class='ident'>y</span><span class='op'>|</span> <span class='kw-2'>*</span><span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>y</span>.<span class='ident'>clone</span>());
-    }
-
-    <span class='doccomment'>/// Perform an elementwise assigment to `self` from scalar `x`.</span>
-    <span class='attribute'>#[<span class='ident'>deprecated</span>(<span class='ident'>note</span><span class='op'>=</span><span class='string'>&quot;This method is replaced with ArrayBase::fill and will be removed.&quot;</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>assign_scalar</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>x</span>: <span class='kw-2'>&amp;</span><span class='ident'>A</span>)
-        <span class='kw'>where</span> <span class='ident'>S</span>: <span class='ident'>DataMut</span>, <span class='ident'>A</span>: <span class='ident'>Clone</span>,
-    {
-        <span class='self'>self</span>.<span class='ident'>unordered_foreach_mut</span>(<span class='kw'>move</span> <span class='op'>|</span><span class='ident'>elt</span><span class='op'>|</span> <span class='kw-2'>*</span><span class='ident'>elt</span> <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>clone</span>());
     }
 
     <span class='doccomment'>/// Perform an elementwise assigment to `self` from element `x`.</span>

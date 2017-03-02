@@ -7,7 +7,7 @@
     <meta name="description" content="API documentation for the Rust `Dot` trait in crate `ndarray`.">
     <meta name="keywords" content="rust, rustlang, rust-lang, Dot">
 
-    <title>0.7.3 - ndarray::linalg::Dot - Rust</title>
+    <title>0.8.0 - ndarray::linalg::Dot - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../normalize.css">
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
@@ -51,7 +51,7 @@
                </span><a class='srclink' href='../../src/ndarray/linalg/impl_linalg.rs.html#150-156' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Dot&lt;Rhs&gt; {
     type <a href='#associatedtype.Output' class='type'>Output</a>;
-    fn <a href='#tymethod.dot' class='fnname'>dot</a>(&amp;self, rhs: &amp;Rhs) -&gt; Self::<a class='trait' href='../../ndarray/linalg/trait.Dot.html' title='ndarray::linalg::Dot'>Output</a>;
+    fn <a href='#tymethod.dot' class='fnname'>dot</a>(&amp;self, rhs: &amp;Rhs) -&gt; Self::<a class='trait' href='../../ndarray/linalg/trait.Dot.html' title='trait ndarray::linalg::Dot'>Output</a>;
 }</pre><div class='docblock'><p>Matrix Multiplication</p>
 
 <p>For two-dimensional arrays, the dot method computes the matrix
@@ -65,11 +65,11 @@ multiplication.</p>
 </div></div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.dot' class='method'><span id='dot.v' class='invisible'><code>fn <a href='#tymethod.dot' class='fnname'>dot</a>(&amp;self, rhs: &amp;Rhs) -&gt; Self::<a class='trait' href='../../ndarray/linalg/trait.Dot.html' title='ndarray::linalg::Dot'>Output</a></code></span></h3></div>
+        <h3 id='tymethod.dot' class='method'><span id='dot.v' class='invisible'><code>fn <a href='#tymethod.dot' class='fnname'>dot</a>(&amp;self, rhs: &amp;Rhs) -&gt; Self::<a class='trait' href='../../ndarray/linalg/trait.Dot.html' title='trait ndarray::linalg::Dot'>Output</a></code></span></h3></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;A, S, S2&gt; Dot&lt;<a class='struct' href='../../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;S2, <a class='type' href='../../ndarray/type.Ix2.html' title='ndarray::Ix2'>Ix2</a>&gt;&gt; for ndarray::<a class='struct' href='../../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;S, <a class='type' href='../../ndarray/type.Ix2.html' title='ndarray::Ix2'>Ix2</a>&gt; <span class='where fmt-newline'>where S: <a class='trait' href='../../ndarray/trait.Data.html' title='ndarray::Data'>Data</a>&lt;Elem=A&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S2: <a class='trait' href='../../ndarray/trait.Data.html' title='ndarray::Data'>Data</a>&lt;Elem=A&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A: <a class='trait' href='../../ndarray/trait.LinalgScalar.html' title='ndarray::LinalgScalar'>LinalgScalar</a></span></code></li>
-<li><code>impl&lt;A, S, S2&gt; Dot&lt;<a class='struct' href='../../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;S2, <a class='type' href='../../ndarray/type.Ix1.html' title='ndarray::Ix1'>Ix1</a>&gt;&gt; for ndarray::<a class='struct' href='../../ndarray/struct.ArrayBase.html' title='ndarray::ArrayBase'>ArrayBase</a>&lt;S, <a class='type' href='../../ndarray/type.Ix2.html' title='ndarray::Ix2'>Ix2</a>&gt; <span class='where fmt-newline'>where S: <a class='trait' href='../../ndarray/trait.Data.html' title='ndarray::Data'>Data</a>&lt;Elem=A&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S2: <a class='trait' href='../../ndarray/trait.Data.html' title='ndarray::Data'>Data</a>&lt;Elem=A&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A: <a class='trait' href='../../ndarray/trait.LinalgScalar.html' title='ndarray::LinalgScalar'>LinalgScalar</a></span></code></li>
+    <li><code>impl&lt;A, S, S2&gt; Dot&lt;<a class='struct' href='../../ndarray/struct.ArrayBase.html' title='struct ndarray::ArrayBase'>ArrayBase</a>&lt;S2, <a class='type' href='../../ndarray/type.Ix2.html' title='type ndarray::Ix2'>Ix2</a>&gt;&gt; for <a class='struct' href='../../ndarray/struct.ArrayBase.html' title='struct ndarray::ArrayBase'>ArrayBase</a>&lt;S, <a class='type' href='../../ndarray/type.Ix2.html' title='type ndarray::Ix2'>Ix2</a>&gt; <span class='where fmt-newline'>where S: <a class='trait' href='../../ndarray/trait.Data.html' title='trait ndarray::Data'>Data</a>&lt;Elem=A&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S2: <a class='trait' href='../../ndarray/trait.Data.html' title='trait ndarray::Data'>Data</a>&lt;Elem=A&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A: <a class='trait' href='../../ndarray/trait.LinalgScalar.html' title='trait ndarray::LinalgScalar'>LinalgScalar</a></span></code></li>
+<li><code>impl&lt;A, S, S2&gt; Dot&lt;<a class='struct' href='../../ndarray/struct.ArrayBase.html' title='struct ndarray::ArrayBase'>ArrayBase</a>&lt;S2, <a class='type' href='../../ndarray/type.Ix1.html' title='type ndarray::Ix1'>Ix1</a>&gt;&gt; for <a class='struct' href='../../ndarray/struct.ArrayBase.html' title='struct ndarray::ArrayBase'>ArrayBase</a>&lt;S, <a class='type' href='../../ndarray/type.Ix2.html' title='type ndarray::Ix2'>Ix2</a>&gt; <span class='where fmt-newline'>where S: <a class='trait' href='../../ndarray/trait.Data.html' title='trait ndarray::Data'>Data</a>&lt;Elem=A&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S2: <a class='trait' href='../../ndarray/trait.Data.html' title='trait ndarray::Data'>Data</a>&lt;Elem=A&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A: <a class='trait' href='../../ndarray/trait.LinalgScalar.html' title='trait ndarray::LinalgScalar'>LinalgScalar</a></span></code></li>
 </ul><script type="text/javascript" async
                          src="../../implementors/ndarray/linalg/trait.Dot.js">
                  </script></section>
